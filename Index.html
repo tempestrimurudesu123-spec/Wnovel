@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Wnovel - Global Web Novel Platform">
+    <title>Wnovel | Live Platform</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { --p: #6366f1; --bg: #f8fafc; --c: #ffffff; --t: #0f172a; --m: #64748b; --b: #e2e8f0; }
+        
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+        body { 
+            margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--bg); color: var(--t); height: 100vh; 
+            overflow: hidden; width: 100%;
+        }
+
+        /* Layout Structure */
+        .app-container { display: flex; flex-direction: column; height: 100vh; position: relative; }
+        
+        header { 
+            height: 65px; background: var(--c); padding: 0 20px; 
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--b); flex-shrink: 0; z-index: 1000;
+        }
+
+        .logo { font-weight: 800; font-size: 22px; color: var(--p); letter-spacing: -0.8px; }
+
+        .content-view { 
+            flex: 1; overflow-y: auto; padding: 20px; 
+            padding-bottom: 110px; /* Space for Nav */
+            -webkit-overflow-scrolling: touch; 
+        }
+
+        .page { display: none; max-width: 650px; margin: 0 auto; }
+        .page.active { display: block; animation: pageIn 0.3s ease-out; }
+
+        @keyframes pageIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Modern UI Cards */
+        .card { 
+            background: var(--c); border: 1px solid var(--b); 
+            padding: 20px; border-radius: 20px; margin-bottom: 15px; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .card:active { transform: scale(0.98); }
+
+        h2 { font-weight: 800; margin-top: 0; font-size: 1.6rem; letter-spacing: -0.5px; }
+
+        /* Forms & Buttons */
+        input, textarea { 
+            width: 100%; padding: 16px; margin-bottom: 12px; 
+            border: 1px solid var(--b); border-radius: 14px; font-size: 16px; 
+            background: #ffffff; font-family: inherit; outline: none; transition: 0.2s;
+        }
+        input:focus, textarea:focus { border-color: var(--p); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
+
+        .btn { 
+            background: var(--p); color: white; border: none; padding: 18px; 
+            width: 100%; border-radius: 16px; font-weight: 700; font-size: 1rem; 
+            cursor: pointer; transition: 0.2s; display: block; text-align: center;
+        }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-outline { background: transparent; color: var(--p); border: 2.5px solid var(--p); margin-top: 10px; }
+
+        /* Navigation - Bulletproof Position */
+        nav { 
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 85px; 
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px);
+            border-top: 1px solid var(--b); display: flex; z-index: 9999; 
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .nav-tab { 
+            flex: 1; background: none; border: none; display: flex; 
+            flex-direction: column; align-items: center; justify-content: center; 
+            font-size: 10px; font-weight: 800; color: var(--m); cursor: pointer;
+        }
+        .nav-tab.active { color: var(--p); }
+        .nav-tab .icon { font-size: 22px; margin-bottom: 4px; }
+
+        /* Pro Reader */
+        #reader-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: var(--c); z-index: 10000; display: none; 
+            flex-direction: column;
+        }
+        .reader-nav { height: 60px; padding: 0 20px; border-bottom: 1px solid var(--b); display: flex; align-items: center; justify-content: space-between; }
+        .reader-body { flex: 1; overflow-y: auto; padding: 30px 20px; font-family: 'Lora', serif; font-size: 1.3rem; line-height: 1.9; color: #1e293b; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header>
+            <div class="logo">Wnovel</div>
+            <div id="net-status" style="font-size: 11px; font-weight: 800; color: #10b981;">● ONLINE</div>
+        </header>
+
+        <div class="content-view" id="scroll-area">
+            <div id="p-home" class="page active">
+                <h2>Discovery</h2>
+                <div id="home-feed">
+                    <div class="card"><p>Synchronizing data...</p></div>
+                </div>
+            </div>
+
+            <div id="p-lib" class="page">
+                <h2>Library</h2>
+                <div class="card">
+                    <p style="color: var(--m)">Books you follow will appear here.</p>
+                </div>
+            </div>
+
+            <div id="p-write" class="page">
+                <h2>Writing Studio</h2>
+                <div id="writer-ui">
+                    <div class="card" style="text-align: center;">
+                        <p>Login as an Author to start publishing your stories.</p>
+                        <button class="btn" onclick="showPage('prof')">Go to Profile</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="p-prof" class="page">
+                <h2>Settings</h2>
+                <div class="card" style="display: flex; align-items: center; gap: 15px;">
+                    <div style="background: var(--p); color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">?</div>
+                    <div>
+                        <div id="u-name" style="font-weight: 800;">Guest User</div>
+                        <div style="font-size: 12px; color: var(--m);">Public Access</div>
+                    </div>
+                </div>
+                
+                <div id="auth-section">
+                    <div class="card">
+                        <input type="email" id="auth-email" placeholder="Email Address">
+                        <input type="password" id="auth-pass" placeholder="Password">
+                        <button class="btn" onclick="authAction('login')" id="l-btn">Sign In</button>
+                        <button class="btn btn-outline" onclick="authAction('signup')" id="s-btn">Join as Author</button>
+                    </div>
+                </div>
+
+                <div id="user-settings" style="display:none;">
+                    <div class="card">
+                        <button class="btn" style="background:#f43f5e;" onclick="signOut()">Sign Out</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <nav>
+            <button class="nav-tab active" id="tab-home" onclick="showPage('home')"><span class="icon">🏠</span>HOME</button>
+            <button class="nav-tab" id="tab-lib" onclick="showPage('lib')"><span class="icon">📚</span>LIBRARY</button>
+            <button class="nav-tab" id="tab-write" onclick="showPage('write')"><span class="icon">✍️</span>WRITER</button>
+            <button class="nav-tab" id="tab-prof" onclick="showPage('prof')"><span class="icon">⚙️</span>PROFILE</button>
+        </nav>
+    </div>
+
+    <div id="reader-overlay">
+        <div class="reader-nav">
+            <button onclick="closeReader()" style="background:none; border:none; font-weight:800; font-family:inherit; cursor:pointer;">← BACK</button>
+            <b id="r-header-title" style="font-size: 14px; opacity: 0.6;">Reading</b>
+            <div style="width:40px"></div>
+        </div>
+        <div class="reader-body">
+            <h1 id="r-title" style="font-family: 'Plus Jakarta Sans'; margin-top: 0; line-height: 1.2;"></h1>
+            <div id="r-content"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SB_URL = 'https://brsjluzuqfhslhszxtjh.supabase.co';
+        const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJyc2psdXp1cWZoc2xoc3p4dGpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1NjA5NTgsImV4cCI6MjA5NDEzNjk1OH0.Oxsyga8BnkZv54BSsUOzYLiFOcNVxpFaKLwrHVRqunk';
+        const supabase = window.supabase.createClient(SB_URL, SB_KEY);
+        let currentUser = null;
+
+        // Navigation Control
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('p-' + id).classList.add('active');
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + id).classList.add('active');
+            document.getElementById('scroll-area').scrollTop = 0;
+            if(id === 'home') refreshFeed();
+        }
+
+        async function initApp() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if(user) {
+                currentUser = user;
+                document.getElementById('u-name').innerText = user.email.split('@')[0].toUpperCase();
+                document.getElementById('auth-section').style.display = 'none';
+                document.getElementById('user-settings').style.display = 'block';
+                setupWriterUI();
+            }
+            refreshFeed();
+        }
+
+        async function refreshFeed() {
+            const feed = document.getElementById('home-feed');
+            const { data, error } = await supabase.from('stories').select('*').order('created_at', {ascending:false});
+            
+            if(error || !data || data.length === 0) {
+                feed.innerHTML = '<div class="card"><p>No stories live yet. Be the first!</p></div>';
+                return;
+            }
+
+            feed.innerHTML = "";
+            data.forEach(story => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `<h3 style="margin:0 0 8px 0">${story.title}</h3><small style="color:var(--p); font-weight:800;">READ STORY →</small>`;
+                card.onclick = () => openReader(story);
+                feed.appendChild(card);
+            });
+        }
+
+        function openReader(story) {
+            document.getElementById('r-title').innerText = story.title;
+            document.getElementById('r-content').innerHTML = story.body.replace(/\n/g, '<br><br>');
+            document.getElementById('reader-overlay').style.display = 'flex';
+        }
+
+        function closeReader() { document.getElementById('reader-overlay').style.display = 'none'; }
+
+        function setupWriterUI() {
+            document.getElementById('writer-ui').innerHTML = `
+                <div class="card">
+                    <input id="new-t" placeholder="Chapter Title">
+                    <textarea id="new-b" rows="12" placeholder="Start writing here..."></textarea>
+                    <button class="btn" onclick="publishStory()">Publish Globally</button>
+                </div>
+            `;
+        }
+
+        async function publishStory() {
+            const t = document.getElementById('new-t').value;
+            const b = document.getElementById('new-b').value;
+            if(!t || !b) return alert("Fill in the title and content.");
+
+            const { error } = await supabase.from('stories').insert([{title:t, body:b, author_id:currentUser.id}]);
+            if(error) alert("Error: " + error.message); else { alert("Success!"); showPage('home'); }
+        }
+
+        async function authAction(type) {
+            const e = document.getElementById('auth-email').value;
+            const p = document.getElementById('auth-pass').value;
+            if(!e || !p) return alert("Details required.");
+
+            const { error } = (type === 'login') 
+                ? await supabase.auth.signInWithPassword({email:e, password:p})
+                : await supabase.auth.signUp({email:e, password:p});
+
+            if(error) alert(error.message); else location.reload();
+        }
+
+        async function signOut() { await supabase.auth.signOut(); location.reload(); }
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>
