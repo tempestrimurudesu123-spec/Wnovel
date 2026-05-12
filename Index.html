@@ -2,130 +2,124 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Wnovel | Live</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wnovel | Global Stories</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Lora:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
-        :root { --p: #6366f1; --bg: #f8fafc; --c: #ffffff; --t: #0f172a; --m: #64748b; --b: #e2e8f0; }
+        :root { --p: #6366f1; --bg: #ffffff; --card: #f8fafc; --t: #0f172a; --m: #64748b; --b: #e2e8f0; }
         
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body { 
             margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; 
             background: var(--bg); color: var(--t); 
-            /* FIX: Gamit ang dvh para sa mobile browser bars */
-            height: 100dvh; 
-            width: 100vw;
-            overflow: hidden; 
+            line-height: 1.6;
+        }
+
+        /* STANDARD WEBSITE NAVIGATION (TOP) */
+        nav { 
+            background: #fff; 
+            border-bottom: 1px solid var(--b);
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        /* HEADER */
-        header { 
-            height: 60px; background: var(--c); padding: 0 20px; 
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid var(--b); flex-shrink: 0;
-        }
-        .logo { font-weight: 800; font-size: 22px; color: var(--p); letter-spacing: -1px; }
+        .logo { font-weight: 800; font-size: 22px; color: var(--p); text-decoration: none; }
 
-        /* MAIN SCROLL AREA */
+        .nav-links { display: flex; gap: 20px; }
+        .nav-links button { 
+            background: none; border: none; font-weight: 700; color: var(--m); 
+            cursor: pointer; font-size: 14px; font-family: inherit;
+        }
+        .nav-links button.active { color: var(--p); }
+
+        /* MAIN CONTENT AREA */
         .container { 
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            padding-bottom: 120px; /* Space para sa floating nav */
-            -webkit-overflow-scrolling: touch;
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 40px 20px;
+            min-height: 80vh;
         }
 
-        .page { display: none; max-width: 500px; margin: 0 auto; }
-        .page.active { display: block; animation: fadeIn 0.2s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .page { display: none; }
+        .page.active { display: block; }
 
-        /* UI CARDS */
+        /* CONTENT CARDS */
         .card { 
-            background: var(--c); border: 1px solid var(--b); 
-            padding: 20px; border-radius: 20px; margin-bottom: 15px; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            background: var(--card); border: 1px solid var(--b); 
+            padding: 25px; border-radius: 16px; margin-bottom: 20px; 
         }
 
-        /* INPUTS & BUTTONS */
+        h1, h2 { font-weight: 800; letter-spacing: -1px; }
+
+        /* FORMS */
         input, textarea { 
-            width: 100%; padding: 15px; margin-bottom: 12px; 
+            width: 100%; padding: 15px; margin-bottom: 15px; 
             border: 1px solid var(--b); border-radius: 12px; font-size: 16px; 
             background: #fff; outline: none; font-family: inherit;
         }
+
         .btn { 
-            background: var(--p); color: white; border: none; padding: 16px; 
-            width: 100%; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer;
-        }
-
-        /* THE FLOATING NAV FIX */
-        .nav-wrapper {
-            position: fixed;
-            bottom: 30px; /* Inangat ko para hindi tamaan ng browser bar */
-            left: 0;
+            background: var(--p); color: white; border: none; padding: 16px 25px; 
+            border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer;
             width: 100%;
-            display: flex;
-            justify-content: center;
-            z-index: 9999;
-            pointer-events: none; /* Allows clicks to pass through except on the bar itself */
         }
 
-        nav { 
-            width: 90%;
-            max-width: 380px;
-            height: 70px; 
-            background: #0f172a; 
-            border-radius: 20px;
-            display: flex; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            pointer-events: auto; /* Re-enable clicks for the nav */
-            padding: 0 10px;
-        }
-
-        .nav-item { 
-            flex: 1; background: none; border: none; display: flex; 
-            flex-direction: column; align-items: center; justify-content: center; 
-            font-size: 10px; font-weight: 700; color: #94a3b8; cursor: pointer;
-        }
-        .nav-item.active { color: #fff; }
-        .nav-item span { font-size: 20px; margin-bottom: 2px; }
-
-        /* READER */
+        /* READER VIEW (STAYS ON TOP WHEN OPEN) */
         #reader { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #fff; z-index: 10000; display: none; flex-direction: column; 
+            background: #fff; z-index: 2000; display: none; flex-direction: column; 
+        }
+        .reader-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; align-items: center; }
+        .reader-content { flex: 1; overflow-y: auto; padding: 40px 20px; font-family: 'Lora', serif; font-size: 1.3rem; line-height: 2; }
+
+        /* MOBILE OPTIMIZATION */
+        @media (max-width: 600px) {
+            .nav-links { gap: 15px; }
+            .nav-links button { font-size: 12px; }
+            .container { padding: 20px; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo">Wnovel</div>
-        <div style="font-size: 10px; font-weight: 800; color: #10b981;">● ONLINE</div>
-    </header>
+    <nav>
+        <a href="#" class="logo" onclick="go('home')">Wnovel</a>
+        <div class="nav-links">
+            <button id="n-home" class="active" onclick="go('home')">Home</button>
+            <button id="n-write" onclick="go('write')">Write</button>
+            <button id="n-prof" onclick="go('prof')">Profile</button>
+        </div>
+    </nav>
 
-    <div class="container" id="main-scroll">
+    <div class="container">
         <div id="p-home" class="page active">
-            <h2 style="font-weight: 800;">Discovery</h2>
-            <div id="feed"><div class="card">Loading stories...</div></div>
+            <h1>Discovery</h1>
+            <p style="color: var(--m)">Read the latest novels from around the world.</p>
+            <hr style="border: 0; border-top: 1px solid var(--b); margin: 30px 0;">
+            <div id="feed">Loading stories...</div>
         </div>
 
         <div id="p-write" class="page">
-            <h2 style="font-weight: 800;">Write</h2>
+            <h1>Writer Studio</h1>
             <div id="writer-ui">
-                <div class="card" style="text-align:center;">
-                    <p>Sign in to start writing books.</p>
-                    <button class="btn" onclick="go('prof')">Login</button>
+                <div class="card">
+                    <h3>Want to publish?</h3>
+                    <p>Please login to your author account to start writing.</p>
+                    <button class="btn" onclick="go('prof')">Go to Login</button>
                 </div>
             </div>
         </div>
 
         <div id="p-prof" class="page">
-            <h2 style="font-weight: 800;">Profile</h2>
+            <h1>Account Settings</h1>
             <div id="auth-ui" class="card">
                 <input type="email" id="email" placeholder="Email">
                 <input type="password" id="pass" placeholder="Password">
@@ -133,27 +127,21 @@
                 <button class="btn" style="background:none; color:var(--p); margin-top:10px;" onclick="auth('signup')">Create Author Account</button>
             </div>
             <div id="user-ui" style="display:none" class="card">
-                <p id="u-email" style="font-weight:bold; margin-bottom:15px;"></p>
+                <p>Welcome back,</p>
+                <h3 id="u-email" style="margin: 0 0 20px 0"></h3>
                 <button class="btn" style="background:#ef4444" onclick="logout()">Sign Out</button>
             </div>
         </div>
     </div>
 
-    <div class="nav-wrapper">
-        <nav>
-            <button class="nav-item active" id="n-home" onclick="go('home')"><span>🏠</span>HOME</button>
-            <button class="nav-item" id="n-write" onclick="go('write')"><span>✍️</span>WRITE</button>
-            <button class="nav-item" id="n-prof" onclick="go('prof')"><span>👤</span>PROFILE</button>
-        </nav>
-    </div>
-
     <div id="reader">
-        <div style="padding:20px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
-            <button onclick="closeReader()" style="border:none; background:none; font-weight:800; font-size:16px;">✕ CLOSE</button>
-            <b style="font-size:12px; color:var(--m);">READER MODE</b>
-            <div style="width:50px;"></div>
+        <div class="reader-header">
+            <button onclick="closeReader()" style="border:none; background:none; font-weight:800; font-size:16px; cursor:pointer;">← Back to Stories</button>
         </div>
-        <div id="r-content" style="flex:1; overflow-y:auto; padding:30px 20px; font-family:'Lora', serif; font-size:1.25rem; line-height:1.8;"></div>
+        <div class="reader-content">
+            <h1 id="r-title" style="margin-top:0"></h1>
+            <div id="r-body"></div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -166,16 +154,16 @@
         function go(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('p-' + id).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.nav-links button').forEach(n => n.classList.remove('active'));
             document.getElementById('n-' + id).classList.add('active');
-            document.getElementById('main-scroll').scrollTop = 0;
+            window.scrollTo(0,0);
             if(id === 'home') loadFeed();
         }
 
         async function init() {
-            const { data } = await supabase.auth.getUser();
-            if(data.user) {
-                me = data.user;
+            const { data: { user } } = await supabase.auth.getUser();
+            if(user) {
+                me = user;
                 document.getElementById('auth-ui').style.display = 'none';
                 document.getElementById('user-ui').style.display = 'block';
                 document.getElementById('u-email').innerText = me.email;
@@ -187,14 +175,15 @@
         async function loadFeed() {
             const { data } = await supabase.from('stories').select('*').order('created_at', {ascending:false});
             const feed = document.getElementById('feed');
-            if(!data || data.length === 0) { feed.innerHTML = "No stories yet."; return; }
+            if(!data || data.length === 0) { feed.innerHTML = "No stories published yet."; return; }
             feed.innerHTML = "";
             data.forEach(s => {
                 const c = document.createElement('div');
                 c.className = 'card';
-                c.innerHTML = `<b>${s.title}</b><br><small style="color:var(--p)">Read Chapter →</small>`;
+                c.innerHTML = `<h3 style="margin:0">${s.title}</h3><p style="color:var(--p); font-weight:700; margin:10px 0 0 0; cursor:pointer">Read Story →</p>`;
                 c.onclick = () => {
-                    document.getElementById('r-content').innerHTML = `<h1>${s.title}</h1>${s.body.replace(/\n/g, '<br><br>')}`;
+                    document.getElementById('r-title').innerText = s.title;
+                    document.getElementById('r-body').innerHTML = s.body.replace(/\n/g, '<br><br>');
                     document.getElementById('reader').style.display = 'flex';
                 };
                 feed.appendChild(c);
@@ -206,9 +195,10 @@
         function setupWriter() {
             document.getElementById('writer-ui').innerHTML = `
                 <div class="card">
-                    <input id="w-t" placeholder="Title">
-                    <textarea id="w-b" rows="12" placeholder="Write here..."></textarea>
-                    <button class="btn" onclick="pub()">PUBLISH BOOK</button>
+                    <h3>Publish a New Chapter</h3>
+                    <input id="w-t" placeholder="Chapter Title">
+                    <textarea id="w-b" rows="15" placeholder="Write your masterpiece here..."></textarea>
+                    <button class="btn" onclick="pub()">Publish Now</button>
                 </div>`;
         }
 
@@ -221,12 +211,12 @@
         async function pub() {
             const t = document.getElementById('w-t').value, b = document.getElementById('w-b').value;
             const { error } = await supabase.from('stories').insert([{title:t, body:b, author_id:me.id}]);
-            if(error) alert(error.message); else { alert("Success!"); go('home'); }
+            if(error) alert(error.message); else { alert("Story Published!"); go('home'); }
         }
 
         async function logout() { await supabase.auth.signOut(); location.reload(); }
 
         init();
-    </script>l
+    </script>
 </body>
-</html>
+    </html>
