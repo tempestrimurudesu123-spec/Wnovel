@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Wnovel | Create & Discover</title>
+    <title>Wnovel | Live</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     
@@ -15,76 +15,89 @@
         body { 
             margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; 
             background: var(--bg); color: var(--t); 
-            min-height: 100vh; display: block; overflow-x: hidden;
+            /* FIX: Gamit ang dvh para sa mobile browser bars */
+            height: 100dvh; 
+            width: 100vw;
+            overflow: hidden; 
+            display: flex;
+            flex-direction: column;
         }
 
         /* HEADER */
         header { 
-            height: 70px; background: rgba(255, 255, 255, 0.8); 
-            backdrop-filter: blur(10px); padding: 0 20px; 
+            height: 60px; background: var(--c); padding: 0 20px; 
             display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid var(--b); position: sticky; top: 0; z-index: 1000;
+            border-bottom: 1px solid var(--b); flex-shrink: 0;
         }
-        .logo { font-weight: 800; font-size: 24px; color: var(--p); letter-spacing: -1px; }
+        .logo { font-weight: 800; font-size: 22px; color: var(--p); letter-spacing: -1px; }
 
-        /* MAIN CONTENT */
+        /* MAIN SCROLL AREA */
         .container { 
-            padding: 20px; padding-bottom: 120px; 
-            max-width: 600px; margin: 0 auto;
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 120px; /* Space para sa floating nav */
+            -webkit-overflow-scrolling: touch;
         }
-        .page { display: none; min-height: 60vh; }
-        .page.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .page { display: none; max-width: 500px; margin: 0 auto; }
+        .page.active { display: block; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* UI CARDS */
         .card { 
             background: var(--c); border: 1px solid var(--b); 
-            padding: 20px; border-radius: 24px; margin-bottom: 15px; 
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            padding: 20px; border-radius: 20px; margin-bottom: 15px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-        .story-title { font-size: 1.2rem; font-weight: 800; margin: 0 0 5px 0; display: block; color: var(--t); }
-        .story-meta { font-size: 12px; color: var(--m); font-weight: 600; }
 
-        /* FORMS */
+        /* INPUTS & BUTTONS */
         input, textarea { 
-            width: 100%; padding: 16px; margin-bottom: 12px; 
-            border: 1.5px solid var(--b); border-radius: 16px; font-size: 16px; 
-            background: #fff; outline: none; font-family: inherit; transition: 0.2s;
+            width: 100%; padding: 15px; margin-bottom: 12px; 
+            border: 1px solid var(--b); border-radius: 12px; font-size: 16px; 
+            background: #fff; outline: none; font-family: inherit;
         }
-        input:focus { border-color: var(--p); }
-
         .btn { 
-            background: var(--p); color: white; border: none; padding: 18px; 
-            width: 100%; border-radius: 16px; font-weight: 800; font-size: 16px; 
-            cursor: pointer; box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+            background: var(--p); color: white; border: none; padding: 16px; 
+            width: 100%; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer;
         }
-        .btn-sec { background: transparent; color: var(--p); border: 2px solid var(--p); margin-top: 10px; box-shadow: none; }
 
-        /* FLOATING NAVIGATION (TOUCH FIXED) */
-        nav { 
-            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 400px; height: 75px; 
-            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px);
-            border-radius: 25px; display: flex; z-index: 9999; 
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); padding: 0 10px;
+        /* THE FLOATING NAV FIX */
+        .nav-wrapper {
+            position: fixed;
+            bottom: 30px; /* Inangat ko para hindi tamaan ng browser bar */
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            z-index: 9999;
+            pointer-events: none; /* Allows clicks to pass through except on the bar itself */
         }
+
+        nav { 
+            width: 90%;
+            max-width: 380px;
+            height: 70px; 
+            background: #0f172a; 
+            border-radius: 20px;
+            display: flex; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            pointer-events: auto; /* Re-enable clicks for the nav */
+            padding: 0 10px;
+        }
+
         .nav-item { 
             flex: 1; background: none; border: none; display: flex; 
             flex-direction: column; align-items: center; justify-content: center; 
             font-size: 10px; font-weight: 700; color: #94a3b8; cursor: pointer;
         }
         .nav-item.active { color: #fff; }
-        .nav-item i { font-style: normal; font-size: 22px; margin-bottom: 2px; }
+        .nav-item span { font-size: 20px; margin-bottom: 2px; }
 
-        /* PRO READER */
+        /* READER */
         #reader { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #fff; z-index: 10000; display: none; flex-direction: column; 
-        }
-        .reader-nav { padding: 20px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; }
-        .reader-content { 
-            flex: 1; overflow-y: auto; padding: 30px 20px; 
-            font-family: 'Lora', serif; font-size: 1.25rem; line-height: 1.9; color: #334155; 
         }
     </style>
 </head>
@@ -92,28 +105,21 @@
 
     <header>
         <div class="logo">Wnovel</div>
-        <div style="font-size: 11px; font-weight: 800; color: #10b981;">● ONLINE</div>
+        <div style="font-size: 10px; font-weight: 800; color: #10b981;">● ONLINE</div>
     </header>
 
-    <div class="container">
+    <div class="container" id="main-scroll">
         <div id="p-home" class="page active">
             <h2 style="font-weight: 800;">Discovery</h2>
-            <div id="feed"><div class="card">Getting stories...</div></div>
-        </div>
-
-        <div id="p-lib" class="page">
-            <h2 style="font-weight: 800;">Library</h2>
-            <div class="card">
-                <p style="color: var(--m);">Stories you read will appear here.</p>
-            </div>
+            <div id="feed"><div class="card">Loading stories...</div></div>
         </div>
 
         <div id="p-write" class="page">
-            <h2 style="font-weight: 800;">Writer Studio</h2>
+            <h2 style="font-weight: 800;">Write</h2>
             <div id="writer-ui">
-                <div class="card" style="text-align: center;">
-                    <p><b>Become an Author</b><br>Login to start writing your novel.</p>
-                    <button class="btn" onclick="go('prof')">Login to Studio</button>
+                <div class="card" style="text-align:center;">
+                    <p>Sign in to start writing books.</p>
+                    <button class="btn" onclick="go('prof')">Login</button>
                 </div>
             </div>
         </div>
@@ -121,38 +127,33 @@
         <div id="p-prof" class="page">
             <h2 style="font-weight: 800;">Profile</h2>
             <div id="auth-ui" class="card">
-                <input type="email" id="email" placeholder="Email Address">
+                <input type="email" id="email" placeholder="Email">
                 <input type="password" id="pass" placeholder="Password">
                 <button class="btn" onclick="auth('login')">Sign In</button>
-                <button class="btn btn-sec" onclick="auth('signup')">Create Author Account</button>
+                <button class="btn" style="background:none; color:var(--p); margin-top:10px;" onclick="auth('signup')">Create Author Account</button>
             </div>
-            <div id="user-ui" style="display:none">
-                <div class="card">
-                    <p style="margin:0; font-size: 12px; color: var(--m);">Signed in as</p>
-                    <p id="u-email" style="font-weight:800; margin: 5px 0 15px 0;"></p>
-                    <button class="btn" style="background:#ef4444;" onclick="logout()">Sign Out</button>
-                </div>
+            <div id="user-ui" style="display:none" class="card">
+                <p id="u-email" style="font-weight:bold; margin-bottom:15px;"></p>
+                <button class="btn" style="background:#ef4444" onclick="logout()">Sign Out</button>
             </div>
         </div>
     </div>
 
-    <nav>
-        <button class="nav-item active" id="n-home" onclick="go('home')"><i>🏠</i>HOME</button>
-        <button class="nav-item" id="n-lib" onclick="go('lib')"><i>📚</i>LIBRARY</button>
-        <button class="nav-item" id="n-write" onclick="go('write')"><i>✍️</i>WRITE</button>
-        <button class="nav-item" id="n-prof" onclick="go('prof')"><i>👤</i>PROFILE</button>
-    </nav>
+    <div class="nav-wrapper">
+        <nav>
+            <button class="nav-item active" id="n-home" onclick="go('home')"><span>🏠</span>HOME</button>
+            <button class="nav-item" id="n-write" onclick="go('write')"><span>✍️</span>WRITE</button>
+            <button class="nav-item" id="n-prof" onclick="go('prof')"><span>👤</span>PROFILE</button>
+        </nav>
+    </div>
 
     <div id="reader">
-        <div class="reader-nav">
-            <button onclick="closeReader()" style="border:none; background:none; font-weight:800; font-size:16px; cursor:pointer;">✕ CLOSE</button>
-            <span style="font-size: 12px; font-weight: 800; opacity: 0.5;">WNOVEL READER</span>
-            <div style="width:50px"></div>
+        <div style="padding:20px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+            <button onclick="closeReader()" style="border:none; background:none; font-weight:800; font-size:16px;">✕ CLOSE</button>
+            <b style="font-size:12px; color:var(--m);">READER MODE</b>
+            <div style="width:50px;"></div>
         </div>
-        <div class="reader-content">
-            <h1 id="r-title" style="font-family: 'Plus Jakarta Sans'; font-weight: 800; margin-top: 0;"></h1>
-            <div id="r-body"></div>
-        </div>
+        <div id="r-content" style="flex:1; overflow-y:auto; padding:30px 20px; font-family:'Lora', serif; font-size:1.25rem; line-height:1.8;"></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -162,12 +163,12 @@
         const supabase = window.supabase.createClient(SB_URL, SB_KEY);
         let me = null;
 
-        // NAVIGATION LOGIC
         function go(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('p-' + id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById('n-' + id).classList.add('active');
+            document.getElementById('main-scroll').scrollTop = 0;
             if(id === 'home') loadFeed();
         }
 
@@ -184,20 +185,16 @@
         }
 
         async function loadFeed() {
-            const { data, error } = await supabase.from('stories').select('*').order('created_at', {ascending:false});
+            const { data } = await supabase.from('stories').select('*').order('created_at', {ascending:false});
             const feed = document.getElementById('feed');
-            if(error || !data || data.length === 0) {
-                feed.innerHTML = '<div class="card">No stories found. Start the journey!</div>';
-                return;
-            }
+            if(!data || data.length === 0) { feed.innerHTML = "No stories yet."; return; }
             feed.innerHTML = "";
             data.forEach(s => {
                 const c = document.createElement('div');
                 c.className = 'card';
-                c.innerHTML = `<span class="story-title">${s.title}</span><span class="story-meta">TAP TO READ →</span>`;
+                c.innerHTML = `<b>${s.title}</b><br><small style="color:var(--p)">Read Chapter →</small>`;
                 c.onclick = () => {
-                    document.getElementById('r-title').innerText = s.title;
-                    document.getElementById('r-body').innerHTML = s.body.replace(/\n/g, '<br><br>');
+                    document.getElementById('r-content').innerHTML = `<h1>${s.title}</h1>${s.body.replace(/\n/g, '<br><br>')}`;
                     document.getElementById('reader').style.display = 'flex';
                 };
                 feed.appendChild(c);
@@ -209,29 +206,27 @@
         function setupWriter() {
             document.getElementById('writer-ui').innerHTML = `
                 <div class="card">
-                    <input id="w-t" placeholder="Title of your Book">
-                    <textarea id="w-b" rows="12" placeholder="Start writing your story here..."></textarea>
-                    <button class="btn" onclick="publish()">Publish Book</button>
+                    <input id="w-t" placeholder="Title">
+                    <textarea id="w-b" rows="12" placeholder="Write here..."></textarea>
+                    <button class="btn" onclick="pub()">PUBLISH BOOK</button>
                 </div>`;
         }
 
         async function auth(type) {
             const e = document.getElementById('email').value, p = document.getElementById('pass').value;
-            if(!e || !p) return alert("Enter credentials");
             const { error } = (type === 'login') ? await supabase.auth.signInWithPassword({email:e, password:p}) : await supabase.auth.signUp({email:e, password:p});
             if(error) alert(error.message); else location.reload();
         }
 
-        async function publish() {
+        async function pub() {
             const t = document.getElementById('w-t').value, b = document.getElementById('w-b').value;
-            if(!t || !b) return alert("Fill in the fields!");
             const { error } = await supabase.from('stories').insert([{title:t, body:b, author_id:me.id}]);
-            if(error) alert(error.message); else { alert("Story Published!"); go('home'); }
+            if(error) alert(error.message); else { alert("Success!"); go('home'); }
         }
 
         async function logout() { await supabase.auth.signOut(); location.reload(); }
 
         init();
-    </script>
+    </script>l
 </body>
-                        </html>
+</html>
