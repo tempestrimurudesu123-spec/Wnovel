@@ -2,74 +2,132 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reading Room | Wnovels Premium</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Wnovels | Core Reader Matrix</title>
     
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#ff5500">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     
     <style>
-        :root { 
-            --read-bg: #08080c; 
-            --read-card: #0f0f18; 
-            --brand-primary: #ff5500; 
-            --text-main: #f1f1f6; 
-            --text-muted: #8e8e9f; 
-            --border-line: #1c1c30; 
+        :root {
+            --reader-bg: #030306;
+            --surface-bg: #09090f;
+            --element-bg: #11111a;
+            --brand-core: #ff5500;
+            --brand-glow: rgba(255, 85, 0, 0.15);
+            --text-primary: #f8f8fa;
+            --text-secondary: #7e7e8f;
+            --border-line: #161626;
+            --gold-star: #ffaa00;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background-color: var(--read-bg); color: var(--text-main); display: flex; flex-direction: column; align-items: center; }
-        .read-nav-header { width: 100%; max-width: 800px; padding: 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-line); position: sticky; top: 0; background: var(--read-bg); z-index: 10; }
-        .btn-back-node { background: none; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 600; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--reader-bg); color: var(--text-primary); padding-bottom: 60px; }
+
+        /* Navigation Header Overlay */
+        .reader-top-bar { background: rgba(9, 9, 15, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-line); position: sticky; top: 0; z-index: 1000; }
+        .reader-bar-container { max-width: 800px; margin: 0 auto; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; }
+        .back-node-link { color: var(--text-primary); text-decoration: none; display: flex; align-items: center; gap: 4px; font-size: 14px; font-weight: 700; cursor: pointer; }
+
+        /* Manuscript Prose Container */
+        .manuscript-viewport { max-width: 800px; margin: 0 auto; padding: 32px 20px; }
+        .meta-genre-tag { display: inline-block; font-size: 11px; font-weight: 800; color: var(--brand-core); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .manuscript-title { font-size: 28px; font-weight: 800; line-height: 1.2; margin-bottom: 6px; color: #fff; }
+        .manuscript-author-line { font-size: 13px; color: var(--text-secondary); font-weight: 600; margin-bottom: 24px; }
         
-        /* Premium Ad Spaces Layout */
-        .adsterra-container-slot { width: 100%; max-width: 728px; min-height: 90px; background-color: var(--read-card); border: 1px dashed var(--border-line); margin: 20px 0; display: flex; justify-content: center; align-items: center; border-radius: 12px; overflow: hidden; }
+        /* Wattpad-grade Typography Engine */
+        .prose-text-body { font-size: 17px; line-height: 1.85; color: #e2e2e8; white-space: pre-wrap; word-wrap: break-word; margin-bottom: 40px; font-weight: 400; text-align: justify; }
+
+        /* Social Engagement Dashboard Panel */
+        .engagement-action-bar { border-top: 1px solid var(--border-line); border-bottom: 1px solid var(--border-line); padding: 16px 0; display: flex; gap: 20px; margin-bottom: 40px; }
+        .interact-trigger-btn { background: var(--element-bg); border: 1px solid var(--border-line); border-radius: 30px; padding: 10px 20px; color: var(--text-primary); font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s; }
+        .interact-trigger-btn.liked { border-color: var(--brand-core); color: var(--brand-core); box-shadow: 0 0 10px var(--brand-glow); }
+        /* Wattpad-Grade Comment Engine Interface */
+        .community-comment-module { background: var(--surface-bg); border: 1px solid var(--border-line); border-radius: 24px; padding: 24px; }
+        .comment-module-title { font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; color: #fff; }
         
-        .story-viewport-canvas { width: 100%; max-width: 800px; padding: 30px 20px; }
-        .story-header-block { border-bottom: 1px solid var(--border-line); padding-bottom: 25px; }
-        .story-genre-badge { font-size: 11px; font-weight: 700; color: var(--brand-primary); text-transform: uppercase; }
-        .story-main-title { font-size: 28px; font-weight: 800; margin-top: 5px; }
-        .interaction-heart-bar { display: flex; align-items: center; gap: 20px; margin-top: 20px; }
-        .btn-heart-action { background-color: var(--read-card); border: 1px solid var(--border-line); color: white; padding: 10px 20px; border-radius: 30px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-        .btn-heart-action.liked { border-color: #ff3366; color: #ff3366; }
-        .story-body-prose { font-family: 'Lora', serif; font-size: 19px; line-height: 1.8; text-align: justify; white-space: pre-wrap; margin-top: 25px; }
-        .system-message-box { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; color: var(--text-muted); gap: 10px; }
+        .comment-input-block { background: var(--element-bg); border: 1px solid var(--border-line); border-radius: 16px; padding: 8px 12px; display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+        .comment-field-node { width: 100%; background: transparent; border: none; color: #fff; font-size: 14px; font-weight: 500; outline: none; padding: 8px 0; }
+        .comment-field-node::placeholder { color: var(--text-secondary); }
+        .comment-submit-btn { background: var(--brand-core); border: none; color: #fff; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s; }
+        .comment-submit-btn:hover { background: #e04b00; }
+
+        /* Dynamic Nested Comment Cards Feed */
+        .comments-feed-horizon { display: flex; flex-direction: column; gap: 16px; max-height: 500px; overflow-y: auto; padding-right: 4px; }
+        .user-comment-card { display: flex; gap: 12px; animation: commentNodeSlideIn 0.3s ease-out forwards; }
+        @keyframes commentNodeSlideIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .commenter-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--element-bg); border: 1px solid var(--border-line); flex-shrink: 0; }
+        .comment-content-frame { background: var(--element-bg); border: 1px solid var(--border-line); border-radius: 16px; padding: 12px 16px; flex-grow: 1; }
+        .commenter-meta-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .commenter-username { font-size: 13px; font-weight: 700; color: #fff; }
+        .comment-timestamp { font-size: 11px; color: var(--text-secondary); }
+        .comment-prose-payload { font-size: 13px; color: #e2e2e8; line-height: 1.5; word-break: break-word; }
+
+        .empty-feed-fallback { text-align: center; color: var(--text-secondary); font-size: 13px; font-weight: 600; padding: 32px 0; }
+
+        /* Adsterra Fixed Wrapper Shell */
+        .adsterra-reader-wrapper { width: 100%; min-height: 90px; background: var(--surface-bg); border: 1px dashed var(--border-line); border-radius: 16px; display: flex; justify-content: center; align-items: center; overflow: hidden; margin-bottom: 32px; }
     </style>
 </head>
 <body>
-    <header class="read-nav-header">
-        <button class="btn-back-node" onclick="window.location.href='index.html'"><span class="material-icons-round">arrow_back</span>Back</button>
-        <div id="navNovelTitle" style="font-weight:700;">Loading Universe...</div>
-        <div style="width:40px;"></div>
+
+    <header class="reader-top-bar">
+        <div class="reader-bar-container">
+            <a onclick="window.location.href='index.html'" class="back-node-link">
+                <span class="material-icons-round">arrow_back</span>Back to Hub
+            </a>
+            <div id="pwaAuthSyncStatus" style="font-size:12px; font-weight:700; color:var(--text-secondary);">Syncing Live Session...</div>
+        </div>
     </header>
 
-    <div class="adsterra-container-slot">
-        <script async="async" data-cfasync="false" src="https://pl29471257.effectivecpmnetwork.com/4cf7e0a66c311471132f6ac2b1acd8b0/invoke.js"></script>
-        <div id="container-4cf7e0a66c311471132f6ac2b1acd8b0"></div>
-    </div>
-
-    <main class="story-viewport-canvas" id="mainReadingViewport">
-        <div class="system-message-box" id="coreLoadingSignal"><span class="material-icons-round">sync</span><div>Syncing database stream...</div></div>
-        <div id="storyContentPacket" style="display: none;">
-            <div class="story-header-block">
-                <div class="story-genre-badge" id="storyGenre">Genre</div>
-                <h1 class="story-main-title" id="storyTitle">Title</h1>
-                <div class="interaction-heart-bar">
-                    <button class="btn-heart-action" id="likeActionBtn" onclick="toggleNovelHeartReaction()"><span class="material-icons-round" id="heartIcon">favorite_border</span><span id="labelHeartCount">0</span> Likes</button>
-                    <div style="font-size:13px; color:var(--text-muted);"><span id="labelViewCount">0</span> Reads</div>
-                </div>
-            </div>
-            <article class="story-body-prose" id="storyMainBodyLines">Content</article>
+    <main class="manuscript-viewport">
+        <div class="adsterra-reader-wrapper">
+            <script async="async" data-cfasync="false" src="https://pl29471257.effectivecpmnetwork.com/4cf7e0a66c311471132f6ac2b1acd8b0/invoke.js"></script>
+            <div id="container-4cf7e0a66c311471132f6ac2b1acd8b0"></div>
         </div>
-     </main>
-  <div class="adsterra-container-slot" style="margin-bottom:60px;">
-        <script src="https://pl29471258.effectivecpmnetwork.com/27/7b/f8/277bf845b91c531ad9fb066482ac8cae.js"></script>
-    </div>
+
+        <article>
+            <span class="meta-genre-tag" id="readNovelGenreTag">General</span>
+            <h1 class="manuscript-title" id="readNovelTitleField">Loading Manuscript Node...</h1>
+            <p class="manuscript-author-line" id="readNovelAuthorNameField">by tracking network data...</p>
+            
+            <div class="prose-text-body" id="readNovelProseBodyField">
+Running data stream pipeline matrix... Please hold while authentication parameters verify database access location.
+            </div>
+        </article>
+
+        <section class="engagement-action-bar">
+            <button class="interact-trigger-btn" id="likeButtonToggleNode" onclick="executeLikeMetricsActionToggle()">
+                <span class="material-icons-round">favorite_border</span>
+                <span id="likeButtonCountLabel">0 Likes</span>
+            </button>
+            <div class="interact-trigger-btn" style="cursor:default;">
+                <span class="material-icons-round" style="color:var(--brand-core)">visibility</span>
+                <span id="viewStatsCountLabel">0 Reads</span>
+            </div>
+        </section>
+
+        <section class="community-comment-module">
+            <div class="comment-module-title">
+                <span class="material-icons-round">forum</span>Community Discussion Hub
+            </div>
+
+            <div class="comment-input-block">
+                <input type="text" id="userCommentInputField" class="comment-field-node" placeholder="Write an open comment or analysis thought node...">
+                <button class="comment-submit-btn" onclick="dispatchUserCommentToDatabase()">
+                    <span class="material-icons-round">send</span>
+                </button>
+            </div>
+
+            <div class="comments-feed-horizon" id="globalCommentsFeedOutputArea">
+                <div class="empty-feed-fallback">Syncing comment nodes feed cluster...</div>
+            </div>
+        </section>
+    </main>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script>
         const firebaseConfig = {
@@ -82,68 +140,170 @@
             appId: "1:327634019544:web:e3e913c4f12ea1d54ce3ad"
         };
         firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
         const db = firebase.database();
-        const URL_PARAM_ID = new URLSearchParams(window.location.search).get('id');
-        let currentNovelRef = db.ref('novels/' + URL_PARAM_ID);
-        let userHasLiked = false;
 
-        if (URL_PARAM_ID) {
-            currentNovelRef.on('value', snap => {
-                if(snap.exists()){
-                    const data = snap.val();
-                    document.getElementById('coreLoadingSignal').style.display = 'none';
-                    document.getElementById('storyContentPacket').style.display = 'block';
-                    document.getElementById('navNovelTitle').innerText = data.title;
-                    document.getElementById('storyGenre').innerText = data.genre;
-                    document.getElementById('storyTitle').innerText = data.title;
-                    document.getElementById('storyMainBodyLines').innerText = data.content || data.synopsis;
-                    document.getElementById('labelHeartCount').innerText = data.likes || 0;
-                    document.getElementById('labelViewCount').innerText = data.views || 0;
+        // Parse Targeted Book Matrix Key From URL Address Bar Parameter
+        const urlAddressParameters = new URLSearchParams(window.location.search);
+        const targetedNovelDatabaseKey = urlAddressParameters.get('id');
+
+        let activeAuthorizedUserSession = null;
+        let currentUserProfileNode = null;
+        let localUserHasLikedThisBookNode = false;
+
+        // Listen for Realtime User Login Configuration
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                activeAuthorizedUserSession = user;
+                db.ref('users/' + user.uid).once('value', snapshot => {
+                    if (snapshot.exists()) {
+                        currentUserProfileNode = snapshot.val();
+                        document.getElementById('pwaAuthSyncStatus').innerText = "@" + currentUserProfileNode.username;
+                        document.getElementById('pwaAuthSyncStatus').style.color = "var(--brand-core)";
+                    }
+                });
+                checkIfUserHasAlreadyLikedTargetNovel();
+            } else {
+                document.getElementById('pwaAuthSyncStatus').innerText = "Guest Reader Node";
+            }
+        });
+
+        if (!targetedNovelDatabaseKey) {
+            alert("No data retrieval routing parameters defined. Returning to Mainframe Grid.");
+            window.location.href = "index.html";
+        } else {
+            initializeReaderInterfaceStream();
+            streamLiveDatabaseCommentsFeed();
+        }
+
+        // Initialize Core Story Data & Increment View Count Automatically
+        function initializeReaderInterfaceStream() {
+            const novelDataRef = db.ref('novels/' + targetedNovelDatabaseKey);
+            
+            // Execute automated single view counter step
+            novelDataRef.child('views').transaction(currentValue => {
+                return (currentValue || 0) + 1;
+            });
+
+            // Sync structural text nodes onto the front-end layout elements
+            novelDataRef.on('value', snapshot => {
+                if (!snapshot.exists()) {
+                    alert("Requested story manuscript entry has been purged or moved.");
+                    window.location.href = "index.html";
+                    return;
+                }
+
+                const book = snapshot.val();
+                document.getElementById('readNovelGenreTag').innerText = book.genre || 'General';
+                document.getElementById('readNovelTitleField').innerText = book.title;
+                document.getElementById('readNovelAuthorNameField').innerText = "Written by " + (book.authorName || "Anonymous Creator") + " (@" + (book.authorUsername || "writer") + ")";
+                document.getElementById('readNovelProseBodyField').innerText = book.content;
+                document.getElementById('viewStatsCountLabel').innerText = ((book.views || 0)).toLocaleString() + " Reads";
+                document.getElementById('likeButtonCountLabel').innerText = ((book.likes || 0)).toLocaleString() + " Likes";
+            });
+        }
+
+        // Realtime Like/Heart Calculation Pipeline
+        function checkIfUserHasAlreadyLikedTargetNovel() {
+            if(!activeAuthorizedUserSession) return;
+            db.ref('likes/' + targetedNovelDatabaseKey + '/' + activeAuthorizedUserSession.uid).on('value', snapshot => {
+                const btn = document.getElementById('likeButtonToggleNode');
+                const icon = btn.querySelector('.material-icons-round');
+                if(snapshot.exists()) {
+                    localUserHasLikedThisBookNode = true;
+                    btn.classList.add('liked');
+                    icon.innerText = "favorite";
                 } else {
-                    document.getElementById('coreLoadingSignal').innerHTML = `
-                        <div style="text-align:center; padding: 20px;">
-                            <span class="material-icons-round" style="font-size:48px; color:var(--brand-primary)">warning</span>
-                            <h3 style="margin-top:10px;">System Parameter Error</h3>
-                            <p style="font-size:13px; color:var(--text-muted); margin-top:5px;">No novel profile detected in this directory node.</p>
-                            <button onclick="window.location.href='index.html'" style="margin-top:15px; background:var(--brand-primary); border:none; padding:10px 20px; color:white; border-radius:8px; font-weight:700; cursor:pointer;">Return to Grid</button>
-                        </div>`;
+                    localUserHasLikedThisBookNode = false;
+                    btn.classList.remove('liked');
+                    icon.innerText = "favorite_border";
                 }
             });
-            executeAntiCheatViewAlgorithm();
-        } else {
-            document.getElementById('coreLoadingSignal').innerHTML = `
-                <div style="text-align:center; padding: 20px;">
-                    <span class="material-icons-round" style="font-size:48px; color:var(--brand-primary)">security</span>
-                    <h3 style="margin-top:10px;">System Parameter Error</h3>
-                    <p style="font-size:13px; color:var(--text-muted); margin-top:5px;">No novel selected inside core system parameters.</p>
-                    <button onclick="window.location.href='index.html'" style="margin-top:15px; background:var(--brand-primary); border:none; padding:10px 20px; color:white; border-radius:8px; font-weight:700; cursor:pointer;">Return to Grid</button>
-                </div>`;
         }
 
-        function executeAntiCheatViewAlgorithm() {
-            const lockKey = 'view_lock_' + URL_PARAM_ID;
-            const lastView = localStorage.getItem(lockKey);
-            const now = Date.now();
-            if (!lastView || (now - lastView > 600000)) {
-                currentNovelRef.child('views').transaction(v => (v || 0) + 1);
-                localStorage.setItem(lockKey, now);
+        function executeLikeMetricsActionToggle() {
+            if (!activeAuthorizedUserSession) {
+                alert("Authentication Required. Please enter the Studio Workbench Gateway to engage with community nodes.");
+                window.location.href = "login.html";
+                return;
             }
-        }
 
-        function toggleNovelHeartReaction() {
-            const btn = document.getElementById('likeActionBtn');
-            const icon = document.getElementById('heartIcon');
-            if(!userHasLiked) {
-                currentNovelRef.child('likes').transaction(l => (l || 0) + 1);
-                btn.classList.add('liked'); icon.innerText = "favorite"; userHasLiked = true;
+            const novelRef = db.ref('novels/' + targetedNovelDatabaseKey);
+            const userLikeNodeRef = db.ref('likes/' + targetedNovelDatabaseKey + '/' + activeAuthorizedUserSession.uid);
+
+            if (localUserHasLikedThisBookNode) {
+                // Unlike sequence
+                userLikeNodeRef.remove().then(() => {
+                    novelRef.child('likes').transaction(current => (current || 1) - 1);
+                });
             } else {
-                currentNovelRef.child('likes').transaction(l => (l > 0 ? l - 1 : 0));
-                btn.classList.remove('liked'); icon.innerText = "favorite_border"; userHasLiked = false;
+                // Like sequence
+                userLikeNodeRef.set(true).then(() => {
+                    novelRef.child('likes').transaction(current => (current || 0) + 1);
+                });
             }
+        }
+
+        // Dispatch Comments Straight to Firebase Database
+        function dispatchUserCommentToDatabase() {
+            if (!activeAuthorizedUserSession || !currentUserProfileNode) {
+                alert("Authentication Required. Sign in to join the conversation.");
+                window.location.href = "login.html";
+                return;
+            }
+
+            const commentInput = document.getElementById('userCommentInputField');
+            const prosePayloadString = commentInput.value.trim();
+
+            if (!prosePayloadString) return;
+
+            const targetCommentRef = db.ref('comments/' + targetedNovelDatabaseKey).push();
+            targetCommentRef.set({
+                uid: activeAuthorizedUserSession.uid,
+                username: currentUserProfileNode.username || "reader",
+                profilePicture: currentUserProfileNode.profilePicture || "https://api.dicebear.com/7.x/bottts/svg?seed=reader",
+                commentText: prosePayloadString,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            }).then(() => {
+                commentInput.value = "";
+            }).catch(error => alert(error.message));
+        }
+
+        // Live Real-Time Thread Streaming Script
+        function streamLiveDatabaseCommentsFeed() {
+            db.ref('comments/' + targetedNovelDatabaseKey).orderByChild('timestamp').on('value', snapshot => {
+                const feedContainer = document.getElementById('globalCommentsFeedOutputArea');
+                feedContainer.innerHTML = "";
+
+                if (!snapshot.exists()) {
+                    feedContainer.innerHTML = `<div class="empty-feed-fallback">No analysis logs declared yet. Be the first to start a discussion thread node!</div>`;
+                    return;
+                }
+
+                snapshot.forEach(child => {
+                    const comment = child.val();
+                    const formattedDateString = comment.timestamp ? new Date(comment.timestamp).toLocaleDateString(undefined, {month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'}) : "Just now";
+                    
+                    const card = `
+                        <div class="user-comment-card">
+                            <img class="commenter-avatar" src="${comment.profilePicture}" alt="user avatar">
+                            <div class="comment-content-frame">
+                                <div class="commenter-meta-row">
+                                    <div class="commenter-username">@${comment.username}</div>
+                                    <div class="comment-timestamp">${formattedDateString}</div>
+                                </div>
+                                <p class="comment-prose-payload">${escapeHtmlProseStrings(comment.commentText)}</p>
+                            </div>
+                        </div>
+                    `;
+                    feedContainer.insertAdjacentHTML('afterbegin', card);
+                });
+            });
+        }
+
+        function escapeHtmlProseStrings(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
     </script>
 </body>
-</html>
-          
-  
-                  
+    </html>
