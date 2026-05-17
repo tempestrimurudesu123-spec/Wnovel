@@ -1,0 +1,17 @@
+{
+  "name": "Wnovels Network",
+  "short_name": "Wnovels",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#050508",
+  "theme-color": "#ff5500",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://img.icons8.com/fluent/512/book.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
