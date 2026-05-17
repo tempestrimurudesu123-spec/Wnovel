@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creator Studio | Wnovels Engine</title>
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        :root {
+            --studio-bg: #050508;
+            --studio-card: #0c0c14;
+            --brand-orange: #ff5500;
+            --text-light: #f1f1f6;
+            --text-dark: #8e8e9f;
+            --line-color: #1c1c30;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: var(--studio-bg); color: var(--text-light); padding-bottom: 40px; }
+        .studio-header { border-bottom: 1px solid var(--line-color); background: rgba(12, 12, 20, 0.9); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; }
+        .header-content { max-width: 1000px; margin: 0 auto; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .studio-logo { font-size: 20px; font-weight: 800; color: var(--brand-orange); display: flex; align-items: center; gap: 8px; }
+        .btn-exit { background: transparent; border: 1px solid var(--line-color); color: var(--text-dark); padding: 8px 16px; border-radius: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px; }
+        .main-workspace { max-width: 1000px; margin: 0 auto; padding: 25px 20px; display: grid; grid-template-columns: 1fr; gap: 25px; }
+        @media(min-width: 768px) { .main-workspace { grid-template-columns: 320px 1fr; } }
+        .workspace-panel { background: var(--studio-card); border: 1px solid var(--line-color); border-radius: 20px; padding: 20px; height: fit-content; }
+        .panel-title { font-size: 16px; font-weight: 800; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .input-node { width: 100%; padding: 12px; background: #050508; border: 1px solid var(--line-color); border-radius: 10px; color: white; margin-bottom: 15px; font-size: 14px; outline: none; }
+        .input-node:focus { border-color: var(--brand-orange); }
+        .btn-action { width: 100%; padding: 12px; background: var(--brand-orange); border: none; color: white; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .novel-item-link { background: #050508; border: 1px solid var(--line-color); padding: 12px; border-radius: 10px; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .novel-item-link:hover { border-color: var(--brand-orange); }
+        .novel-item-title { font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px; }
+        .text-editor-box { width: 100%; min-height: 350px; background: #050508; border: 1px solid var(--line-color); border-radius: 10px; color: white; padding: 15px; font-size: 15px; line-height: 1.6; resize: vertical; outline: none; }
+    </style>
+</head>
+<body>
+
+    <header class="studio-header">
+        <div class="header-content">
+            <div class="studio-logo"><span class="material-icons-round">biotech</span>Wnovels Studio</div>
+            <button class="btn-exit" onclick="logOutStudio()"><span class="material-icons-round">logout</span>Exit Terminal</button>
+        </div>
+    </header>
+
+    <main class="main-workspace">
+        <div class="workspace-panel">
+            <div class="panel-title"><span class="material-icons-round">folder</span>Your Manuscript Nodes</div>
+            <div id="manuscriptListContainer" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px;">
+                <div style="color:var(--text-dark); font-size:13px; text-align:center; padding:20px;">Fetching node library...</div>
+            </div>
+            <button class="btn-action" style="background:transparent; border: 1px dashed var(--brand-orange); color:var(--brand-orange);" onclick="clearWorkspaceForNewNovel()">
+                <span class="material-icons-round">add</span>Create New Novel
+            </button>
+        </div>
+
+        <div class="workspace-panel">
+            <div class="panel-title"><span class="material-icons-round">history_edu</span>Manuscript Forge Workbench</div>
+            <input type="hidden" id="activeNovelId">
+            
+            <label style="font-size:12px; color:var(--text-dark); display:block; margin-bottom:5px;">Novel Title</label>
+            <input type="text" id="novelTitleField" class="input-node" placeholder="e.g., The Cosmic Overlord Code">
+            
+            <label style="font-size:12px; color:var(--text-dark); display:block; margin-bottom:5px;">Genre / Category</label>
+            <input type="text" id="novelGenreField" class="input-node" placeholder="e.g., Fantasy, Sci-Fi, Romance">
+            
+            <label style="font-size:12px; color:var(--text-dark); display:block; margin-bottom:5px;">Synopsis / Brief Overview</label>
+            <input type="text" id="novelSynopsisField" class="input-node" placeholder="Write a short teaser hook line...">
+            
+            <label style="font-size:12px; color:var(--text-dark); display:block; margin-bottom:5px;">Story Chapter Content Prose</label>
+            <textarea id="novelContentField" class="text-editor-box" placeholder="Start forging your manuscript lines here..."></textarea>
+            
+            <button class="btn-action" style="margin-top: 15px;" onclick="saveNovelToCloudDatabase()">
+                <span class="material-icons-round">cloud_upload</span>Deploy Manuscript to Global Grid
+            </button>
+        </div>
+  </main>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBelCPgA4ZE7pcFGPPp9191KPOdaSSoMc8",
+            authDomain: "studio-8164628274-c414a.firebaseapp.com",
+            databaseURL: "https://studio-8164628274-c414a-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "studio-8164628274-c414a",
+            storageBucket: "studio-8164628274-c414a.firebasestorage.app",
+            messagingSenderId: "327634019544",
+            appId: "1:327634019544:web:e3e913c4f12ea1d54ce3ad"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        // Security checkpoint gatekeeper
+        auth.onAuthStateChanged(user => {
+            if (!user) {
+                window.location.href = "login.html";
+            } else {
+                fetchAndBuildUserManuscripts(user.uid);
+            }
+        });
+
+        function fetchAndBuildUserManuscripts(uid) {
+            db.ref('novels').orderByChild('authorId').equalTo(uid).on('value', snap => {
+                const container = document.getElementById('manuscriptListContainer');
+                container.innerHTML = "";
+                
+                if(!snap.exists()) {
+                    container.innerHTML = `<div style="color:var(--text-dark); font-size:13px; text-align:center; padding:20px;">No deployed nodes found.</div>`;
+                    return;
+                }
+
+                snap.forEach(child => {
+                    const novel = child.val();
+                    const item = document.createElement('div');
+                    item.className = "novel-item-link";
+                    item.onclick = () => populateWorkbench(child.key, novel);
+                    item.innerHTML = `
+                        <div class="novel-item-title">${novel.title}</div>
+                        <span class="material-icons-round" style="font-size:16px; color:var(--brand-orange)">edit</span>
+                    `;
+                    container.appendChild(item);
+                });
+            });
+        }
+
+        function populateWorkbench(id, data) {
+            document.getElementById('activeNovelId').value = id;
+            document.getElementById('novelTitleField').value = data.title || '';
+            document.getElementById('novelGenreField').value = data.genre || '';
+            document.getElementById('novelSynopsisField').value = data.synopsis || '';
+            document.getElementById('novelContentField').value = data.content || '';
+        }
+
+        function clearWorkspaceForNewNovel() {
+            document.getElementById('activeNovelId').value = '';
+            document.getElementById('novelTitleField').value = '';
+            document.getElementById('novelGenreField').value = '';
+            document.getElementById('novelSynopsisField').value = '';
+            document.getElementById('novelContentField').value = '';
+        }
+
+        function saveNovelToCloudDatabase() {
+            const user = auth.currentUser;
+            if(!user) return;
+
+            const novelId = document.getElementById('activeNovelId').value;
+            const title = document.getElementById('novelTitleField').value.trim();
+            const genre = document.getElementById('novelGenreField').value.trim();
+            const synopsis = document.getElementById('novelSynopsisField').value.trim();
+            const content = document.getElementById('novelContentField').value.trim();
+
+            if(!title || !content) { alert("Ang Title at Content ay hindi pwedeng walang laman."); return; }
+
+            const targetRef = novelId ? db.ref('novels/' + novelId) : db.ref('novels').push();
+            const finalId = novelId ? novelId : targetRef.key;
+
+            const updatePayload = {
+                id: finalId,
+                authorId: user.uid,
+                title: title,
+                genre: genre,
+                synopsis: synopsis,
+                content: content,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            if (!novelId) {
+                updatePayload.views = 0;
+                updatePayload.likes = 0;
+            }
+
+            targetRef.update(updatePayload)
+                .then(() => {
+                    alert("Manuscript grid updated successfully!");
+                    if(!novelId) clearWorkspaceForNewNovel();
+                })
+                .catch(e => alert(e.message));
+        }
+
+        function logOutStudio() {
+            auth.signOut().then(() => window.location.href = "login.html");
+        }
+    </script>
+</body>
+</html>
