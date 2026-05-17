@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gate Entry | Wnovels Secure</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        body { background-color: #050508; color: #f1f1f6; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .login-card { background-color: #0c0c14; padding: 40px; border-radius: 20px; border: 1px solid #1c1c30; width: 100%; max-width: 360px; text-align: center; }
+        h2 { color: #ff5500; margin-bottom: 25px; font-size: 24px; }
+        input { width: 100%; padding: 14px; background: #050508; border: 1px solid #1c1c30; border-radius: 10px; color: white; margin-bottom: 15px; box-sizing: border-box; outline: none; }
+        input:focus { border-color: #ff5500; }
+        button { width: 100%; padding: 14px; background: #ff5500; border: none; color: white; border-radius: 10px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <h2>Wnovels Studio Gate</h2>
+        <input type="email" id="emailNode" placeholder="Email Address">
+        <input type="password" id="passNode" placeholder="Security Password">
+        <button onclick="handleAuthNode('LOGIN')">Sign In</button>
+        <button onclick="handleAuthNode('REG')" style="background:transparent; border: 1px solid #ff5500; color:#ff5500;">Register Account</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBelCPgA4ZE7pcFGPPp9191KPOdaSSoMc8",
+            authDomain: "studio-8164628274-c414a.firebaseapp.com",
+            databaseURL: "https://studio-8164628274-c414a-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "studio-8164628274-c414a",
+            storageBucket: "studio-8164628274-c414a.firebasestorage.app",
+            messagingSenderId: "327634019544",
+            appId: "1:327634019544:web:e3e913c4f12ea1d54ce3ad"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        function handleAuthNode(type) {
+            const email = document.getElementById('emailNode').value.trim();
+            const pass = document.getElementById('passNode').value.trim();
+            if(!email || !pass) { alert("Punan ang email at password."); return; }
+
+            if(type === 'LOGIN') {
+                auth.signInWithEmailAndPassword(email, pass)
+                    .then(() => window.location.href="writer.html")
+                    .catch(e => alert(e.message));
+            } else {
+                auth.createUserWithEmailAndPassword(email, pass)
+                    .then(() => alert("Rehistrado na! Maaari ka nang mag-login."))
+                    .catch(e => alert(e.message));
+            }
+        }
+    </script>
+</body>
+</html>
