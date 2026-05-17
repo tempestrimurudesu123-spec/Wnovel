@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WNOVELS NETWORK - WEBNOVELS EARNINGS</title>
+    <title>WNOVELS MULTIVERSE - Reads, Write & Earn Arcade</title>
     
     <script src="https://pl29471258.effectivecpmnetwork.com/27/7b/f8/277bf845b91c531ad9fb066482ac8cae.js"></script>
-
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
         :root {
             --bg-deep: #03050a; --bg-surface: #0a0d1a; --bg-card: #11152c;
@@ -17,8 +17,8 @@
         }
         body {
             background-color: var(--bg-deep); color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            margin: 0; padding: 0; padding-bottom: 75px; user-select: none;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0; padding: 0; padding-bottom: 80px; user-select: none;
         }
         .bottom-nav-hub {
             position: fixed; bottom: 0; left: 0; width: 100%; background: var(--bg-surface);
@@ -26,122 +26,147 @@
         }
         .nav-link { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 0.75rem; text-decoration: none; cursor: pointer; }
         .nav-link.active { color: var(--accent-orange); font-weight: bold; }
-        .nav-icon { width: 22px; height: 22px; margin-bottom: 3px; filter: grayscale(1); }
-        .nav-link.active .nav-icon { filter: grayscale(0) hue-rotate(340deg) saturate(5); }
+        .nav-icon { width: 22px; height: 22px; margin-bottom: 3px; }
 
         .view-section { display: none; padding: 15px; max-width: 800px; margin: 0 auto; }
         .view-section.active { display: block; }
 
-        .hero-banner {
-            background: linear-gradient(180deg, rgba(255,69,0,0.2) 0%, rgba(3,5,10,0) 100%);
-            padding: 25px 15px; text-align: center; border-radius: 12px; margin-bottom: 20px;
-        }
-        .matrix-title { font-size: 1.4rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
-        .matrix-title span { color: var(--accent-orange); }
+        /* SEARCH & FILTER UI Elements */
+        .search-container { margin-bottom: 15px; display: flex; gap: 8px; }
+        .search-input { flex: 1; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px; color: white; font-size: 0.9rem; }
+        .category-scroll { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 15px; padding-bottom: 5px; }
+        .category-pill { background: var(--bg-card); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; white-space: nowrap; cursor: pointer; color: var(--text-muted); }
+        .category-pill.active { background: var(--accent-orange); color: white; border-color: var(--accent-orange); }
 
         .novel-grid-card {
             background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
             padding: 12px; display: flex; gap: 15px; margin-bottom: 15px; position: relative; cursor: pointer;
         }
-        .novel-cover-img { width: 85px; height: 125px; object-fit: cover; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); background: #222; }
+        .novel-cover-img { width: 85px; height: 125px; object-fit: cover; border-radius: 6px; background: #161f38; }
         
-        /* STATUS TAGS FOR USERS */
         .status-badge { position: absolute; top: 12px; right: 12px; font-size: 0.65rem; font-weight: bold; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; }
         .status-ongoing { background: rgba(16,185,129,0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
         .status-completed { background: rgba(99,102,241,0.2); color: #818cf8; border: 1px solid #6366f1; }
 
         .arcade-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 14px; padding: 15px; margin-bottom: 15px; }
-        .btn-action { background: linear-gradient(90deg, #ff4500, #f59e0b); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; text-transform: uppercase; font-size: 0.85rem; }
-        .clicker-coin-target { width: 130px; height: 130px; margin: 15px auto; display: block; cursor: pointer; transition: transform 0.05s; }
-        .clicker-coin-target:active { transform: scale(0.9); }
-        .progress-box { background: #070914; height: 35px; border-radius: 20px; border: 1px solid var(--border); width: 100%; overflow: hidden; position: relative; margin-bottom: 10px; }
-        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-orange), var(--accent-gold)); width: 0%; }
+        .btn-action { background: linear-gradient(90deg, #ff4500, #f59e0b); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; text-transform: uppercase; font-size: 0.85rem; text-align: center; }
         
-        .chapter-pill-btn { background: #161f38; border: 1px solid var(--border); padding: 10px 15px; border-radius: 8px; color: white; cursor: pointer; text-align: left; font-size: 0.9rem; display: flex; justify-content: space-between; }
-        .chapter-pill-btn:hover { border-color: var(--accent-orange); }
+        /* MINI GAMES GRID */
+        .games-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
+        .game-launcher-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; cursor: pointer; }
+        .game-icon-frame { font-size: 2rem; margin-bottom: 5px; }
+
+        /* ACTIVE GAME ZONE SCREEN Overlay */
+        #gameActiveScreenOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#020306; z-index:2500; padding:20px; box-sizing:border-box; }
+        .game-play-area { width: 100%; height: 300px; background: var(--bg-surface); border: 2px dashed var(--border); border-radius: 12px; margin: 20px 0; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+
+        .chapter-pill-btn { background: #161f38; border: 1px solid var(--border); padding: 12px 15px; border-radius: 8px; color: white; cursor: pointer; text-align: left; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
 <body>
-<div id="view-library" class="view-section active">
-    <div class="hero-banner">
-        <div class="matrix-title">WNovels <span>Ecosystem</span></div>
-        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">The Ultimate Copyright-Protected Reading Matrix</div>
+    <div id="view-library" class="view-section active">
+    <div style="font-size:1.3rem; font-weight:900; margin-bottom:15px; text-transform:uppercase; letter-spacing:1px;">📚 Global <span>Library</span></div>
+    
+    <div class="search-container">
+        <input type="text" id="librarySearchInput" class="search-input" placeholder="Search book title or author penname..." oninput="filterLibraryEngineSearch()">
     </div>
+    
+    <div class="category-scroll">
+        <div class="category-pill active" onclick="filterGenreCategory('All', this)">ALL GENRES</div>
+        <div class="category-pill" onclick="filterGenreCategory('Fantasy System', this)">FANTASY SYSTEM</div>
+        <div class="category-pill" onclick="filterGenreCategory('LitRPG / Isekai', this)">LITRPG / ISEKAI</div>
+        <div class="category-pill" onclick="filterGenreCategory('Martial Arts Cultivation', this)">CULTIVATION</div>
+        <div class="category-pill" onclick="filterGenreCategory('Romance / Urban', this)">ROMANCE / URBAN</div>
+    </div>
+
     <div id="topTrendingBox"></div>
-    <h3 style="font-size: 1rem; text-transform: uppercase; color: var(--accent-gold); margin-top: 25px;">🆕 Newly Released / Latest Updates</h3>
-    <div id="newReleasesFeedBox"></div>
-    <h3 style="font-size: 1rem; text-transform: uppercase; color: var(--accent-orange); margin-top: 25px;">📚 Global Discovery Feed</h3>
+    <h3 style="font-size:0.9rem; text-transform:uppercase; color:var(--accent-gold); margin-top:20px;">🆕 Latest Book Updates</h3>
     <div id="globalNovelFeedBox"></div>
 </div>
 
+<div id="view-writer-hub" class="view-section">
+    <div style="text-align:center; padding:30px 15px; background:linear-gradient(135deg, #311042 0%, #0a0d1a 100%); border-radius:14px; border:1px solid var(--border); margin-bottom:20px;">
+        <div style="font-size:3rem; margin-bottom:10px;">✍️</div>
+        <h2 style="margin:0; font-size:1.4rem; font-weight:900;">Become a Content Creator</h2>
+        <p style="color:var(--text-muted); font-size:0.85rem; line-height:1.4; margin:10px 0 20px 0;">Publish unlimited webnovels and setup custom volumes just like Wattpad. Expand your fanbase and earn from your creations!</p>
+        <button class="btn-action" onclick="triggerStudioRedirect()">Enter Author Studio Dashboard</button>
+    </div>
+</div>
+
 <div id="view-arcade" class="view-section">
-    <div class="arcade-card">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <div style="font-weight: bold; font-size: 0.95rem;">📆 Premium Daily Attendance</div>
-                <div style="font-size: 0.7rem; color: var(--text-muted);">Watch mandatory ad to credit wallet account</div>
-            </div>
-            <button class="btn-action" style="width: auto; padding: 8px 15px;" onclick="triggerDailySignIn()">SIGN IN</button>
-        </div>
+    <div style="font-size:1.2rem; font-weight:900; text-transform:uppercase; margin-bottom:15px;">🎮 Play to Earn <span>Arcade</span></div>
+    
+    <div class="arcade-card" style="display:flex; justify-content:space-between; align-items:center;">
+        <div><div style="font-size:0.75rem; color:var(--text-muted);">Current Energy Pool</div><div style="font-size:1.1rem; font-weight:bold; color:var(--accent-orange);" id="arcadePointsDisplay">0 PT</div></div>
+        <button class="btn-action" style="width:auto; padding:8px 15px; font-size:0.75rem;" onclick="triggerDailySignIn()">Claim Attendance (₱5)</button>
     </div>
-    <div class="arcade-card">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-            <div><div style="font-size:0.75rem; color:var(--text-muted);">Mined Points</div><div style="font-size:1.4rem; font-weight:bold; color:var(--accent-gold);"><span id="arcadePoints">0</span> PT</div></div>
-            <div><div style="font-size:0.75rem; color:var(--text-muted);">Convertible Balance</div><div style="font-size:1.4rem; font-weight:bold; color:var(--accent-green);">₱<span id="arcadeCash">0.00</span></div></div>
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <button class="btn-action" style="background:#1e293b;" onclick="convertPointsToWallet('recharge')">⚡ Recharge (-5PT)</button>
-            <button class="btn-action" onclick="convertPointsToWallet('cashout')">💸 Cashout Money (-₱5)</button>
-        </div>
+
+    <div class="games-grid">
+        <div class="game-launcher-card" onclick="launchMiniGameEngine('coin')"><div class="game-icon-frame">🪙</div><div style="font-weight:bold; font-size:0.85rem;">Crypto Tap</div><div style="font-size:0.65rem; color:var(--text-muted); margin-top:3px;">Tap target meter to mine</div></div>
+        <div class="game-launcher-card" onclick="launchMiniGameEngine('guess')"><div class="game-icon-frame">🎲</div><div style="font-weight:bold; font-size:0.85rem;">Lucky Number</div><div style="font-size:0.65rem; color:var(--text-muted); margin-top:3px;">Guess random multiplier</div></div>
+        <div class="game-launcher-card" onclick="launchMiniGameEngine('clicker')"><div class="game-icon-frame">💥</div><div style="font-weight:bold; font-size:0.85rem;">Speed Reflex</div><div style="font-size:0.65rem; color:var(--text-muted); margin-top:3px;">Pop core node fast</div></div>
+        <div class="game-launcher-card" onclick="launchMiniGameEngine('chest')"><div class="game-icon-frame">🧰</div><div style="font-weight:bold; font-size:0.85rem;">Mystery Chest</div><div style="font-size:0.65rem; color:var(--text-muted); margin-top:3px;">Unlock system drop chest</div></div>
     </div>
-    <div class="arcade-card" style="text-align: center;">
-        <div class="progress-box">
-            <div id="arcadeProgressBar" class="progress-bar-fill"></div>
-            <div style="position: absolute; width: 100%; top: 8px; font-size: 0.75rem; font-weight: bold;" id="clickRatioField">0 / 50 TAPS</div>
-        </div>
-        <img class="clicker-coin-target" src="https://img.icons8.com/color/250/bitcoin--v1.png" onclick="processSecureTapEngine()">
+</div>
+
+<div id="view-wallet" class="view-section">
+    <div style="font-size:1.2rem; font-weight:900; text-transform:uppercase; margin-bottom:15px;">💳 Secure Wallet <span>Dashboard</span></div>
+    
+    <div class="arcade-card" style="background:linear-gradient(135deg, #11152c 0%, #070914 100%); border-color:var(--accent-gold);">
+        <div style="font-size:0.8rem; color:var(--text-muted); font-weight:bold; text-transform:uppercase;">Account Total Revenue Balance</div>
+        <div style="font-size:2.2rem; font-weight:900; color:var(--accent-green); margin:5px 0;">₱<span id="walletCashField">0.00</span></div>
+        <div style="font-size:0.75rem; color:var(--text-muted);">Platform service rule: -₱5.00 maintenance network cut applies per transaction.</div>
+    </div>
+
+    <div class="arcade-card">
+        <h4 style="margin:0 0 12px 0; text-transform:uppercase; font-size:0.85rem; color:var(--accent-gold);">Top-Up / Point Conversions</h4>
+        <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:12px;">Convert your earned game points into wallet currency.</p>
+        <button class="btn-action" style="background:#1e293b; margin-bottom:15px;" onclick="executeWalletConversion('recharge')">Convert Game Points Now (-5PT Fee)</button>
+        
+        <h4 style="margin:0 0 12px 0; text-transform:uppercase; font-size:0.85rem; color:var(--accent-orange);">Cashout Real Money</h4>
+        <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:12px;">Minimum threshold required for secure release: ₱10.00</p>
+        <button class="btn-action" onclick="executeWalletConversion('cashout')">Initialize Outbound G-Cash Payout (-₱5 Fee)</button>
     </div>
 </div>
 
 <div id="bookDetailsModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--bg-deep); z-index:1500; overflow-y:auto; padding:20px; box-sizing:border-box;">
-    <button onclick="closeBookDetailsModal()" style="background:#1e293b; color:white; border:none; padding:10px 18px; border-radius:6px; font-weight:bold; cursor:pointer; margin-bottom:15px;">← Back to Hub</button>
+    <button onclick="closeBookDetailsModal()" style="background:#1e293b; color:white; border:none; padding:10px 18px; border-radius:6px; font-weight:bold; cursor:pointer; margin-bottom:15px;">← Back to Library</button>
     <div style="text-align:center; margin-bottom:20px;">
         <img id="modalBookCover" class="novel-cover-img" style="width:120px; height:175px; margin-bottom:12px;">
         <h2 id="modalBookTitle" style="margin:5px 0; font-size:1.4rem;">Book Title</h2>
         <div id="modalBookAuthor" style="color:var(--accent-gold); font-size:0.9rem;">Author</div>
         <div id="modalBookMeta" style="font-size:0.8rem; color:var(--text-muted); margin-top:5px;">Genre • Status</div>
     </div>
-    <div class="arcade-card">
-        <label style="color:var(--accent-orange); font-size:0.75rem; font-weight:bold;">SYNOPSIS SUMMARY</label>
-        <p id="modalBookSynopsis" style="font-size:0.9rem; line-height:1.5; color:#cbd5e1; margin-top:5px;"></p>
-    </div>
-    <h3 style="font-size:1rem; color:var(--text-main); margin-top:20px; text-transform:uppercase;">📜 Index Table of Chapters</h3>
+    <div class="arcade-card"><p id="modalBookSynopsis" style="font-size:0.9rem; line-height:1.5; color:#cbd5e1; margin:0; white-space:pre-wrap;"></p></div>
+    <h3 style="font-size:1rem; margin-top:20px; text-transform:uppercase;">📜 Index Table of Chapters</h3>
     <div id="modalChaptersList" style="display:flex; flex-direction:column; gap:10px; margin-top:10px;"></div>
 </div>
 
 <div id="storyReaderModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--bg-deep); z-index:2000; overflow-y:auto; padding:20px; box-sizing:border-box;">
     <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:15px; margin-bottom:20px;">
-        <button onclick="closeStoryReaderModal()" style="background:#1e293b; color:white; border:none; padding:8px 16px; border-radius:6px; font-weight:bold; cursor:pointer;">← Table of Contents</button>
+        <button onclick="closeStoryReaderModal()" style="background:#1e293b; color:white; border:none; padding:8px 16px; border-radius:6px; font-weight:bold; cursor:pointer;">← Table of Chapters</button>
         <span id="readerVolumeTag" style="font-size:0.75rem; background:var(--accent-orange); color:white; padding:3px 8px; border-radius:4px; font-weight:bold;">VOL</span>
     </div>
-    <div style="text-align:center; margin-bottom:20px;">
-        <h1 id="readerChapterTitle" style="font-size:1.3rem; font-weight:bold; color:var(--text-main);">Chapter Title</h1>
+    <h1 id="readerChapterTitle" style="font-size:1.3rem; font-weight:bold; text-align:center;">Chapter Title</h1>
+    <div id="readerStoryBody" style="font-family:'Georgia', serif; font-size:1.15rem; line-height:1.8; color:#e2e8f0; max-width:650px; margin:20px auto; white-space:pre-wrap; padding-bottom:40px;"></div>
+</div>
+
+<div id="gameActiveScreenOverlay">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 id="activeGameTitle" style="margin:0; text-transform:uppercase; color:var(--accent-gold);">Game Core Zone</h3>
+        <button onclick="shutdownActiveGameSession()" style="background:#ef4444; color:white; border:none; padding:6px 14px; border-radius:6px; font-weight:bold; cursor:pointer;">Exit Game</button>
     </div>
-    <div id="readerStoryBody" style="font-family:'Georgia', serif; font-size:1.15rem; line-height:1.8; color:#e2e8f0; max-width:650px; margin:0 auto; white-space:pre-wrap; padding-bottom:40px;"></div>
-    
-    <div style="border-top:1px dashed var(--border); padding-top:20px; margin-top:40px; text-align:center; color:var(--text-muted); font-size:0.75rem; line-height:1.4; max-width:600px; margin-left:auto; margin-right:auto;">
-        <img src="https://img.icons8.com/ios-filled/50/64748b/copyright.png" style="width:20px; opacity:0.5; margin-bottom:5px;"><br>
-        <strong>All Rights Reserved — Copyright Notice</strong><br>
-        This manuscript artifact data stream is registered under the creator's pen name profile. No part of this publication may be reproduced, distributed, or transmitted in any form or by any means, including database scraping, mechanical copying, or digital mirror hosting without the absolute prior written validation sequence of the publisher and legal author node.
-    </div>
+    <div class="game-play-area" id="gameEnginePlayroom"></div>"><br>Wallet</div
+    <div style="text-align:center; font-size:0.8rem; color:var(--text-muted);">Points earned are automatically updated into your core wallet nodes live.</div>
 </div>
 
 <div class="bottom-nav-hub">
-    <div class="nav-link active" onclick="switchActiveView('view-library', this)"><img class="nav-icon" src="https://img.icons8.com/ios-filled/50/ffffff/books.png">Library</div>
-    <div class="nav-link" onclick="triggerStudioRedirect()"><img class="nav-icon" src="https://img.icons8.com/ios-filled/50/ffffff/edit-property.png">Studio</div>
-    <div class="nav-link" onclick="switchActiveView('view-arcade', this)"><img class="nav-icon" src="https://img.icons8.com/ios-filled/50/ffffff/game-controller.png">Arcade</div>
-    </div>
-    <script>
+    <div class="nav-link active" onclick="switchActiveView('view-library', this)"><img class="nav-icon" src="https://img.icons8.com/ios-filled/50/64748b/books.png"><br>Library</div>
+    <div class="nav-link" onclick="switchActiveView('view-writer-hub', this)"><img class="nav-icon" src="https://img.icons8.com/ios-filled/50/64748b/edit-property.png"><br>Writer</div>
+    <div class="nav-link" onclick="switchActiveView('view-arcade', this)"><img class="nav-icon" src="https://img.icons8.com/ios-filled/50/64748b/game-controller.png"><br>Arcade</div>
+    <div class="nav-link" onclick="switchActiveView('view-wallet', this)"><img class="nav-icon" src="https://img.icons8.com/ios-filled/50/64748b/wallet.png"><br>Wallet</div>
+</div>
+   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBelCPgA4ZE7pcFGPPp9191KPOdaSSoMc8",
       authDomain: "studio-8164628274-c414a.firebaseapp.com",
@@ -152,75 +177,85 @@
     };
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
-    let mockUserNodeId = "user_id_123"; let tapCounter = 0;
+    
+    let mockUserNodeId = "user_id_123"; 
+    let globalNovelsCache = [];
+    let selectedGenreFilter = "All";
     const adsterraDirectLink = "https://pl29471258.effectivecpmnetwork.com/27/7b/f8/277bf845b91c531ad9fb066482ac8cae.js";
 
     function switchActiveView(viewId, element) {
         document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        document.getElementById(viewId).classList.add('active'); element.classList.add('active');
+        document.getElementById(viewId).classList.add('active'); 
+        element.classList.add('active');
+        window.open(adsterraDirectLink, '_blank');
     }
     function triggerStudioRedirect() { window.open(adsterraDirectLink, '_blank'); setTimeout(() => { location.href='writer.html'; }, 200); }
 
-    // 🔄 STREAM ENGINE: RENDERING GLOBAL NOVEL CANVAS MATRIX
+    // 🔄 DYNAMIC STREAM NODE MANAGER (DATABASE SYNCHRONIZATION)
     database.ref('novels').on('value', (snapshot) => {
-        const feed = document.getElementById('globalNovelFeedBox');
-        const releases = document.getElementById('newReleasesFeedBox');
-        const trending = document.getElementById('topTrendingBox');
-        if(!snapshot.exists()) { feed.innerHTML="<div class='arcade-card'>No webnovels loaded.</div>"; return; }
-        
-        feed.innerHTML=""; releases.innerHTML="";
-        let items = [];
-        snapshot.forEach((c) => { let v = c.val(); v.id = c.key; items.push(v); });
+        globalNovelsCache = [];
+        if(!snapshot.exists()) return renderLibraryViewDOM([]);
+        snapshot.forEach(c => { let data = c.val(); data.id = c.key; globalNovelsCache.push(data); });
+        executeMasterSearchFilterPipeline();
+    });
 
-        // Calculate Ranking Trending Metrics
-        let sortedTrend = [...items].sort((a,b) => (b.totalViews || 0) - (a.totalViews || 0));
-        let top = sortedTrend[0];
-        if(top) {
+    function filterGenreCategory(genre, element) {
+        document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+        element.classList.add('active');
+        selectedGenreFilter = genre;
+        executeMasterSearchFilterPipeline();
+    }
+
+    function filterLibraryEngineSearch() { executeMasterSearchFilterPipeline(); }
+
+    function executeMasterSearchFilterPipeline() {
+        let query = document.getElementById('librarySearchInput').value.toLowerCase().trim();
+        let filtered = globalNovelsCache.filter(b => {
+            let matchGenre = (selectedGenreFilter === "All" || b.genre === selectedGenreFilter);
+            let matchText = (b.title.toLowerCase().includes(query) || b.authorName.toLowerCase().includes(query));
+            return matchGenre && matchText;
+        });
+        renderLibraryViewDOM(filtered);
+    }
+
+    function renderLibraryViewDOM(books) {
+        const feed = document.getElementById('globalNovelFeedBox');
+        const trending = document.getElementById('topTrendingBox');
+        feed.innerHTML = ""; trending.innerHTML = "";
+        
+        if(books.length === 0) { feed.innerHTML = "<div class='arcade-card'>No active blueprints matched the query parameters.</div>"; return; }
+
+        let sorted = [...books].sort((a,b) => (b.totalViews || 0) - (a.totalViews || 0));
+        let top = sorted[0];
+        if(top && selectedGenreFilter === "All") {
             trending.innerHTML = `
                 <div class="novel-grid-card" style="border:1px solid var(--accent-gold);" onclick="openBookDetailsHub('${top.id}')">
                     <span class="status-badge ${top.status==='completed'?'status-completed':'status-ongoing'}">${top.status || 'ongoing'}</span>
                     <img src="${top.coverUrl}" class="novel-cover-img">
-                    <div style="flex:1;">
-                        <div style="color:var(--accent-gold); font-size:0.65rem; font-weight:bold;">🔥 TOP TRENDING MANUSCRIPT</div>
-                        <div style="font-weight:bold; font-size:1.1rem; margin:2px 0;">${top.title}</div>
-                        <div style="font-size:0.75rem; color:var(--text-muted);">By ${top.authorName}</div>
+                    <div style="flex:1; padding-right:70px;">
+                        <div style="color:var(--accent-gold); font-size:0.65rem; font-weight:bold;">🏆 #1 POPULAR TRENDING BOOK</div>
+                        <div style="font-weight:bold; font-size:1.1rem; margin:4px 0;">${top.title}</div>
+                        <div style="font-size:0.75rem; color:var(--text-muted);">By ${top.authorName} • Reads: ${top.totalViews || 0}</div>
                     </div>
                 </div>`;
         }
 
-        // New Updates Pipeline
-        let sortedNew = [...items].sort((a,b) => b.timestamp - a.timestamp);
-        sortedNew.slice(0,3).forEach(n => {
-            releases.innerHTML += `
-                <div class="novel-grid-card" onclick="openBookDetailsHub('${n.id}')">
-                    <span class="status-badge ${n.status==='completed'?'status-completed':'status-ongoing'}">${n.status || 'ongoing'}</span>
-                    <img src="${n.coverUrl}" class="novel-cover-img" style="width:50px; height:75px;">
-                    <div style="flex:1;">
-                        <div style="font-weight:bold; font-size:0.9rem;">${n.title}</div>
-                        <div style="font-size:0.7rem; color:var(--accent-orange);">Genre: ${n.genre}</div>
-                    </div>
-                </div>`;
-        });
-
-        // Global Loop Discovery
-        items.forEach(n => {
+        books.forEach(n => {
             feed.innerHTML += `
                 <div class="novel-grid-card" onclick="openBookDetailsHub('${n.id}')">
                     <span class="status-badge ${n.status==='completed'?'status-completed':'status-ongoing'}">${n.status || 'ongoing'}</span>
                     <img src="${n.coverUrl}" class="novel-cover-img">
-                    <div style="flex:1;">
-                        <div style="font-weight:bold; font-size:1rem;">${n.title}</div>
-                        <div style="font-size:0.75rem; color:var(--accent-gold); margin:3px 0;">By ${n.authorName}</div>
+                    <div style="flex:1; padding-right:70px;">
+                        <div style="font-weight:bold; font-size:1rem; line-height:1.2;">${n.title}</div>
+                        <div style="font-size:0.75rem; color:var(--accent-orange); margin:3px 0;">${n.genre} | ${n.authorName}</div>
                         <p style="font-size:0.75rem; color:var(--text-muted); margin:0; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${n.synopsis}</p>
                     </div>
                 </div>`;
         });
-    });
+    }
 
-    // 📖 BOOK HUB TABLE OF CONTENTS PARSER ENGINE
     function openBookDetailsHub(bookId) {
-        window.open(adsterraDirectLink, '_blank');
         database.ref('novels/' + bookId).once('value').then(snap => {
             let b = snap.val();
             document.getElementById('modalBookCover').src = b.coverUrl;
@@ -229,28 +264,23 @@
             document.getElementById('modalBookMeta').innerText = `Genre: ${b.genre} | Status: ${b.status || 'ongoing'}`;
             document.getElementById('modalBookSynopsis').innerText = b.synopsis;
 
-            let listContainer = document.getElementById('modalChaptersList');
-            listContainer.innerHTML = "";
-
+            let listContainer = document.getElementById('modalChaptersList'); listContainer.innerHTML = "";
             if(b.chapters) {
-                Object.keys(b.chapters).forEach(chId => {
-                    let ch = b.chapters[chId];
+                let arr = []; Object.keys(b.chapters).forEach(k => { let c = b.chapters[k]; c.id = k; arr.push(c); });
+                arr.sort((a,b) => a.chapterNum - b.chapterNum).forEach(ch => {
                     listContainer.innerHTML += `
-                        <div class="chapter-pill-btn" onclick="readTargetChapter('${bookId}', '${chId}')">
+                        <div class="chapter-pill-btn" onclick="readTargetChapter('${bookId}', '${ch.id}')">
                             <span>Vol. ${ch.volumeNum || '1'} — Chapter ${ch.chapterNum}: ${ch.chapterTitle}</span>
                             <span style="color:var(--accent-gold); font-size:0.75rem;">READ ➔</span>
                         </div>`;
                 });
-            } else {
-                listContainer.innerHTML = "<div style='color:var(--text-muted); font-size:0.8rem; text-align:center;'>No structural chapters deployed yet.</div>";
-            }
+            } else { listContainer.innerHTML = "<div style='color:var(--text-muted); text-align:center;'>No chapters released yet.</div>"; }
             document.getElementById('bookDetailsModal').style.display = "block";
-            let v = b.totalViews || 0; database.ref('novels/'+bookId).update({ totalViews: v+1 });
+            database.ref('novels/'+bookId).update({ totalViews: (b.totalViews || 0) + 1 });
         });
     }
 
     function readTargetChapter(bookId, chId) {
-        window.open(adsterraDirectLink, '_blank');
         database.ref(`novels/${bookId}/chapters/${chId}`).once('value').then(snap => {
             let ch = snap.val();
             document.getElementById('readerVolumeTag').innerText = `VOLUME ${ch.volumeNum || '1'}`;
@@ -259,29 +289,93 @@
             document.getElementById('storyReaderModal').style.display = "block";
         });
     }
-
     function closeBookDetailsModal() { document.getElementById('bookDetailsModal').style.display="none"; }
     function closeStoryReaderModal() { document.getElementById('storyReaderModal').style.display="none"; }
 
-    // 💸 TRANSACTION AND SERVICE FEE ROUTER (-5 RULE SET)
-    function convertPointsToWallet(mode) {
+    // 💸 WALLET ENGINE CLOUD SYSTEM WITH PLATFORM -5 SERVICE FEES
+    function executeWalletConversion(mode) {
         database.ref('users/'+mockUserNodeId).once('value').then(snap => {
             let pt = snap.child('tapPointsProgress').val() || 0;
             let cash = snap.child('totalEarnedPHP').val() || 0;
             if(mode === 'recharge') {
-                if(pt < 10) return alert("Minimum 10 PT required to cover 5 PT system platform fee.");
+                if(pt < 10) return alert("You need at least 10 PT to process under the 5 PT network fee.");
                 database.ref('users/'+mockUserNodeId).update({ tapPointsProgress: 0, totalEarnedPHP: cash + ((pt-5)/10) });
-                alert("Token Recharged. 5 PT network fee deducted.");
+                alert("Points converted! 5 PT system platform charge processed.");
             } else {
-                if(cash < 10) return alert("Minimum ₱10.00 required for cashout execution.");
-                database.ref('payout_requests/'+mockUserNodeId).push({ cashoutRaw: cash, actualPayout: cash - 5.00, timestamp: Date.now() });
+                if(cash < 10) return alert("Minimum withdrawal threshold is ₱10.00.");
+                database.ref('payout_requests/'+mockUserNodeId).push({ totalCashout: cash, netPayout: cash - 5.00, timestamp: Date.now() });
                 database.ref('users/'+mockUserNodeId).update({ totalEarnedPHP: 0 });
-                alert("Cashout queued. ₱5.00 transaction fee applied.");
+                alert("Outbound G-Cash transmission filed. ₱5.00 maintenance network fee applied.");
             }
         });
     }
-    function processSecureTapEngine() { tapCounter++; if(tapCounter>=50){ tapCounter=0; window.open(adsterraDirectLink,'_blank'); database.ref('users/'+mockUserNodeId).once('value').then(s=>{ let p=s.child('tapPointsProgress').val()||0; database.ref('users/'+mockUserNodeId).update({tapPointsProgress:p+10}); }); } document.getElementById('clickRatioField').innerText=tapCounter+" / 50 TAPS"; document.getElementById('arcadeProgressBar').style.width=(tapCounter/50)*100+"%"; }
-    database.ref('users/'+mockUserNodeId).on('value', s=> { let v=s.val(); if(v){ document.getElementById('arcadePoints').innerText=v.tapPointsProgress||0; document.getElementById('arcadeCash').innerText=(v.totalEarnedPHP||0).toFixed(2); } });
+    function triggerDailySignIn() { window.open(adsterraDirectLink,'_blank'); database.ref('users/'+mockUserNodeId).once('value').then(s=>{ let c=s.child('totalEarnedPHP').val()||0; database.ref('users/'+mockUserNodeId).update({totalEarnedPHP:c+5.00}); alert("Daily login confirmed! ₱5.00 added to balance."); }); }
+
+    // 🎮 MULTI-GAME COMPILER ARCADE ENGINE (4 NO-BORING SYSTEM INTEGRATION)
+    let internalClickMeter = 0;
+    function launchMiniGameEngine(gameType) {
+        window.open(adsterraDirectLink, '_blank');
+        const playroom = document.getElementById('gameEnginePlayroom');
+        const overlay = document.getElementById('gameActiveScreenOverlay');
+        const title = document.getElementById('activeGameTitle');
+        playroom.innerHTML = ""; 
+        overlay.style.display = "block";
+
+        if(gameType === 'coin') {
+            title.innerText = "Game 1: Crypto Tap Clicker";
+            playroom.innerHTML = `<button class="btn-action" style="width:130px; height:130px; border-radius:50%; font-size:3rem;" onclick="creditArcadePointsScore(1)">🪙</button><div style="margin-top:15px;" id="gameFeedback">Tap the crypto node!</div>`;
+        } else if(gameType === 'guess') {
+            title.innerText = "Game 2: Lucky Number Predictor";
+            playroom.innerHTML = `<div style="font-size:0.85rem; margin-bottom:10px;">Pick a door card to extract hidden tokens:</div>
+                <div style="display:flex; gap:10px;"><button class="btn-action" onclick="playGuessGameEngine(1)">Door A</button><button class="btn-action" style="background:var(--accent-gold);" onclick="playGuessGameEngine(2)">Door B</button></div><div id="gameFeedback" style="margin-top:15px;"></div>`;
+        } else if(gameType === 'clicker') {
+            title.innerText = "Game 3: Speed Reflex Reflexes";
+            internalClickMeter = 0;
+            playroom.innerHTML = `<div id="reflexNodeTarget" style="position:absolute; background:red; width:45px; height:45px; border-radius:50%; cursor:pointer;" onclick="triggerReflexNodePop()"></div><div id="gameFeedback" style="bottom:15px; position:absolute; font-size:0.8rem;">Pop the red button as fast as you can!</div>`;
+            repositionReflexNodeTarget();
+        } else if(gameType === 'chest') {
+            title.innerText = "Game 4: Void Chest Unboxing";
+            playroom.innerHTML = `<div style="font-size:3rem; cursor:pointer;" id="chestNodeGraphic" onclick="triggerChestUnboxingEngine()">🧰</div><div id="gameFeedback" style="margin-top:15px;">Click chest box to extract reward drops!</div>`;
+        }
+    }
+
+    function creditArcadePointsScore(points) {
+        database.ref('users/'+mockUserNodeId).once('value').then(s => {
+            let p = s.child('tapPointsProgress').val() || 0;
+            database.ref('users/'+mockUserNodeId).update({ tapPointsProgress: p + points });
+        });
+    }
+
+    function playGuessGameEngine(choice) {
+        let winning = Math.floor(Math.random() * 2) + 1;
+        if(choice === winning) { document.getElementById('gameFeedback').innerText = "🎉 Win! Captured +5 Points."; creditArcadePointsScore(5); }
+        else { document.getElementById('gameFeedback').innerText = "❌ Missed target loop! Try again."; }
+    }
+
+    function repositionReflexNodeTarget() {
+        const target = document.getElementById('reflexNodeTarget'); if(!target) return;
+        let rx = Math.floor(Math.random() * 200) + 10; let ry = Math.floor(Math.random() * 180) + 10;
+        target.style.left = rx + "px"; target.style.top = ry + "px";
+    }
+    function triggerReflexNodePop() { creditArcadePointsScore(2); repositionReflexNodeTarget(); }
+
+    function triggerChestUnboxingEngine() {
+        document.getElementById('chestNodeGraphic').innerText = "✨";
+        let loot = Math.floor(Math.random() * 10) + 2;
+        document.getElementById('gameFeedback').innerText = `Loot Core Found: +${loot} Game Points!`;
+        creditArcadePointsScore(loot);
+        setTimeout(() => { if(document.getElementById('chestNodeGraphic')) document.getElementById('chestNodeGraphic').innerText = "🧰"; }, 1000);
+    }
+
+    function shutdownActiveGameSession() { document.getElementById('gameActiveScreenOverlay').style.display = "none"; }
+
+    database.ref('users/'+mockUserNodeId).on('value', s=> {
+        let v=s.val(); 
+        if(v){
+            document.getElementById('arcadePointsDisplay').innerText = (v.tapPointsProgress || 0) + " PT";
+            document.getElementById('walletCashField').innerText = (v.totalEarnedPHP || 0).toFixed(2);
+        }
+    });
 </script>
 </body>
-</html>
+</html>                                                                     
