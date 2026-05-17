@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WNOVELS NETWORK - Premium Webnovel Ecosystem</title>
+    <title>WNOVELS NETWORK - WEBNOVELS EARNINGS</title>
     
     <script src="https://pl29471258.effectivecpmnetwork.com/27/7b/f8/277bf845b91c531ad9fb066482ac8cae.js"></script>
 
@@ -11,395 +11,277 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
         :root {
-            --bg-deep: #03050a;
-            --bg-surface: #0a0d1a;
-            --bg-card: #11152c;
-            --accent-orange: #ff4500;
-            --accent-gold: #f59e0b;
-            --accent-green: #10b981;
-            --text-main: #f8fafc;
-            --text-muted: #64748b;
-            --border: #1e293b;
+            --bg-deep: #03050a; --bg-surface: #0a0d1a; --bg-card: #11152c;
+            --accent-orange: #ff4500; --accent-gold: #f59e0b; --accent-green: #10b981;
+            --text-main: #f8fafc; --text-muted: #64748b; --border: #1e293b;
         }
         body {
             background-color: var(--bg-deep); color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             margin: 0; padding: 0; padding-bottom: 75px; user-select: none;
         }
-        
-        /* 📱 BOTTOM CONTROL HUD NAVIGATION */
         .bottom-nav-hub {
-            position: fixed; bottom: 0; left: 0; width: 100%;
-            background: var(--bg-surface); border-top: 1px solid var(--border);
-            display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000;
+            position: fixed; bottom: 0; left: 0; width: 100%; background: var(--bg-surface);
+            border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000;
         }
-        .nav-link {
-            display: flex; flex-direction: column; align-items: center;
-            color: var(--text-muted); font-size: 0.75rem; text-decoration: none; cursor: pointer;
-        }
+        .nav-link { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 0.75rem; text-decoration: none; cursor: pointer; }
         .nav-link.active { color: var(--accent-orange); font-weight: bold; }
         .nav-icon { width: 22px; height: 22px; margin-bottom: 3px; filter: grayscale(1); }
         .nav-link.active .nav-icon { filter: grayscale(0) hue-rotate(340deg) saturate(5); }
 
-        /* 📑 VIEW CONTAINERS */
         .view-section { display: none; padding: 15px; max-width: 800px; margin: 0 auto; }
         .view-section.active { display: block; }
 
-        /* 📚 PREMIUM WATTPAD DESIGNED FEED */
         .hero-banner {
             background: linear-gradient(180deg, rgba(255,69,0,0.2) 0%, rgba(3,5,10,0) 100%);
             padding: 25px 15px; text-align: center; border-radius: 12px; margin-bottom: 20px;
         }
-        .matrix-title { font-size: 1.4rem; font-weight: 900; color: var(--text-main); letter-spacing: 1px; text-transform: uppercase; }
+        .matrix-title { font-size: 1.4rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
         .matrix-title span { color: var(--accent-orange); }
+
         .novel-grid-card {
-            background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 12px; padding: 12px; display: flex; gap: 15px; margin-bottom: 15px;
-            transition: transform 0.2s; cursor: pointer; position: relative;
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+            padding: 12px; display: flex; gap: 15px; margin-bottom: 15px; position: relative; cursor: pointer;
         }
-        .novel-grid-card:active { transform: scale(0.98); }
-        .novel-cover-img { width: 85px; height: 125px; object-fit: cover; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .novel-cover-img { width: 85px; height: 125px; object-fit: cover; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); background: #222; }
         
-        .trending-badge {
-            background: linear-gradient(45deg, var(--accent-gold), var(--accent-orange));
-            color: black; font-weight: 900; padding: 3px 8px; border-radius: 4px;
-            font-size: 0.65rem; display: inline-block; margin-bottom: 5px;
-        }
-        .new-release-tag {
-            position: absolute; top: 12px; right: 12px; background: #dc2626; color: white;
-            font-size: 0.6rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;
-        }
-        .empty-state-notice {
-            border: 2px dashed var(--border); border-radius: 12px; padding: 50px 20px;
-            text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 20px;
-        }
-        
-        /* 💎 ARCADE PLATFORM */
+        /* STATUS TAGS FOR USERS */
+        .status-badge { position: absolute; top: 12px; right: 12px; font-size: 0.65rem; font-weight: bold; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; }
+        .status-ongoing { background: rgba(16,185,129,0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
+        .status-completed { background: rgba(99,102,241,0.2); color: #818cf8; border: 1px solid #6366f1; }
+
         .arcade-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 14px; padding: 15px; margin-bottom: 15px; }
-        .earn-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .pill-stat { background: #070914; padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; border: 1px solid var(--border); }
-        .btn-action {
-            background: linear-gradient(90deg, #ff4500, #f59e0b); color: white;
-            border: none; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; text-transform: uppercase; font-size: 0.85rem;
-        }
+        .btn-action { background: linear-gradient(90deg, #ff4500, #f59e0b); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; text-transform: uppercase; font-size: 0.85rem; }
         .clicker-coin-target { width: 130px; height: 130px; margin: 15px auto; display: block; cursor: pointer; transition: transform 0.05s; }
         .clicker-coin-target:active { transform: scale(0.9); }
-        .progress-box { background: #070914; height: 35px; border-radius: 20px; border: 1px solid var(--border); width: 100%; overflow: hidden; margin-bottom: 10px; position: relative; }
-        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-orange), var(--accent-gold)); width: 0%; transition: width 0.1s linear; }
-
-        /* 👤 IDENTITY INTERFACE */
-        .profile-container { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; text-align: center; margin-top: 15px; }
-        .identity-avatar { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent-orange); background: #222; cursor: pointer; margin-bottom: 12px; }
-        .hidden-file-input { display: none; }
-        .input-premium { width: 100%; background: var(--bg-deep); border: 1px solid var(--border); border-radius: 8px; padding: 10px; color: white; margin-top: 10px; text-align: center; }
-        .adsterra-banner-container { background: rgba(255,255,255,0.01); border: 1px dashed var(--border); padding: 5px; border-radius: 10px; margin: 15px 0; text-align: center; }
+        .progress-box { background: #070914; height: 35px; border-radius: 20px; border: 1px solid var(--border); width: 100%; overflow: hidden; position: relative; margin-bottom: 10px; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-orange), var(--accent-gold)); width: 0%; }
+        
+        .chapter-pill-btn { background: #161f38; border: 1px solid var(--border); padding: 10px 15px; border-radius: 8px; color: white; cursor: pointer; text-align: left; font-size: 0.9rem; display: flex; justify-content: space-between; }
+        .chapter-pill-btn:hover { border-color: var(--accent-orange); }
     </style>
 </head>
 <body>
-
 <div id="view-library" class="view-section active">
     <div class="hero-banner">
         <div class="matrix-title">WNovels <span>Ecosystem</span></div>
-        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">The Ultimate Decentralized Reading & Writing Matrix</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">The Ultimate Copyright-Protected Reading Matrix</div>
     </div>
-
     <div id="topTrendingBox"></div>
-
-    <h3 style="font-size: 1rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent-gold); margin-top: 25px; margin-bottom: 12px;">🆕 Newly Released Books / Chapters</h3>
+    <h3 style="font-size: 1rem; text-transform: uppercase; color: var(--accent-gold); margin-top: 25px;">🆕 Newly Released / Latest Updates</h3>
     <div id="newReleasesFeedBox"></div>
-
-    <h3 style="font-size: 1rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent-orange); margin-top: 25px; margin-bottom: 12px;">📚 Global Discovery Feed</h3>
+    <h3 style="font-size: 1rem; text-transform: uppercase; color: var(--accent-orange); margin-top: 25px;">📚 Global Discovery Feed</h3>
     <div id="globalNovelFeedBox"></div>
 </div>
 
 <div id="view-arcade" class="view-section">
-    <div class="adsterra-banner-container">
-        <span style="font-size:0.6rem; color:var(--text-muted); display:block; margin-bottom:5px;">SPONSORED REWARD NODE</span>
-        <script async="async" data-cfasync="false" src="https://pl29471257.effectivecpmnetwork.com/4cf7e0a66c311471132f6ac2b1acd8b0/invoke.js"></script>
-        <div id="container-4cf7e0a66c311471132f6ac2b1acd8b0"></div>
-    </div>
-
     <div class="arcade-card">
-        <div class="earn-row">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
                 <div style="font-weight: bold; font-size: 0.95rem;">📆 Premium Daily Attendance</div>
                 <div style="font-size: 0.7rem; color: var(--text-muted);">Watch mandatory ad to credit wallet account</div>
             </div>
-            <button class="pill-stat" style="background: var(--accent-gold); color: black; font-weight: bold; border:none; cursor: pointer;" onclick="triggerDailySignIn()">SIGN IN</button>
+            <button class="btn-action" style="width: auto; padding: 8px 15px;" onclick="triggerDailySignIn()">SIGN IN</button>
         </div>
     </div>
-
     <div class="arcade-card">
-        <div class="earn-row">
-            <div>
-                <div style="font-size: 0.75rem; color: var(--text-muted);">Mined Points Storage</div>
-                <div style="font-size: 1.4rem; font-weight: bold; color: var(--accent-gold);"><span id="arcadePoints">0</span> PT</div>
-            </div>
-            <div>
-                <div style="font-size: 0.75rem; color: var(--text-muted);">Convertible Cash Balance</div>
-                <div style="font-size: 1.4rem; font-weight: bold; color: var(--accent-green);">₱<span id="arcadeCash">0.00</span></div>
-            </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+            <div><div style="font-size:0.75rem; color:var(--text-muted);">Mined Points</div><div style="font-size:1.4rem; font-weight:bold; color:var(--accent-gold);"><span id="arcadePoints">0</span> PT</div></div>
+            <div><div style="font-size:0.75rem; color:var(--text-muted);">Convertible Balance</div><div style="font-size:1.4rem; font-weight:bold; color:var(--accent-green);">₱<span id="arcadeCash">0.00</span></div></div>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <button class="btn-action" style="background: #1e293b; border: 1px solid var(--border);" onclick="convertPointsToWallet('recharge')">⚡ Recharge Token (-5PT)</button>
+            <button class="btn-action" style="background:#1e293b;" onclick="convertPointsToWallet('recharge')">⚡ Recharge (-5PT)</button>
             <button class="btn-action" onclick="convertPointsToWallet('cashout')">💸 Cashout Money (-₱5)</button>
         </div>
     </div>
-
     <div class="arcade-card" style="text-align: center;">
-        <div style="font-weight: bold; font-size: 0.95rem; color: var(--text-main);">🪙 TapCoin Play-to-Earn Core</div>
-        <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 12px;">Secure 50 taps to mine point packages. Double rewards require ad view.</div>
         <div class="progress-box">
             <div id="arcadeProgressBar" class="progress-bar-fill"></div>
-            <div style="position: absolute; width: 100%; top: 8px; text-align: center; font-size: 0.75rem; font-weight: bold;" id="clickRatioField">0 / 50 SECURED TAPS</div>
+            <div style="position: absolute; width: 100%; top: 8px; font-size: 0.75rem; font-weight: bold;" id="clickRatioField">0 / 50 TAPS</div>
         </div>
         <img class="clicker-coin-target" src="https://img.icons8.com/color/250/bitcoin--v1.png" onclick="processSecureTapEngine()">
     </div>
 </div>
 
-<div id="view-profile" class="view-section">
-    <div class="profile-container">
-        <input type="file" id="profileAvatarUpload" class="hidden-file-input" accept="image/*" onchange="uploadProfilePictureFromGallery()">
-        <img id="myAvatarDisplay" class="identity-avatar" src="https://img.icons8.com/officel/160/user.png" onclick="triggerAvatarUploadClick()">
-        <div style="font-size: 0.7rem; color: var(--accent-orange); margin-bottom: 15px;">[ Tap Avatar Image to Upload from Gallery ]</div>
-        <div style="text-align: left; max-width: 300px; margin: 0 auto;">
-            <label style="font-size: 0.75rem; color: var(--text-muted);">Set Your Public Identity Name:</label>
-            <input type="text" id="usernameInputField" class="input-premium" placeholder="Enter custom username...">
-            <button class="btn-action" style="margin-top: 12px;" onclick="saveEcosystemIdentityProfile()">Save Identity Profile</button>
-        </div>
+<div id="bookDetailsModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--bg-deep); z-index:1500; overflow-y:auto; padding:20px; box-sizing:border-box;">
+    <button onclick="closeBookDetailsModal()" style="background:#1e293b; color:white; border:none; padding:10px 18px; border-radius:6px; font-weight:bold; cursor:pointer; margin-bottom:15px;">← Back to Hub</button>
+    <div style="text-align:center; margin-bottom:20px;">
+        <img id="modalBookCover" class="novel-cover-img" style="width:120px; height:175px; margin-bottom:12px;">
+        <h2 id="modalBookTitle" style="margin:5px 0; font-size:1.4rem;">Book Title</h2>
+        <div id="modalBookAuthor" style="color:var(--accent-gold); font-size:0.9rem;">Author</div>
+        <div id="modalBookMeta" style="font-size:0.8rem; color:var(--text-muted); margin-top:5px;">Genre • Status</div>
+    </div>
+    <div class="arcade-card">
+        <label style="color:var(--accent-orange); font-size:0.75rem; font-weight:bold;">SYNOPSIS SUMMARY</label>
+        <p id="modalBookSynopsis" style="font-size:0.9rem; line-height:1.5; color:#cbd5e1; margin-top:5px;"></p>
+    </div>
+    <h3 style="font-size:1rem; color:var(--text-main); margin-top:20px; text-transform:uppercase;">📜 Index Table of Chapters</h3>
+    <div id="modalChaptersList" style="display:flex; flex-direction:column; gap:10px; margin-top:10px;"></div>
+</div>
+
+<div id="storyReaderModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--bg-deep); z-index:2000; overflow-y:auto; padding:20px; box-sizing:border-box;">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:15px; margin-bottom:20px;">
+        <button onclick="closeStoryReaderModal()" style="background:#1e293b; color:white; border:none; padding:8px 16px; border-radius:6px; font-weight:bold; cursor:pointer;">← Table of Contents</button>
+        <span id="readerVolumeTag" style="font-size:0.75rem; background:var(--accent-orange); color:white; padding:3px 8px; border-radius:4px; font-weight:bold;">VOL</span>
+    </div>
+    <div style="text-align:center; margin-bottom:20px;">
+        <h1 id="readerChapterTitle" style="font-size:1.3rem; font-weight:bold; color:var(--text-main);">Chapter Title</h1>
+    </div>
+    <div id="readerStoryBody" style="font-family:'Georgia', serif; font-size:1.15rem; line-height:1.8; color:#e2e8f0; max-width:650px; margin:0 auto; white-space:pre-wrap; padding-bottom:40px;"></div>
+    
+    <div style="border-top:1px dashed var(--border); padding-top:20px; margin-top:40px; text-align:center; color:var(--text-muted); font-size:0.75rem; line-height:1.4; max-width:600px; margin-left:auto; margin-right:auto;">
+        <img src="https://img.icons8.com/ios-filled/50/64748b/copyright.png" style="width:20px; opacity:0.5; margin-bottom:5px;"><br>
+        <strong>All Rights Reserved — Copyright Notice</strong><br>
+        This manuscript artifact data stream is registered under the creator's pen name profile. No part of this publication may be reproduced, distributed, or transmitted in any form or by any means, including database scraping, mechanical copying, or digital mirror hosting without the absolute prior written validation sequence of the publisher and legal author node.
     </div>
 </div>
 
 <div class="bottom-nav-hub">
-    <div class="nav-link active" onclick="switchActiveView('view-library', this)">
-        <img class="nav-icon" src="https://img.icons8.com/ios-filled/50/ffffff/books.png">Library
+    <div class="nav-link active" onclick="switchActiveView('view-library', this)"><img class="nav-icon" src="https://img.icons8.com/ios-filled/50/ffffff/books.png">Library</div>
+    <div class="nav-link" onclick="triggerStudioRedirect()"><img class="nav-icon" src="https://img.icons8.com/ios-filled/50/ffffff/edit-property.png">Studio</div>
+    <div class="nav-link" onclick="switchActiveView('view-arcade', this)"><img class="nav-icon" src="https://img.icons8.com/ios-filled/50/ffffff/game-controller.png">Arcade</div>
     </div>
-    <div class="nav-link" onclick="triggerStudioAdGateRedirect()">
-        <img class="nav-icon" src="https://img.icons8.com/ios-filled/50/ffffff/edit-property.png">Studio
-    </div>
-    <div class="nav-link" onclick="switchActiveView('view-arcade', this)">
-        <img class="nav-icon" src="https://img.icons8.com/ios-filled/50/ffffff/game-controller.png">Arcade
-    </div>
-    <div class="nav-link" onclick="switchActiveView('view-profile', this)">
-        <img class="nav-icon" src="https://img.icons8.com/ios-filled/50/ffffff/user-male-circle.png">Profile
-    </div>
-</div>
-<script>
-    // 🔑 SECURED RECOGNIZED FIREBASE DATABASE ENGINE CONFIG
+    <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBelCPgA4ZE7pcFGPPp9191KPOdaSSoMc8",
       authDomain: "studio-8164628274-c414a.firebaseapp.com",
       databaseURL: "https://studio-8164628274-c414a-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "studio-8164628274-c414a",
       storageBucket: "studio-8164628274-c414a.firebasestorage.app",
-      messagingSenderId: "327634019544",
-      appId: "1:327634019544:web:e3e913c4f12ea1d54ce3ad"
+      messagingSenderId: "327634019544", appId: "1:327634019544:web:e3e913c4f12ea1d54ce3ad"
     };
-
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
-    
-    let mockUserNodeId = "user_id_123"; 
-    let tapCounter = 0;
-    let lastTapTimestamp = 0;
-
+    let mockUserNodeId = "user_id_123"; let tapCounter = 0;
     const adsterraDirectLink = "https://pl29471258.effectivecpmnetwork.com/27/7b/f8/277bf845b91c531ad9fb066482ac8cae.js";
 
     function switchActiveView(viewId, element) {
-        document.querySelectorAll('.view-section').forEach(section => section.classList.remove('active'));
-        document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-        document.getElementById(viewId).classList.add('active');
-        element.classList.add('active');
+        document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.getElementById(viewId).classList.add('active'); element.classList.add('active');
     }
+    function triggerStudioRedirect() { window.open(adsterraDirectLink, '_blank'); setTimeout(() => { location.href='writer.html'; }, 200); }
 
-    function triggerStudioAdGateRedirect() {
-        window.open(adsterraDirectLink, '_blank');
-        setTimeout(() => { location.href = 'writer.html'; }, 300);
-    }
+    // 🔄 STREAM ENGINE: RENDERING GLOBAL NOVEL CANVAS MATRIX
+    database.ref('novels').on('value', (snapshot) => {
+        const feed = document.getElementById('globalNovelFeedBox');
+        const releases = document.getElementById('newReleasesFeedBox');
+        const trending = document.getElementById('topTrendingBox');
+        if(!snapshot.exists()) { feed.innerHTML="<div class='arcade-card'>No webnovels loaded.</div>"; return; }
+        
+        feed.innerHTML=""; releases.innerHTML="";
+        let items = [];
+        snapshot.forEach((c) => { let v = c.val(); v.id = c.key; items.push(v); });
 
-    function triggerAvatarUploadClick() { document.getElementById('profileAvatarUpload').click(); }
-    function uploadProfilePictureFromGallery() {
-        const file = document.getElementById('profileAvatarUpload').files[0];
-        const reader = new FileReader();
-        reader.onloadend = function() {
-            const base64Data = reader.result;
-            document.getElementById('myAvatarDisplay').src = base64Data;
-            database.ref('users/' + mockUserNodeId).update({ profilePic: base64Data });
+        // Calculate Ranking Trending Metrics
+        let sortedTrend = [...items].sort((a,b) => (b.totalViews || 0) - (a.totalViews || 0));
+        let top = sortedTrend[0];
+        if(top) {
+            trending.innerHTML = `
+                <div class="novel-grid-card" style="border:1px solid var(--accent-gold);" onclick="openBookDetailsHub('${top.id}')">
+                    <span class="status-badge ${top.status==='completed'?'status-completed':'status-ongoing'}">${top.status || 'ongoing'}</span>
+                    <img src="${top.coverUrl}" class="novel-cover-img">
+                    <div style="flex:1;">
+                        <div style="color:var(--accent-gold); font-size:0.65rem; font-weight:bold;">🔥 TOP TRENDING MANUSCRIPT</div>
+                        <div style="font-weight:bold; font-size:1.1rem; margin:2px 0;">${top.title}</div>
+                        <div style="font-size:0.75rem; color:var(--text-muted);">By ${top.authorName}</div>
+                    </div>
+                </div>`;
         }
-        if(file) reader.readAsDataURL(file);
-    }
 
-    function saveEcosystemIdentityProfile() {
-        let name = document.getElementById('usernameInputField').value.trim();
-        if(!name) return alert("Please specify a valid Identity Name!");
-        window.open(adsterraDirectLink, '_blank');
-        database.ref('users/' + mockUserNodeId).update({ username: name }).then(() => {
-            alert("Identity profile successfully validated and secured in cloud!");
+        // New Updates Pipeline
+        let sortedNew = [...items].sort((a,b) => b.timestamp - a.timestamp);
+        sortedNew.slice(0,3).forEach(n => {
+            releases.innerHTML += `
+                <div class="novel-grid-card" onclick="openBookDetailsHub('${n.id}')">
+                    <span class="status-badge ${n.status==='completed'?'status-completed':'status-ongoing'}">${n.status || 'ongoing'}</span>
+                    <img src="${n.coverUrl}" class="novel-cover-img" style="width:50px; height:75px;">
+                    <div style="flex:1;">
+                        <div style="font-weight:bold; font-size:0.9rem;">${n.title}</div>
+                        <div style="font-size:0.7rem; color:var(--accent-orange);">Genre: ${n.genre}</div>
+                    </div>
+                </div>`;
         });
-    }
 
-    function processSecureTapEngine() {
-        const now = Date.now();
-        if (now - lastTapTimestamp < 160) { 
-            console.warn("Anti-Cheat triggered: Auto-clicker blocked.");
-            return; 
-        }
-        lastTapTimestamp = now;
-        tapCounter++;
-        updateProgressBarUI();
-
-        if(tapCounter >= 50) {
-            tapCounter = 0;
-            window.open(adsterraDirectLink, '_blank');
-            const wantDouble = confirm("🎁 DOUBLE REWARDS? Click OK to load sponsor ad and get 20 points instead of 10!");
-            let calculatedPointsPayout = wantDouble ? 20 : 10;
-            if(wantDouble) { window.open(adsterraDirectLink, '_blank'); }
-
-            database.ref('users/' + mockUserNodeId).once('value').then((snap) => {
-                let existingPoints = snap.child('tapPointsProgress').val() || 0;
-                database.ref('users/' + mockUserNodeId).update({ tapPointsProgress: existingPoints + calculatedPointsPayout });
-            });
-            updateProgressBarUI();
-        }
-    }
-</script>
-<script>
-    function updateProgressBarUI() {
-        document.getElementById('clickRatioField').innerText = tapCounter + " / 50 SECURED TAPS";
-        document.getElementById('arcadeProgressBar').style.width = (tapCounter / 50) * 100 + "%";
-    }
-
-    function triggerDailySignIn() {
-        window.open(adsterraDirectLink, '_blank');
-        database.ref('users/' + mockUserNodeId).once('value').then((snap) => {
-            let existingCash = snap.child('totalEarnedPHP').val() || 0;
-            database.ref('users/' + mockUserNodeId).update({ totalEarnedPHP: existingCash + 5.00 }).then(() => {
-                alert("🎉 Daily attendance logged! ₱5.00 credited.");
-            });
+        // Global Loop Discovery
+        items.forEach(n => {
+            feed.innerHTML += `
+                <div class="novel-grid-card" onclick="openBookDetailsHub('${n.id}')">
+                    <span class="status-badge ${n.status==='completed'?'status-completed':'status-ongoing'}">${n.status || 'ongoing'}</span>
+                    <img src="${n.coverUrl}" class="novel-cover-img">
+                    <div style="flex:1;">
+                        <div style="font-weight:bold; font-size:1rem;">${n.title}</div>
+                        <div style="font-size:0.75rem; color:var(--accent-gold); margin:3px 0;">By ${n.authorName}</div>
+                        <p style="font-size:0.75rem; color:var(--text-muted); margin:0; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${n.synopsis}</p>
+                    </div>
+                </div>`;
         });
-    }
+    });
 
-    // 💸 DYNAMIC SERVICE TRANSACTION FEE ENGINE (-5 POINTS / -₱5.00 KALTAS SIKRETO NG TECH CEO)
-    function convertPointsToWallet(mode) {
-        database.ref('users/' + mockUserNodeId).once('value').then((snap) => {
-            let currentPoints = snap.child('tapPointsProgress').val() || 0;
-            let currentCash = snap.child('totalEarnedPHP').val() || 0;
-            const tokenServiceFee = 5; 
+    // 📖 BOOK HUB TABLE OF CONTENTS PARSER ENGINE
+    function openBookDetailsHub(bookId) {
+        window.open(adsterraDirectLink, '_blank');
+        database.ref('novels/' + bookId).once('value').then(snap => {
+            let b = snap.val();
+            document.getElementById('modalBookCover').src = b.coverUrl;
+            document.getElementById('modalBookTitle').innerText = b.title;
+            document.getElementById('modalBookAuthor').innerText = "Written by " + b.authorName;
+            document.getElementById('modalBookMeta').innerText = `Genre: ${b.genre} | Status: ${b.status || 'ongoing'}`;
+            document.getElementById('modalBookSynopsis').innerText = b.synopsis;
 
-            if(mode === 'recharge') {
-                if(currentPoints < (tokenServiceFee + 5)) {
-                    alert("⚠️ Minimum recharge balance is 10 PT (Includes 5 PT service fee).");
-                    return;
-                }
-                let netPoints = currentPoints - tokenServiceFee;
-                let cashValueConverted = (netPoints / 10) * 1.00; 
+            let listContainer = document.getElementById('modalChaptersList');
+            listContainer.innerHTML = "";
 
-                database.ref('users/' + mockUserNodeId).update({
-                    tapPointsProgress: 0,
-                    totalEarnedPHP: currentCash + cashValueConverted
-                }).then(() => {
-                    alert(`⚡ Recharge Successful!\n• Service Fee: -${tokenServiceFee} PT\n• Value Added: ₱${cashValueConverted.toFixed(2)}`);
+            if(b.chapters) {
+                Object.keys(b.chapters).forEach(chId => {
+                    let ch = b.chapters[chId];
+                    listContainer.innerHTML += `
+                        <div class="chapter-pill-btn" onclick="readTargetChapter('${bookId}', '${chId}')">
+                            <span>Vol. ${ch.volumeNum || '1'} — Chapter ${ch.chapterNum}: ${ch.chapterTitle}</span>
+                            <span style="color:var(--accent-gold); font-size:0.75rem;">READ ➔</span>
+                        </div>`;
                 });
             } else {
-                if(currentCash < 10.00) {
-                    alert("⚠️ Minimum cashout parameter threshold is ₱10.00.");
-                    return;
-                }
-                let netCashPayout = currentCash - 5.00; // Auto deduct ₱5 flat execution platform fee
-                
-                database.ref('payout_requests/' + mockUserNodeId).set({
-                    username: snap.child('username').val() || "WNovels User",
-                    requestedAmount: currentCash,
-                    serviceFeeDeducted: 5.00,
-                    actualPayoutPayload: netCashPayout,
-                    timestamp: Date.now()
-                }).then(() => {
-                    database.ref('users/' + mockUserNodeId).update({ totalEarnedPHP: 0 });
-                    alert(`💸 Payout Deployed!\n• Requested: ₱${currentCash.toFixed(2)}\n• Exchange Fee: -₱5.00\n• To Net GCash: ₱${netCashPayout.toFixed(2)}`);
-                });
+                listContainer.innerHTML = "<div style='color:var(--text-muted); font-size:0.8rem; text-align:center;'>No structural chapters deployed yet.</div>";
+            }
+            document.getElementById('bookDetailsModal').style.display = "block";
+            let v = b.totalViews || 0; database.ref('novels/'+bookId).update({ totalViews: v+1 });
+        });
+    }
+
+    function readTargetChapter(bookId, chId) {
+        window.open(adsterraDirectLink, '_blank');
+        database.ref(`novels/${bookId}/chapters/${chId}`).once('value').then(snap => {
+            let ch = snap.val();
+            document.getElementById('readerVolumeTag').innerText = `VOLUME ${ch.volumeNum || '1'}`;
+            document.getElementById('readerChapterTitle').innerText = `Chapter ${ch.chapterNum}: ${ch.chapterTitle}`;
+            document.getElementById('readerStoryBody').innerText = ch.content;
+            document.getElementById('storyReaderModal').style.display = "block";
+        });
+    }
+
+    function closeBookDetailsModal() { document.getElementById('bookDetailsModal').style.display="none"; }
+    function closeStoryReaderModal() { document.getElementById('storyReaderModal').style.display="none"; }
+
+    // 💸 TRANSACTION AND SERVICE FEE ROUTER (-5 RULE SET)
+    function convertPointsToWallet(mode) {
+        database.ref('users/'+mockUserNodeId).once('value').then(snap => {
+            let pt = snap.child('tapPointsProgress').val() || 0;
+            let cash = snap.child('totalEarnedPHP').val() || 0;
+            if(mode === 'recharge') {
+                if(pt < 10) return alert("Minimum 10 PT required to cover 5 PT system platform fee.");
+                database.ref('users/'+mockUserNodeId).update({ tapPointsProgress: 0, totalEarnedPHP: cash + ((pt-5)/10) });
+                alert("Token Recharged. 5 PT network fee deducted.");
+            } else {
+                if(cash < 10) return alert("Minimum ₱10.00 required for cashout execution.");
+                database.ref('payout_requests/'+mockUserNodeId).push({ cashoutRaw: cash, actualPayout: cash - 5.00, timestamp: Date.now() });
+                database.ref('users/'+mockUserNodeId).update({ totalEarnedPHP: 0 });
+                alert("Cashout queued. ₱5.00 transaction fee applied.");
             }
         });
     }
-
-    database.ref('users/' + mockUserNodeId).on('value', (snap) => {
-        const user = snap.val();
-        if(user) {
-            if(user.profilePic) document.getElementById('myAvatarDisplay').src = user.profilePic;
-            if(user.username) document.getElementById('usernameInputField').value = user.username;
-            document.getElementById('arcadePoints').innerText = user.tapPointsProgress || 0;
-            document.getElementById('arcadeCash').innerText = (user.totalEarnedPHP || 0).toFixed(2);
-        }
-    });
-
-    // 🔄 RE-ENGINEERED DYNAMIC BOOK FEED NODE (LATEST CHAPTERS & TRENDING CALCULATORS)
-    database.ref('novels').on('value', (snapshot) => {
-        const feedBox = document.getElementById('globalNovelFeedBox');
-        const newReleasesBox = document.getElementById('newReleasesFeedBox');
-        const trendingBox = document.getElementById('topTrendingBox');
-        
-        if(!snapshot.exists()) {
-            feedBox.innerHTML = `<div class="empty-state-notice">📭 <strong>Global Book Node Empty</strong></div>`;
-            newReleasesBox.innerHTML = `<div style="font-size:0.75rem; color:var(--text-muted)">Waiting for fresh manuscript deployment...</div>`;
-            trendingBox.innerHTML = "";
-            return;
-        }
-
-        feedBox.innerHTML = ""; newReleasesBox.innerHTML = "";
-        let novelArray = [];
-
-        snapshot.forEach((childSnap) => {
-            let novel = childSnap.val();
-            novel.id = childSnap.key;
-            let views = novel.totalViews || 0; let likes = novel.totalLikes || 0; let comments = novel.totalComments || 0;
-            novel.trendingScore = (views * 1) + (likes * 4) + (comments * 6); 
-            novelArray.push(novel);
-        });
-
-        // 1. Trending Vector Calculations
-        let sortedTrending = [...novelArray].sort((a, b) => b.trendingScore - a.trendingScore);
-        let top1 = sortedTrending[0];
-        trendingBox.innerHTML = `
-            <h3 style="color: var(--accent-gold); font-size: 1rem; text-transform: uppercase; letter-spacing:0.5px; margin-bottom:12px;">🏆 #1 Global Trending Project</h3>
-            <div class="novel-grid-card" style="border: 1px solid var(--accent-gold); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(245,158,11,0.05) 100%);">
-                <img src="${top1.coverUrl}" class="novel-cover-img" style="border: 1px solid var(--accent-gold);">
-                <div style="flex:1;">
-                    <div class="trending-badge">TOP 1 RANK</div>
-                    <div style="font-weight:900; color:var(--text-main); font-size:1.1rem; line-height:1.2;">${top1.title}</div>
-                    <div style="font-size:0.75rem; color:var(--accent-orange); margin: 4px 0;">By ${top1.authorName} • ${top1.genre}</div>
-                    <div style="font-size:0.75rem; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${top1.synopsis}</div>
-                    <div style="font-size:0.7rem; margin-top:10px; color:var(--accent-gold); font-weight:bold;">🔥 ${top1.totalViews} Reads • ❤️ ${top1.totalLikes} Likes</div>
-                </div>
-            </div>`;
-
-        // 2. Newly Released Books Node System (Sort by newest timestamp vector)
-        let sortedNewReleases = [...novelArray].sort((a, b) => b.timestamp - a.timestamp);
-        sortedNewReleases.slice(0, 3).forEach((novel) => {
-            newReleasesBox.innerHTML += `
-                <div class="novel-grid-card" style="border-left: 3px solid #dc2626;">
-                    <span class="new-release-tag">NEW / CH</span>
-                    <img src="${novel.coverUrl}" class="novel-cover-img" style="width:55px; height:80px;">
-                    <div style="flex:1;">
-                        <div style="font-weight:bold; font-size:0.95rem; color:var(--text-main); padding-right:60px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${novel.title}</div>
-                        <div style="font-size:0.7rem; color:var(--accent-gold); margin:2px 0;">By ${novel.authorName} • Latest Pulse</div>
-                        <div style="font-size:0.75rem; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden;">${novel.synopsis}</div>
-                    </div>
-                </div>`;
-        });
-
-        // 3. Main Discovery Feed Vector Loop
-        novelArray.forEach((novel) => {
-            feedBox.innerHTML += `
-                <div class="novel-grid-card">
-                    <img src="${novel.coverUrl}" class="novel-cover-img">
-                    <div style="flex:1;">
-                        <div style="font-weight:bold; font-size:1rem; color:var(--text-main);">${novel.title}</div>
-                        <div style="font-size:0.75rem; color:var(--accent-orange); margin: 3px 0;">${novel.genre} | Author: ${novel.authorName}</div>
-                        <div style="font-size:0.75rem; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${novel.synopsis}</div>
-                        <div style="font-size:0.7rem; margin-top:8px; color:var(--text-muted);">📊 Reads: ${novel.totalViews || 0} • Comments: ${novel.totalComments || 0}</div>
-                    </div>
-                </div>`;
-        });
-    });
+    function processSecureTapEngine() { tapCounter++; if(tapCounter>=50){ tapCounter=0; window.open(adsterraDirectLink,'_blank'); database.ref('users/'+mockUserNodeId).once('value').then(s=>{ let p=s.child('tapPointsProgress').val()||0; database.ref('users/'+mockUserNodeId).update({tapPointsProgress:p+10}); }); } document.getElementById('clickRatioField').innerText=tapCounter+" / 50 TAPS"; document.getElementById('arcadeProgressBar').style.width=(tapCounter/50)*100+"%"; }
+    database.ref('users/'+mockUserNodeId).on('value', s=> { let v=s.val(); if(v){ document.getElementById('arcadePoints').innerText=v.tapPointsProgress||0; document.getElementById('arcadeCash').innerText=(v.totalEarnedPHP||0).toFixed(2); } });
 </script>
 </body>
-    </html>
+</html>
