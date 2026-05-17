@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WNOVELS MULTIVERSE - Secured Reading & Arcade Matrix</title>
     
-    <script src="https://pl29471258.effectivecpmnetwork.com/27/7b/f8/277bf845b91c531ad9fb066482ac8cae.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -61,7 +60,6 @@
 
         .chapter-pill-btn { background: #161f38; border: 1px solid var(--border); padding: 12px 15px; border-radius: 8px; color: white; cursor: pointer; text-align: left; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; }
         
-        /* Loading Security Banner styling */
         #securityGateOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #03050a; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; }
     </style>
 </head>
@@ -176,8 +174,8 @@
     <div class="nav-link" onclick="switchActiveView('view-writer-hub', this)"><img class="nav-icon" src="https://img.icons8.com/ios-filled/50/64748b/edit-property.png"><br>Writer</div>
     <div class="nav-link" onclick="switchActiveView('view-arcade', this)"><img class="nav-icon" src="https://img.icons8.com/ios-filled/50/64748b/game-controller.png"><br>Arcade</div>
     <div class="nav-link" onclick="switchActiveView('view-wallet', this)"><img class="nav-icon" src="https://img.icons8.com/ios-filled/50/64748b/wallet.png"><br>Wallet</div>
-  </div>
-   <script>
+    </div>
+    <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBelCPgA4ZE7pcFGPPp9191KPOdaSSoMc8",
       authDomain: "studio-8164628274-c414a.firebaseapp.com",
@@ -190,13 +188,15 @@
     const database = firebase.database();
     const auth = firebase.auth();
     
-    let activeUserUid = null; // Dito papasok ang secured unique account ID ng bawat phone
+    let activeUserUid = null;
     let globalNovelsCache = [];
     let selectedGenreFilter = "All";
-    let lastActionTimestamp = 0; // Anti-Spam Click Speed Limiter
-    const adsterraDirectLink = "https://pl29471258.effectivecpmnetwork.com/27/7b/f8/277bf845b91c531ad9fb066482ac8cae.js";
+    let lastActionTimestamp = 0;
 
-    // 🔒 SECURED DEVICE AUTHENTICATION LOGIC
+    // 🟢 SECURED ADSTERRA GATEWAY (Dito natin itinago 'yung pangalawang link mo para hindi sumabog ang code!)
+    // Ginamit natin ang pinaka-URL ng ad mo para mag-pop up nang tama sa bagong tab kapag may klinick ang user.
+    const adsterraDirectLink = "https://pl29471258.effectivecpmnetwork.com/27/7b/f8/277bf845b91c531ad9fb066482ac8cae.js"; 
+
     auth.onAuthStateChanged(user => {
         if(user) {
             activeUserUid = user.uid;
@@ -204,8 +204,7 @@
             document.getElementById('securityGateOverlay').style.display = "none";
             initializeWalletListenerNode(activeUserUid);
         } else {
-            // Kung walang account ang phone, gagawan ng bago nang awtomatiko nang walang register form!
-            auth.signInAnonymously().catch(err => alert("Security Protocol Connection Failed: " + err.message));
+            auth.signInAnonymously().catch(err => alert("Security Failure: " + err.message));
         }
     });
 
@@ -216,10 +215,16 @@
                 document.getElementById('arcadePointsDisplay').innerText = (v.tapPointsProgress || 0) + " PT";
                 document.getElementById('walletCashField').innerText = (v.totalEarnedPHP || 0).toFixed(2);
             } else {
-                // Initialize clean node structure kung bago ang account
                 database.ref('users/' + uid).set({ tapPointsProgress: 0, totalEarnedPHP: 0.00 });
             }
         });
+    }
+
+    // Ligtas na taga-bukas ng ad link mo sa bagong tab para kumita ka sa click
+    function launchAdNetworkWindow() {
+        if(adsterraDirectLink) {
+            window.open(adsterraDirectLink, '_blank');
+        }
     }
 
     function switchActiveView(viewId, element) {
@@ -227,11 +232,14 @@
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         document.getElementById(viewId).classList.add('active'); 
         element.classList.add('active');
-        window.open(adsterraDirectLink, '_blank');
+        launchAdNetworkWindow(); // Kikita ka tuwing lilipat sila ng Tab!
     }
-    function triggerStudioRedirect() { window.open(adsterraDirectLink, '_blank'); setTimeout(() => { location.href='writer.html'; }, 200); }
+    
+    function triggerStudioRedirect() { 
+        launchAdNetworkWindow(); 
+        setTimeout(() => { location.href='writer.html'; }, 200); 
+    }
 
-    // 📚 DATABASE RECURSIVE SYNCHRONIZATION LOOP
     database.ref('novels').on('value', (snapshot) => {
         globalNovelsCache = [];
         if(!snapshot.exists()) return renderLibraryViewDOM([]);
@@ -331,7 +339,6 @@
     function closeBookDetailsModal() { document.getElementById('bookDetailsModal').style.display="none"; }
     function closeStoryReaderModal() { document.getElementById('storyReaderModal').style.display="none"; }
 
-    // 💸 WALLET ENGINE ISOLATED ACCOUNT TRANSACTION MANAGEMENT
     function executeWalletConversion(mode) {
         if(!activeUserUid) return;
         database.ref('users/' + activeUserUid).once('value').then(snap => {
@@ -352,7 +359,7 @@
     
     function triggerDailySignIn() { 
         if(!activeUserUid) return;
-        window.open(adsterraDirectLink,'_blank'); 
+        launchAdNetworkWindow(); // Kikita ka kapag kinalim ang Daily Attendance
         database.ref('users/' + activeUserUid).once('value').then(s=>{ 
             let c = s.child('totalEarnedPHP').val() || 0; 
             database.ref('users/' + activeUserUid).update({totalEarnedPHP: c + 5.00}); 
@@ -360,9 +367,8 @@
         }); 
     }
 
-    // 🎮 ANTI-CHEAT PROTECTED ARCADE ENGINE
     function launchMiniGameEngine(gameType) {
-        window.open(adsterraDirectLink, '_blank');
+        launchAdNetworkWindow(); // Kikita ka kapag nag-launch sila ng kahit anong laro
         const playroom = document.getElementById('gameEnginePlayroom');
         const overlay = document.getElementById('gameActiveScreenOverlay');
         const title = document.getElementById('activeGameTitle');
@@ -386,11 +392,10 @@
         }
     }
 
-    // 🛡️ SECURITY LAYER: BLOCK AUTO-CLICKER EXTENSIONS AND ROBOTS
     function creditArcadePointsSecure(points) {
         if(!activeUserUid) return;
         let now = Date.now();
-        if(now - lastActionTimestamp < 150) { // Kung mas mabilis sa 150 milliseconds (Auto-Clicker hack), block!
+        if(now - lastActionTimestamp < 150) { 
             document.getElementById('gameFeedback').innerText = "⚠️ SYSTEM WARNING: Auto-Clicker Detected!";
             return;
         }
@@ -424,5 +429,11 @@
 
     function shutdownActiveGameSession() { document.getElementById('gameActiveScreenOverlay').style.display = "none"; }
 </script>
+
+<div style="text-align: center; margin: 15px 0;">
+    <script async="async" data-cfasync="false" src="https://pl29471257.effectivecpmnetwork.com/4cf7e0a66c311471132f6ac2b1acd8b0/invoke.js"></script>
+    <div id="container-4cf7e0a66c311471132f6ac2b1acd8b0"></div>
+</div>
+
 </body>
-    </html>         
+    </html>
