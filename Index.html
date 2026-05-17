@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WNOVELS MULTIVERSE - Reads, Write & Earn Arcade</title>
+    <title>WNOVELS MULTIVERSE - Secured Reading & Arcade Matrix</title>
     
     <script src="https://pl29471258.effectivecpmnetwork.com/27/7b/f8/277bf845b91c531ad9fb066482ac8cae.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
     <style>
         :root {
@@ -31,9 +32,9 @@
         .view-section { display: none; padding: 15px; max-width: 800px; margin: 0 auto; }
         .view-section.active { display: block; }
 
-        /* SEARCH & FILTER UI Elements */
         .search-container { margin-bottom: 15px; display: flex; gap: 8px; }
         .search-input { flex: 1; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px; color: white; font-size: 0.9rem; }
+        
         .category-scroll { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 15px; padding-bottom: 5px; }
         .category-pill { background: var(--bg-card); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; white-space: nowrap; cursor: pointer; color: var(--text-muted); }
         .category-pill.active { background: var(--accent-orange); color: white; border-color: var(--accent-orange); }
@@ -51,21 +52,27 @@
         .arcade-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 14px; padding: 15px; margin-bottom: 15px; }
         .btn-action { background: linear-gradient(90deg, #ff4500, #f59e0b); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; text-transform: uppercase; font-size: 0.85rem; text-align: center; }
         
-        /* MINI GAMES GRID */
         .games-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
         .game-launcher-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; cursor: pointer; }
         .game-icon-frame { font-size: 2rem; margin-bottom: 5px; }
 
-        /* ACTIVE GAME ZONE SCREEN Overlay */
         #gameActiveScreenOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#020306; z-index:2500; padding:20px; box-sizing:border-box; }
         .game-play-area { width: 100%; height: 300px; background: var(--bg-surface); border: 2px dashed var(--border); border-radius: 12px; margin: 20px 0; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; }
 
         .chapter-pill-btn { background: #161f38; border: 1px solid var(--border); padding: 12px 15px; border-radius: 8px; color: white; cursor: pointer; text-align: left; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* Loading Security Banner styling */
+        #securityGateOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #03050a; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; }
     </style>
 </head>
 <body>
+    <div id="securityGateOverlay">
+        <div style="font-size: 2rem; margin-bottom: 10px;">🛡️</div>
+        <div style="color: var(--accent-gold); letter-spacing: 1px;">SECURING USER PROTOCOL NODES...</div>
+        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 5px;">Synchronizing isolated device matrix data</div>
+    </div>
     <div id="view-library" class="view-section active">
-    <div style="font-size:1.3rem; font-weight:900; margin-bottom:15px; text-transform:uppercase; letter-spacing:1px;">📚 Global <span>Library</span></div>
+    <div style="font-size:1.3rem; font-weight:900; margin-bottom:15px; text-transform:uppercase;">📚 Global <span>Library</span></div>
     
     <div class="search-container">
         <input type="text" id="librarySearchInput" class="search-input" placeholder="Search book title or author penname..." oninput="filterLibraryEngineSearch()">
@@ -97,7 +104,11 @@
     <div style="font-size:1.2rem; font-weight:900; text-transform:uppercase; margin-bottom:15px;">🎮 Play to Earn <span>Arcade</span></div>
     
     <div class="arcade-card" style="display:flex; justify-content:space-between; align-items:center;">
-        <div><div style="font-size:0.75rem; color:var(--text-muted);">Current Energy Pool</div><div style="font-size:1.1rem; font-weight:bold; color:var(--accent-orange);" id="arcadePointsDisplay">0 PT</div></div>
+        <div>
+            <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Secured Account ID</div>
+            <div style="font-size:0.75rem; font-family:monospace; color:var(--accent-gold); font-weight:bold;" id="securedDeviceTag">FETCHING...</div>
+            <div style="font-size:1.1rem; font-weight:bold; color:var(--accent-orange); margin-top:5px;" id="arcadePointsDisplay">0 PT</div>
+        </div>
         <button class="btn-action" style="width:auto; padding:8px 15px; font-size:0.75rem;" onclick="triggerDailySignIn()">Claim Attendance (₱5)</button>
     </div>
 
@@ -156,7 +167,7 @@
         <h3 id="activeGameTitle" style="margin:0; text-transform:uppercase; color:var(--accent-gold);">Game Core Zone</h3>
         <button onclick="shutdownActiveGameSession()" style="background:#ef4444; color:white; border:none; padding:6px 14px; border-radius:6px; font-weight:bold; cursor:pointer;">Exit Game</button>
     </div>
-    <div class="game-play-area" id="gameEnginePlayroom"></div>"><br>Wallet</div
+    <div class="game-play-area" id="gameEnginePlayroom"></div>
     <div style="text-align:center; font-size:0.8rem; color:var(--text-muted);">Points earned are automatically updated into your core wallet nodes live.</div>
 </div>
 
@@ -165,7 +176,7 @@
     <div class="nav-link" onclick="switchActiveView('view-writer-hub', this)"><img class="nav-icon" src="https://img.icons8.com/ios-filled/50/64748b/edit-property.png"><br>Writer</div>
     <div class="nav-link" onclick="switchActiveView('view-arcade', this)"><img class="nav-icon" src="https://img.icons8.com/ios-filled/50/64748b/game-controller.png"><br>Arcade</div>
     <div class="nav-link" onclick="switchActiveView('view-wallet', this)"><img class="nav-icon" src="https://img.icons8.com/ios-filled/50/64748b/wallet.png"><br>Wallet</div>
-</div>
+  </div>
    <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBelCPgA4ZE7pcFGPPp9191KPOdaSSoMc8",
@@ -177,11 +188,39 @@
     };
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
+    const auth = firebase.auth();
     
-    let mockUserNodeId = "user_id_123"; 
+    let activeUserUid = null; // Dito papasok ang secured unique account ID ng bawat phone
     let globalNovelsCache = [];
     let selectedGenreFilter = "All";
+    let lastActionTimestamp = 0; // Anti-Spam Click Speed Limiter
     const adsterraDirectLink = "https://pl29471258.effectivecpmnetwork.com/27/7b/f8/277bf845b91c531ad9fb066482ac8cae.js";
+
+    // 🔒 SECURED DEVICE AUTHENTICATION LOGIC
+    auth.onAuthStateChanged(user => {
+        if(user) {
+            activeUserUid = user.uid;
+            document.getElementById('securedDeviceTag').innerText = activeUserUid.substring(0,10) + "...";
+            document.getElementById('securityGateOverlay').style.display = "none";
+            initializeWalletListenerNode(activeUserUid);
+        } else {
+            // Kung walang account ang phone, gagawan ng bago nang awtomatiko nang walang register form!
+            auth.signInAnonymously().catch(err => alert("Security Protocol Connection Failed: " + err.message));
+        }
+    });
+
+    function initializeWalletListenerNode(uid) {
+        database.ref('users/' + uid).on('value', s => {
+            let v = s.val(); 
+            if(v) {
+                document.getElementById('arcadePointsDisplay').innerText = (v.tapPointsProgress || 0) + " PT";
+                document.getElementById('walletCashField').innerText = (v.totalEarnedPHP || 0).toFixed(2);
+            } else {
+                // Initialize clean node structure kung bago ang account
+                database.ref('users/' + uid).set({ tapPointsProgress: 0, totalEarnedPHP: 0.00 });
+            }
+        });
+    }
 
     function switchActiveView(viewId, element) {
         document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
@@ -192,7 +231,7 @@
     }
     function triggerStudioRedirect() { window.open(adsterraDirectLink, '_blank'); setTimeout(() => { location.href='writer.html'; }, 200); }
 
-    // 🔄 DYNAMIC STREAM NODE MANAGER (DATABASE SYNCHRONIZATION)
+    // 📚 DATABASE RECURSIVE SYNCHRONIZATION LOOP
     database.ref('novels').on('value', (snapshot) => {
         globalNovelsCache = [];
         if(!snapshot.exists()) return renderLibraryViewDOM([]);
@@ -224,7 +263,7 @@
         const trending = document.getElementById('topTrendingBox');
         feed.innerHTML = ""; trending.innerHTML = "";
         
-        if(books.length === 0) { feed.innerHTML = "<div class='arcade-card'>No active blueprints matched the query parameters.</div>"; return; }
+        if(books.length === 0) { feed.innerHTML = "<div class='arcade-card'>No webnovels found.</div>"; return; }
 
         let sorted = [...books].sort((a,b) => (b.totalViews || 0) - (a.totalViews || 0));
         let top = sorted[0];
@@ -234,7 +273,7 @@
                     <span class="status-badge ${top.status==='completed'?'status-completed':'status-ongoing'}">${top.status || 'ongoing'}</span>
                     <img src="${top.coverUrl}" class="novel-cover-img">
                     <div style="flex:1; padding-right:70px;">
-                        <div style="color:var(--accent-gold); font-size:0.65rem; font-weight:bold;">🏆 #1 POPULAR TRENDING BOOK</div>
+                        <div style="color:var(--accent-gold); font-size:0.65rem; font-weight:bold;">🏆 POPULAR #1 TRENDING MANUSCRIPT</div>
                         <div style="font-weight:bold; font-size:1.1rem; margin:4px 0;">${top.title}</div>
                         <div style="font-size:0.75rem; color:var(--text-muted);">By ${top.authorName} • Reads: ${top.totalViews || 0}</div>
                     </div>
@@ -292,27 +331,36 @@
     function closeBookDetailsModal() { document.getElementById('bookDetailsModal').style.display="none"; }
     function closeStoryReaderModal() { document.getElementById('storyReaderModal').style.display="none"; }
 
-    // 💸 WALLET ENGINE CLOUD SYSTEM WITH PLATFORM -5 SERVICE FEES
+    // 💸 WALLET ENGINE ISOLATED ACCOUNT TRANSACTION MANAGEMENT
     function executeWalletConversion(mode) {
-        database.ref('users/'+mockUserNodeId).once('value').then(snap => {
+        if(!activeUserUid) return;
+        database.ref('users/' + activeUserUid).once('value').then(snap => {
             let pt = snap.child('tapPointsProgress').val() || 0;
             let cash = snap.child('totalEarnedPHP').val() || 0;
             if(mode === 'recharge') {
                 if(pt < 10) return alert("You need at least 10 PT to process under the 5 PT network fee.");
-                database.ref('users/'+mockUserNodeId).update({ tapPointsProgress: 0, totalEarnedPHP: cash + ((pt-5)/10) });
-                alert("Points converted! 5 PT system platform charge processed.");
+                database.ref('users/' + activeUserUid).update({ tapPointsProgress: 0, totalEarnedPHP: cash + ((pt-5)/10) });
+                alert("Points converted successfully! 5 PT platform fee processed.");
             } else {
                 if(cash < 10) return alert("Minimum withdrawal threshold is ₱10.00.");
-                database.ref('payout_requests/'+mockUserNodeId).push({ totalCashout: cash, netPayout: cash - 5.00, timestamp: Date.now() });
-                database.ref('users/'+mockUserNodeId).update({ totalEarnedPHP: 0 });
-                alert("Outbound G-Cash transmission filed. ₱5.00 maintenance network fee applied.");
+                database.ref('payout_requests/' + activeUserUid).push({ totalCashout: cash, netPayout: cash - 5.00, timestamp: Date.now() });
+                database.ref('users/' + activeUserUid).update({ totalEarnedPHP: 0 });
+                alert("Outbound G-Cash payout filed! ₱5.00 network maintenance applied.");
             }
         });
     }
-    function triggerDailySignIn() { window.open(adsterraDirectLink,'_blank'); database.ref('users/'+mockUserNodeId).once('value').then(s=>{ let c=s.child('totalEarnedPHP').val()||0; database.ref('users/'+mockUserNodeId).update({totalEarnedPHP:c+5.00}); alert("Daily login confirmed! ₱5.00 added to balance."); }); }
+    
+    function triggerDailySignIn() { 
+        if(!activeUserUid) return;
+        window.open(adsterraDirectLink,'_blank'); 
+        database.ref('users/' + activeUserUid).once('value').then(s=>{ 
+            let c = s.child('totalEarnedPHP').val() || 0; 
+            database.ref('users/' + activeUserUid).update({totalEarnedPHP: c + 5.00}); 
+            alert("Daily attendance confirmed! ₱5.00 added directly to your wallet."); 
+        }); 
+    }
 
-    // 🎮 MULTI-GAME COMPILER ARCADE ENGINE (4 NO-BORING SYSTEM INTEGRATION)
-    let internalClickMeter = 0;
+    // 🎮 ANTI-CHEAT PROTECTED ARCADE ENGINE
     function launchMiniGameEngine(gameType) {
         window.open(adsterraDirectLink, '_blank');
         const playroom = document.getElementById('gameEnginePlayroom');
@@ -323,14 +371,13 @@
 
         if(gameType === 'coin') {
             title.innerText = "Game 1: Crypto Tap Clicker";
-            playroom.innerHTML = `<button class="btn-action" style="width:130px; height:130px; border-radius:50%; font-size:3rem;" onclick="creditArcadePointsScore(1)">🪙</button><div style="margin-top:15px;" id="gameFeedback">Tap the crypto node!</div>`;
+            playroom.innerHTML = `<button class="btn-action" style="width:130px; height:130px; border-radius:50%; font-size:3rem;" onclick="creditArcadePointsSecure(1)">🪙</button><div style="margin-top:15px;" id="gameFeedback">Tap the crypto node!</div>`;
         } else if(gameType === 'guess') {
             title.innerText = "Game 2: Lucky Number Predictor";
             playroom.innerHTML = `<div style="font-size:0.85rem; margin-bottom:10px;">Pick a door card to extract hidden tokens:</div>
                 <div style="display:flex; gap:10px;"><button class="btn-action" onclick="playGuessGameEngine(1)">Door A</button><button class="btn-action" style="background:var(--accent-gold);" onclick="playGuessGameEngine(2)">Door B</button></div><div id="gameFeedback" style="margin-top:15px;"></div>`;
         } else if(gameType === 'clicker') {
-            title.innerText = "Game 3: Speed Reflex Reflexes";
-            internalClickMeter = 0;
+            title.innerText = "Game 3: Speed Reflex Hub";
             playroom.innerHTML = `<div id="reflexNodeTarget" style="position:absolute; background:red; width:45px; height:45px; border-radius:50%; cursor:pointer;" onclick="triggerReflexNodePop()"></div><div id="gameFeedback" style="bottom:15px; position:absolute; font-size:0.8rem;">Pop the red button as fast as you can!</div>`;
             repositionReflexNodeTarget();
         } else if(gameType === 'chest') {
@@ -339,16 +386,24 @@
         }
     }
 
-    function creditArcadePointsScore(points) {
-        database.ref('users/'+mockUserNodeId).once('value').then(s => {
+    // 🛡️ SECURITY LAYER: BLOCK AUTO-CLICKER EXTENSIONS AND ROBOTS
+    function creditArcadePointsSecure(points) {
+        if(!activeUserUid) return;
+        let now = Date.now();
+        if(now - lastActionTimestamp < 150) { // Kung mas mabilis sa 150 milliseconds (Auto-Clicker hack), block!
+            document.getElementById('gameFeedback').innerText = "⚠️ SYSTEM WARNING: Auto-Clicker Detected!";
+            return;
+        }
+        lastActionTimestamp = now;
+        database.ref('users/' + activeUserUid).once('value').then(s => {
             let p = s.child('tapPointsProgress').val() || 0;
-            database.ref('users/'+mockUserNodeId).update({ tapPointsProgress: p + points });
+            database.ref('users/' + activeUserUid).update({ tapPointsProgress: p + points });
         });
     }
 
     function playGuessGameEngine(choice) {
         let winning = Math.floor(Math.random() * 2) + 1;
-        if(choice === winning) { document.getElementById('gameFeedback').innerText = "🎉 Win! Captured +5 Points."; creditArcadePointsScore(5); }
+        if(choice === winning) { document.getElementById('gameFeedback').innerText = "🎉 Win! Captured +5 Points."; creditArcadePointsSecure(5); }
         else { document.getElementById('gameFeedback').innerText = "❌ Missed target loop! Try again."; }
     }
 
@@ -357,25 +412,17 @@
         let rx = Math.floor(Math.random() * 200) + 10; let ry = Math.floor(Math.random() * 180) + 10;
         target.style.left = rx + "px"; target.style.top = ry + "px";
     }
-    function triggerReflexNodePop() { creditArcadePointsScore(2); repositionReflexNodeTarget(); }
+    function triggerReflexNodePop() { creditArcadePointsSecure(2); repositionReflexNodeTarget(); }
 
     function triggerChestUnboxingEngine() {
         document.getElementById('chestNodeGraphic').innerText = "✨";
         let loot = Math.floor(Math.random() * 10) + 2;
         document.getElementById('gameFeedback').innerText = `Loot Core Found: +${loot} Game Points!`;
-        creditArcadePointsScore(loot);
+        creditArcadePointsSecure(loot);
         setTimeout(() => { if(document.getElementById('chestNodeGraphic')) document.getElementById('chestNodeGraphic').innerText = "🧰"; }, 1000);
     }
 
     function shutdownActiveGameSession() { document.getElementById('gameActiveScreenOverlay').style.display = "none"; }
-
-    database.ref('users/'+mockUserNodeId).on('value', s=> {
-        let v=s.val(); 
-        if(v){
-            document.getElementById('arcadePointsDisplay').innerText = (v.tapPointsProgress || 0) + " PT";
-            document.getElementById('walletCashField').innerText = (v.totalEarnedPHP || 0).toFixed(2);
-        }
-    });
 </script>
 </body>
-</html>                                                                     
+    </html>         
