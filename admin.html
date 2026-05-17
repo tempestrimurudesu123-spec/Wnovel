@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Wnovels | Global Admin Terminal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        :root {
+            --admin-bg: #030306;
+            --panel-bg: #09090f;
+            --accent: #ff5500; /* Orange - Payouts */
+            --accent-blue: #00d4ff; /* Blue - Top-ups */
+            --text: #f8f8fa;
+            --border: #161626;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: var(--admin-bg); color: var(--text); padding-bottom: 80px; }
+
+        /* 💻 RESPONSIVE ENGINE: DESKTOP VS MOBILE */
+        .admin-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+        .admin-brand { font-size: 24px; font-weight: 800; text-transform: uppercase; }
+        .admin-brand span { color: var(--accent); }
+
+        /* Navigation Tabs */
+        .admin-nav { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 10px; }
+        .nav-btn { background: var(--panel-bg); border: 1px solid var(--border); color: #7e7e8f; padding: 12px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+        .nav-btn.active { border-color: var(--accent); color: #fff; background: rgba(255,85,0,0.1); }
+        .nav-btn.active.blue-mode { border-color: var(--accent-blue); background: rgba(0,212,255,0.1); }
+
+        /* Desktop Grid vs Mobile List */
+        .request-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+        
+        @media (min-width: 992px) {
+            .request-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        /* Request Cards */
+        .request-card { background: var(--panel-bg); border: 1px solid var(--border); border-radius: 20px; padding: 20px; position: relative; }
+        .status-badge { position: absolute; top: 20px; right: 20px; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 20px; background: #1a1a2e; }
+        
+        .user-info { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+        .user-info img { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border); }
+        .user-details h4 { font-size: 15px; font-weight: 700; }
+        .user-details p { font-size: 12px; color: #7e7e8f; }
+
+        .request-data { background: #11111a; border-radius: 12px; padding: 15px; margin-bottom: 15px; }
+        .data-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
+        .data-label { color: #7e7e8f; }
+        .data-value { font-weight: 700; color: #fff; }
+
+        .action-btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-size: 12px; transition: 0.3s; }
+        .payout-btn { background: var(--accent); color: #fff; }
+        .topup-btn { background: var(--accent-blue); color: #fff; }
+        .action-btn:disabled { background: #161626; color: #444; cursor: not-allowed; }
+
+        /* Admin Login Overlay */
+        #adminAuthGuard { position: fixed; inset: 0; background: var(--admin-bg); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .auth-box { width: 100%; max-width: 350px; text-align: center; }
+        .auth-input { width: 100%; background: var(--panel-bg); border: 1px solid var(--border); padding: 15px; border-radius: 14px; color: #fff; text-align: center; font-size: 18px; margin-bottom: 15px; outline: none; }
+    </style>
+  </head>
+  <body>
+
+    <div id="adminAuthGuard">
+        <div class="auth-box">
+            <h2 style="margin-bottom: 20px;">SYSTEM KEY REQUIRED</h2>
+            <input type="password" id="adminSecretKey" class="auth-input" placeholder="Enter Admin Password">
+            <button class="action-btn payout-btn" onclick="verifyAdminAccess()">Unlock Terminal</button>
+        </div>
+    </div>
+
+    <div class="admin-container">
+        <header class="admin-header">
+            <div class="admin-brand">Admin<span>Mainframe</span></div>
+            <div style="font-size: 11px; color: #7e7e8f;">Secure Connection: ACTIVE</div>
+        </header>
+
+        <nav class="admin-nav">
+            <button class="nav-btn active" id="payoutTab" onclick="switchAdminTab('payouts')">
+                <span class="material-icons-round">payments</span> Payout Requests
+            </button>
+            <button class="nav-btn" id="topupTab" onclick="switchAdminTab('topups')">
+                <span class="material-icons-round">account_balance_wallet</span> Top-Up Requests
+            </button>
+        </nav>
+
+        <div id="payoutPanelView" class="request-grid">
+            <p style="color:#7e7e8f; text-align:center;">Scanning payout nodes...</p>
+        </div>
+
+        <div id="topupPanelView" class="request-grid" style="display:none;">
+            <p style="color:#7e7e8f; text-align:center;">Scanning top-up nodes...</p>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBelCPgA4ZE7pcFGPPp9191KPOdaSSoMc8",
+            databaseURL: "https://studio-8164628274-c414a-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "studio-8164628274-c414a"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // 🛑 SECURITY CHECK (Palitan mo ito ng kahit anong password mo)
+        function verifyAdminAccess() {
+            const pass = document.getElementById('adminSecretKey').value;
+            if(pass === "1234") { // <--- DITO MO PALITAN ANG PASSWORD MO PAR
+                document.getElementById('adminAuthGuard').style.display = "none";
+                loadPayoutRequests();
+                loadTopupRequests();
+            } else {
+                alert("ACCESS DENIED: Unauthorized Terminal Entry.");
+            }
+        }
+
+        function switchAdminTab(mode) {
+            const pPanel = document.getElementById('payoutPanelView');
+            const tPanel = document.getElementById('topupPanelView');
+            const pTab = document.getElementById('payoutTab');
+            const tTab = document.getElementById('topupTab');
+
+            if(mode === 'payouts') {
+                pPanel.style.display = 'grid';
+                tPanel.style.display = 'none';
+                pTab.classList.add('active');
+                tTab.classList.remove('active', 'blue-mode');
+            } else {
+                pPanel.style.display = 'none';
+                tPanel.style.display = 'grid';
+                tTab.classList.add('active', 'blue-mode');
+                pTab.classList.remove('active');
+            }
+        }
+
+        // --- PAYOUT ENGINE (Para sa Authors) ---
+        function loadPayoutRequests() {
+            db.ref('payout_requests').orderByChild('status').equalTo('PENDING_VERIFICATION').on('value', snap => {
+                const container = document.getElementById('payoutPanelView');
+                container.innerHTML = "";
+                if(!snap.exists()) { container.innerHTML = "<p>No pending payout logs.</p>"; return; }
+
+                snap.forEach(child => {
+                    const req = child.val();
+                    const card = document.createElement('div');
+                    card.className = "request-card";
+                    card.innerHTML = `
+                        <div class="status-badge" style="color:var(--accent)">PENDING</div>
+                        <div class="user-info">
+                            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=${req.username}" alt="avatar">
+                            <div class="user-details">
+                                <h4>@${req.username}</h4>
+                                <p>${req.payoutChannel}</p>
+                            </div>
+                        </div>
+                        <div class="request-data">
+                            <div class="data-row"><span class="data-label">Method:</span><span class="data-value">${req.payoutChannel}</span></div>
+                            <div class="data-row"><span class="data-label">Account:</span><span class="data-value">${req.receiverAccount}</span></div>
+                            <div class="data-row"><span class="data-label">Amount:</span><span class="data-value" style="color:var(--accent)">$${req.requestedAmountUSD.toFixed(2)}</span></div>
+                        </div>
+                        <button class="action-btn payout-btn" onclick="approvePayoutAction('${child.key}', '${req.userId}', ${req.requestedAmountUSD})">Confirm & Mark as Paid</button>
+                    `;
+                    container.appendChild(card);
+                });
+            });
+        }
+
+        function approvePayoutAction(reqId, userId, amount) {
+            if(!confirm("Have you sent the money via GCash/Maya? This will automatically deduct the balance from the author's wallet.")) return;
+
+            // 1. Awtomatikong ibawas ang pera sa wallet ng author
+            const userRef = db.ref('users/' + userId);
+            userRef.child('views').transaction(currentViews => {
+                // Babawasan natin ang views para mag-match ang wallet math
+                // (Total Views - (Amount / $0.002))
+                const viewsToDeduct = amount / 0.002;
+                return (currentViews || 0) - viewsToDeduct;
+            }).then(() => {
+                // 2. Mark as COMPLETED ang request
+                return db.ref('payout_requests/' + reqId).update({ status: 'COMPLETED_PAID' });
+            }).then(() => {
+                alert("PAYOUT SUCCESSFUL: Wallet balance updated automatically.");
+            });
+        }
+
+        // (Part 3 is the Top-Up Logic)
+      // --- TOP-UP ENGINE (Para sa Readers) ---
+        function loadTopupRequests() {
+            db.ref('topup_requests').orderByChild('status').equalTo('PENDING').on('value', snap => {
+                const container = document.getElementById('topupPanelView');
+                container.innerHTML = "";
+                if(!snap.exists()) { container.innerHTML = "<p>No pending top-up nodes.</p>"; return; }
+
+                snap.forEach(child => {
+                    const req = child.val();
+                    const card = document.createElement('div');
+                    card.className = "request-card";
+                    card.innerHTML = `
+                        <div class="status-badge" style="color:var(--accent-blue)">TOP-UP</div>
+                        <div class="user-info">
+                            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=${req.username}" alt="avatar">
+                            <div class="user-details">
+                                <h4>@${req.username}</h4>
+                                <p>Ref: ${req.refNumber}</p>
+                            </div>
+                        </div>
+                        <div class="request-data">
+                            <div class="data-row"><span class="data-label">Ref No:</span><span class="data-value">${req.refNumber}</span></div>
+                            <div class="data-row"><span class="data-label">Amount:</span><span class="data-value" style="color:var(--accent-blue)">₱${req.amountPHP}</span></div>
+                        </div>
+                        <button class="action-btn topup-btn" onclick="approveTopupAction('${child.key}', '${req.userId}', ${req.amountPHP})">Approve & Add Coins</button>
+                    `;
+                    container.appendChild(card);
+                });
+            });
+        }
+
+        function approveTopupAction(reqId, userId, amountPHP) {
+            if(!confirm("Did you receive the GCash payment? This will add coins to the user's wallet automatically.")) return;
+
+            const coinsToAdd = amountPHP; // Halimbawa: ₱1 = 1 Coin/Diamond
+            const userRef = db.ref('users/' + userId + '/walletCoins');
+
+            userRef.transaction(current => (current || 0) + coinsToAdd)
+                .then(() => {
+                    return db.ref('topup_requests/' + reqId).update({ status: 'COMPLETED' });
+                }).then(() => {
+                    alert("TOP-UP SUCCESSFUL: Coins added to user profile.");
+                });
+        }
+    </script>
+</body>
+</html>
