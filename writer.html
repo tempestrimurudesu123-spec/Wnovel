@@ -3,444 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Wnovels Pro | Author Studio & Wallet</title>
-    <link rel="manifest" href="manifest.json">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <title>WNOVELS STUDIO - Author Blueprint Dashboard</title>
+    
+    <script src="https://pl29471258.effectivecpmnetwork.com/27/7b/f8/277bf845b91c531ad9fb066482ac8cae.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
         :root {
-            --app-bg: #030306;
-            --card-bg: #09090f;
-            --card-inner: #11111a;
-            --accent-primary: #ff5500;
-            --accent-secondary: #ffaa00;
-            --text-main: #f8f8fa;
-            --text-muted: #7e7e8f;
-            --border-line: #161626;
-            --success: #00cc66;
+            --bg-deep: #04060e;
+            --bg-surface: #0b0f1e;
+            --accent-orange: #ff4500;
+            --text-main: #f1f5f9;
+            --text-muted: #475569;
+            --border: #1e293b;
+            --studio-purple: #6366f1;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--app-bg); color: var(--text-main); padding-bottom: 80px; overflow-x: hidden; }
-
-        /* Premium App Navigation Header */
-        .app-header { background: rgba(9, 9, 15, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-line); position: sticky; top: 0; z-index: 1000; }
-        .header-container { max-width: 1200px; margin: 0 auto; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .app-brand { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: -0.5px; color: #fff; }
-        .app-brand span { color: var(--accent-primary); }
-
-        /* Profile Quick Identity Box */
-        .profile-badge-node { display: flex; align-items: center; gap: 10px; background: var(--card-inner); padding: 6px 14px; border-radius: 30px; border: 1px solid var(--border-line); }
-        .profile-badge-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--card-bg); border: 1px solid var(--accent-primary); }
-        .profile-badge-name { font-size: 13px; font-weight: 700; color: #fff; }
-
-        /* Dynamic Navigation Matrix */
-        .nav-tabs-wrapper { background: var(--card-bg); border-bottom: 1px solid var(--border-line); overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
-        .nav-tabs-container { max-width: 1200px; margin: 0 auto; display: flex; padding: 0 10px; }
-        .tab-btn { background: transparent; border: none; color: var(--text-muted); padding: 16px 20px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; position: relative; transition: all 0.3s; }
-        .tab-btn.active { color: var(--accent-primary); }
-        .tab-btn.active::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: var(--accent-primary); border-radius: 3px 3px 0 0; }
-
-        /* View Layout System */
-        .app-view { display: none; max-width: 1200px; margin: 24px auto; padding: 0 20px; animation: fadeIn 0.4s ease forwards; }
-        .app-view.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Split-Panel Workbench Layout */
-        .studio-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
-        @media(min-width: 992px) { .studio-grid { grid-template-columns: 350px 1fr; } }
-
-        /* Card System Framework */
-        .pro-card { background: var(--card-bg); border: 1px solid var(--border-line); border-radius: 24px; padding: 24px; margin-bottom: 24px; }
-        .card-heading { font-size: 16px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #fff; }
+        body {
+            background-color: var(--bg-deep); color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0; padding: 20px; padding-bottom: 80px;
+        }
+        .studio-header { text-align: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
+        .studio-headline { font-size: 1.3rem; font-weight: 900; color: var(--studio-purple); text-transform: uppercase; letter-spacing: 1px; }
         
-        /* Modernized Form Control Inputs */
-        .form-group { margin-bottom: 20px; }
-        .form-label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
-        .input-control { width: 100%; padding: 14px 16px; background: var(--card-inner); border: 1px solid var(--border-line); border-radius: 14px; color: #fff; font-size: 14px; font-weight: 500; outline: none; transition: border-color 0.3s; }
-        .input-control:focus { border-color: var(--accent-primary); }
-        .textarea-control { min-height: 400px; resize: vertical; line-height: 1.7; font-size: 16px; }
-
-        /* Action Buttons */
-        .btn-pro { width: 100%; padding: 14px 24px; background: linear-gradient(135deg, var(--accent-primary), #ff2200); border: none; color: #fff; border-radius: 14px; font-size: 14px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; text-transform: uppercase; letter-spacing: 0.5px; transition: transform 0.2s; }
-        .btn-pro:active { transform: scale(0.98); }
-        .btn-secondary { background: var(--card-inner); border: 1px solid var(--border-line); color: var(--text-main); }
-        /* Wallet Analytics Layout grid */
-        .analytics-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .metric-tile { background: var(--card-bg); border: 1px solid var(--border-line); border-radius: 20px; padding: 20px; display: flex; align-items: center; justify-content: space-between; }
-        .metric-data h3 { font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; }
-        .metric-data p { font-size: 24px; font-weight: 800; color: #fff; }
-        .metric-icon-box { width: 48px; height: 48px; border-radius: 14px; background: var(--card-inner); display: flex; align-items: center; justify-content: center; color: var(--accent-primary); }
-
-        /* Payout Gateways Core Grid */
-        .gateway-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 24px; }
-        .gateway-card { background: var(--card-inner); border: 2px solid var(--border-line); border-radius: 16px; padding: 16px; text-align: center; cursor: pointer; transition: all 0.3s; position: relative; }
-        .gateway-card.selected { border-color: var(--accent-primary); background: rgba(255,85,0,0.04); }
-        .gateway-icon { height: 32px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: #fff; margin-bottom: 10px; }
-        .gateway-title { font-size: 12px; font-weight: 700; color: var(--text-main); }
-
-        /* Dynamic Manuscript Node Blocks */
-        .manuscript-node { background: var(--card-inner); border: 1px solid var(--border-line); border-radius: 14px; padding: 14px; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: border-color 0.2s; }
-        .manuscript-node:hover { border-color: var(--accent-primary); }
-        .novel-item-title { font-size: 14px; font-weight: 700; color: #fff; }
-
-        .hidden { display: none !important; }
+        .form-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 20px; }
+        .field-group { margin-bottom: 15px; }
+        label { font-size: 0.8rem; text-transform: uppercase; color: #94a3b8; display: block; margin-bottom: 5px; font-weight: bold; }
+        
+        .input-box, select, textarea {
+            width: 100%; background: #04060e; border: 1px solid var(--border);
+            border-radius: 8px; padding: 12px; color: white; font-size: 0.9rem; box-sizing: border-box;
+        }
+        textarea { height: 100px; resize: none; }
+        
+        .cover-preview-box {
+            border: 2px dashed var(--border); border-radius: 10px; width: 110px; height: 160px;
+            display: flex; align-items: center; justify-content: center; text-align: center;
+            font-size: 0.7rem; color: var(--text-muted); cursor: pointer; object-fit: cover; background: #020307;
+        }
+        
+        .btn-deploy {
+            background: linear-gradient(90deg, var(--studio-purple), #4f46e5);
+            color: white; border: none; font-weight: bold; text-transform: uppercase;
+            width: 100%; padding: 14px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; letter-spacing: 0.5px;
+        }
+        .btn-deploy:active { opacity: 0.8; }
+        .back-hud-btn { color: var(--text-muted); text-decoration: none; font-size: 0.8rem; display: block; text-align: center; margin-top: 15px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <header class="app-header">
-        <div class="header-container">
-            <div class="app-brand"><span class="material-icons-round">token</span>Wnovels<span>Studio</span></div>
+<div class="studio-header">
+    <div class="studio-headline">🎨 WNovels Author Studio</div>
+    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 3px;">Deploy and Update Creative Blueprints on Global Server</div>
+</div>
+
+<div class="form-card">
+    <div style="font-size: 0.95rem; font-weight: bold; margin-bottom: 15px; color: var(--text-main);">➕ Create New Novel Blueprint</div>
+    
+    <div class="field-group">
+        <label>Manuscript Cover Canvas</label>
+        <input type="file" id="coverFileInput" style="display: none;" accept="image/*" onchange="convertCoverToCloudPayload()">
+        <img id="coverPreviewCanvas" class="cover-preview-box" src="https://via.placeholder.com/110x160?text=Upload+Cover" onclick="triggerCoverInputClick()">
+    </div>
+
+    <div class="field-group">
+        <label>Novel Identity Title</label>
+        <input type="text" id="novelTitleInput" class="input-box" placeholder="e.g. The Sovereign System Overlord">
+    </div>
+
+    <div class="field-group">
+        <label>Author Alias Penname</label>
+        <input type="text" id="novelAuthorInput" class="input-box" placeholder="e.g. Author_Xeno">
+    </div>
+
+    <div class="field-group">
+        <label>Genre Sorting Vector</label>
+        <select id="novelGenreSelect">
+            <option value="Fantasy System">Fantasy System</option>
+            <option value="LitRPG / Isekai">LitRPG / Isekai</option>
+            <option value="Martial Arts Cultivation">Martial Arts Cultivation</option>
+            <option value="Romance / Urban">Romance / Urban</option>
+        </select>
+    </div>
+
+    <div class="field-group">
+        <label>Ecosystem Synopsis Summary</label>
+        <textarea id="novelSynopsisInput" placeholder="Write a short dramatic hooked synopsis sequence..."></textarea>
+    </div>
+
+    <button class="btn-deploy" onclick="deployNovelManuscriptToCloud()">Deploy Blueprint to Feed</button>
+</div>
+
+<div class="back-hud-btn" onclick="location.href='index.html'">← Leave Studio & Return to Central Library</div>
+<script>
+    // 🔑 SECURED RECOGNIZED FIREBASE DATABASE ENGINE CONFIG
+    const firebaseConfig = {
+      apiKey: "AIzaSyBelCPgA4ZE7pcFGPPp9191KPOdaSSoMc8",
+      authDomain: "studio-8164628274-c414a.firebaseapp.com",
+      databaseURL: "https://studio-8164628274-c414a-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "studio-8164628274-c414a",
+      storageBucket: "studio-8164628274-c414a.firebasestorage.app",
+      messagingSenderId: "327634019544",
+      appId: "1:327634019544:web:e3e913c4f12ea1d54ce3ad"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    
+    let base64CoverPayload = "https://via.placeholder.com/110x160?text=No+Cover";
+    const adsterraDirectLink = "https://pl29471258.effectivecpmnetwork.com/27/7b/f8/277bf845b91c531ad9fb066482ac8cae.js";
+
+    function triggerCoverInputClick() { document.getElementById('coverFileInput').click(); }
+
+    function convertCoverToCloudPayload() {
+        const file = document.getElementById('coverFileInput').files[0];
+        const reader = new FileReader();
+        reader.onloadend = function() {
+            base64CoverPayload = reader.result;
+            document.getElementById('coverPreviewCanvas').src = base64CoverPayload;
+        }
+        if(file) reader.readAsDataURL(file);
+    }
+
+    function deployNovelManuscriptToCloud() {
+        let title = document.getElementById('novelTitleInput').value.trim();
+        let author = document.getElementById('novelAuthorInput').value.trim();
+        let genre = document.getElementById('novelGenreSelect').value;
+        let synopsis = document.getElementById('novelSynopsisInput').value.trim();
+
+        if(!title || !author || !synopsis) {
+            return alert("⚠️ All mandatory fields must be validated before blueprint deployment!");
+        }
+
+        // Automatic Ad Activation Gate to generate revenue
+        window.open(adsterraDirectLink, '_blank');
+
+        let contentNodeRef = database.ref('novels').push();
+        contentNodeRef.set({
+            title: title,
+            authorName: author,
+            genre: genre,
+            synopsis: synopsis,
+            coverUrl: base64CoverPayload,
+            totalViews: 0,
+            totalLikes: 0,
+            totalComments: 0,
+            timestamp: Date.now() // Critical node factor for "Newly Released / New Chapters" sorter
+        }).then(() => {
+            alert("🚀 System blueprint successfully compiled and broadcasted to global library feed!");
             
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <div class="profile-badge-node">
-                    <img id="headerAuthorAvatar" class="profile-badge-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'></svg>" alt="avatar">
-                    <span id="headerAuthorName" class="profile-badge-name">Syncing Profile...</span>
-                </div>
-                <button class="btn-pro btn-secondary" style="width:auto; padding:8px 16px; font-size:12px; border-radius:20px;" onclick="handleStudioSignOut()">
-                    <span class="material-icons-round" style="font-size:16px;">logout</span>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <nav class="nav-tabs-wrapper">
-        <div class="nav-tabs-container">
-            <button class="tab-btn active" onclick="switchAppViewTab('studioWorkspaceView', this)">
-                <span class="material-icons-round">history_edu</span>Manuscript Forge
-            </button>
-            <button class="tab-btn" onclick="switchAppViewTab('walletDashboardView', this)">
-                <span class="material-icons-round">account_balance_wallet</span>Earnings & Wallet
-            </button>
-            <button class="tab-btn" onclick="switchAppViewTab('payoutTerminalView', this)">
-                <span class="material-icons-round">payments</span>Cash Out Gate
-            </button>
-        </div>
-    </nav>
-    <main id="studioWorkspaceView" class="app-view active">
-        <div class="studio-grid">
-            <div class="pro-card">
-                <div class="card-heading"><span class="material-icons-round">folder_open</span>My Book Blueprints</div>
-                <div id="manuscriptLibraryOutput" style="max-height:350px; overflow-y:auto; margin-bottom:16px;">
-                    <div style="color:var(--text-muted); font-size:13px; text-align:center; padding:30px;">Syncing cluster nodes...</div>
-                </div>
-                <button class="btn-pro btn-secondary" onclick="resetStudioFormWorkbench()">
-                    <span class="material-icons-round">add_circle_outline</span>Create New Book
-                </button>
-            </div>
-
-            <div class="pro-card">
-                <div class="card-heading"><span class="material-icons-round">biotech</span>Book Metadata Specifications</div>
-                <input type="hidden" id="trackActiveNovelId">
-                
-                <div class="form-group">
-                    <label class="form-label">Book Title Manuscript</label>
-                    <input type="text" id="fieldNovelTitle" class="input-control" placeholder="e.g., The System Overlord">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Genre Classification Node</label>
-                    <input type="text" id="fieldNovelGenre" class="input-control" placeholder="Fantasy, Sci-Fi, Action, Romance, System">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Synopsis Story Logline Hook</label>
-                    <input type="text" id="fieldNovelSynopsis" class="input-control" placeholder="Enter a dark enticing summary sequence...">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Full Chapter Prose Field</label>
-                    <textarea id="fieldNovelContent" class="input-control textarea-control" placeholder="Begin typing your chapter lines here..."></textarea>
-                </div>
-                <button class="btn-pro" onclick="processManuscriptCommitCloud()">
-                    <span class="material-icons-round">cloud_upload</span>Deploy & Update to Global Feed
-                </button>
-            </div>
-        </div>
-    </main>
-
-    <main id="walletDashboardView" class="app-view">
-        <div class="analytics-strip">
-            <div class="metric-tile">
-                <div class="metric-data">
-                    <h3>Total Accumulated Reads</h3>
-                    <p id="statTotalViews">0</p>
-                </div>
-                <div class="metric-icon-box"><span class="material-icons-round">visibility</span></div>
-            </div>
-            <div class="metric-tile">
-                <div class="metric-data">
-                    <h3>Ad-Revenue Generated</h3>
-                    <p id="statEstimatedEarnings">$0.00</p>
-                </div>
-                <div class="metric-icon-box"><span class="material-icons-round">monetization_on</span></div>
-            </div>
-            <div class="metric-tile">
-                <div class="metric-data">
-                    <h3>Available Balance</h3>
-                    <p id="statWalletBalance">$0.00</p>
-                </div>
-                <div class="metric-icon-box"><span class="material-icons-round">account_balance_wallet</span></div>
-            </div>
-        </div>
-
-        <div class="pro-card">
-            <div class="card-heading"><span class="material-icons-round">insights</span>CPM Network Live Ledger Tracker</div>
-            <p style="color:var(--text-muted); font-size:14px; line-height:1.6; margin-bottom:15px;">
-                Your wallet balance auto-calculates live impressions linked to your text sequences via Adsterra pipelines. No calculation lag occurs.
-            </p>
-            <div style="background:var(--card-inner); padding:16px; border-radius:14px; border:1px solid var(--border-line); font-size:13px; color:var(--success); font-weight:700;">
-                ● Platform Synchronization Node: ONLINE SECURE OPERATIONAL
-            </div>
-        </div>
-    </main>
-
-    <main id="payoutTerminalView" class="app-view">
-        <div class="pro-card">
-            <div class="card-heading"><span class="material-icons-round">account_balance</span>Select Target Currency Pipeline</div>
-            
-            <div class="form-label">Digital Wallets & Global Banking</div>
-            <div class="gateway-grid">
-                <div class="gateway-card" onclick="selectPayoutGatewayChannel('GCash')">
-                    <div class="gateway-icon" style="color:#0055ff; font-size: 16px; font-weight: 800;">GCash</div>
-                    <div class="gateway-title">GCash</div>
-                </div>
-                <div class="gateway-card" onclick="selectPayoutGatewayChannel('Maya')">
-                    <div class="gateway-icon" style="color:#00ff88; font-size: 16px; font-weight: 800;">Maya</div>
-                    <div class="gateway-title">Maya</div>
-                </div>
-                <div class="gateway-card" onclick="selectPayoutGatewayChannel('PayPal')">
-                    <div class="gateway-icon" style="color:#0033aa; font-size: 16px; font-weight: 800;">PayPal</div>
-                    <div class="gateway-title">PayPal</div>
-                </div>
-                <div class="gateway-card" onclick="selectPayoutGatewayChannel('Bank Wire Transfer')">
-                    <div class="gateway-icon"><span class="material-icons-round" style="font-size:28px;">account_balance</span></div>
-                    <div class="gateway-title">Bank Wire</div>
-                </div>
-            </div>
-
-            <div class="form-label">Mobile Game Diamond Top-Up Conversion Terminals</div>
-            <div class="gateway-grid">
-                <div class="gateway-card" onclick="selectPayoutGatewayChannel('Mobile Legends Diamonds')">
-                    <div class="gateway-icon" style="color:#ffcc00; font-size: 14px; font-weight: 800;">MLBB</div>
-                    <div class="gateway-title">ML Diamonds</div>
-                </div>
-                <div class="gateway-card" onclick="selectPayoutGatewayChannel('Garena Shells')">
-                    <div class="gateway-icon" style="color:#ff2200; font-size: 14px; font-weight: 800;">Garena</div>
-                    <div class="gateway-title">Garena Shells</div>
-                </div>
-                <div class="gateway-card" onclick="selectPayoutGatewayChannel('Steam Wallet')">
-                    <div class="gateway-icon" style="color:#114477; font-size: 14px; font-weight: 800;">Steam</div>
-                    <div class="gateway-title">Steam Wallet</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="pro-card">
-            <div class="card-heading"><span class="material-icons-round">point_of_sale</span>Terminal Transaction Execution Node</div>
-            <input type="hidden" id="selectedPayoutChannelId">
-            
-            <div class="form-group">
-                <label class="form-label">Destination Gateway Selector Status</label>
-                <input type="text" id="displaySelectedChannel" class="input-control" style="background:var(--card-inner); border-color:var(--border-line); color:var(--accent-secondary); font-weight:700;" readonly value="None Selected">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Destination Target Account Identifier (Phone, Email, or Gamer ID)</label>
-                <input type="text" id="fieldPayoutReceiverAccount" class="input-control" placeholder="Provide delivery path string parameters...">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Withdrawal Volume Value ($ USD)</label>
-                <input type="number" id="fieldPayoutAmount" class="input-control" placeholder="0.00" min="5">
-                <span style="font-size:11px; color:var(--text-muted); display:block; margin-top:5px;">Minimum Automated Processing Threshold Limit: $5.00 USD</span>
-            </div>
-            <button class="btn-pro" onclick="dispatchWithdrawalRequestToServer()">
-                <span class="material-icons-round">bolt</span>Initialize Payout Sequence Protocol
-            </button>
-        </div>
-    </main>
-
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyBelCPgA4ZE7pcFGPPp9191KPOdaSSoMc8",
-            authDomain: "studio-8164628274-c414a.firebaseapp.com",
-            databaseURL: "https://studio-8164628274-c414a-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "studio-8164628274-c414a",
-            storageBucket: "studio-8164628274-c414a.firebasestorage.app",
-            messagingSenderId: "327634019544",
-            appId: "1:327634019544:web:e3e913c4f12ea1d54ce3ad"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.database();
-
-        let primaryAuthorProfileNode = null;
-
-        // Security Routing Gatekeeper
-        auth.onAuthStateChanged(user => {
-            if (!user) {
-                window.location.href = "login.html";
-            } else {
-                fetchAndSyncProfileIdentity(user.uid);
-            }
+            document.getElementById('novelTitleInput').value = "";
+            document.getElementById('novelAuthorInput').value = "";
+            document.getElementById('novelSynopsisInput').value = "";
+            document.getElementById('coverPreviewCanvas').src = "https://via.placeholder.com/110x160?text=Upload+Cover";
+            base64CoverPayload = "https://via.placeholder.com/110x160?text=No+Cover";
         });
-
-        // Tab Navigation Matrix Swapper
-        function switchAppViewTab(viewId, element) {
-            document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
-            element.classList.add('active');
-        }
-
-        // Fetch User Identity Matrix
-        function fetchAndSyncProfileIdentity(uid) {
-            db.ref('users/' + uid).on('value', snap => {
-                if(snap.exists()) {
-                    primaryAuthorProfileNode = snap.val();
-                    document.getElementById('headerAuthorName').innerText = "@" + (primaryAuthorProfileNode.username || "writer");
-                    document.getElementById('headerAuthorAvatar').src = primaryAuthorProfileNode.profilePicture || "https://api.dicebear.com/7.x/bottts/svg?seed=writer";
-                }
-                initializeStudioDataPipelines(uid);
-            });
-        }
-
-        // Live Book Engine Syncer
-        function initializeStudioDataPipelines(uid) {
-            db.ref('novels').orderByChild('authorId').equalTo(uid).on('value', snap => {
-                const container = document.getElementById('manuscriptLibraryOutput');
-                container.innerHTML = "";
-                
-                let totalAccumulatedReads = 0;
-
-                if(!snap.exists()) {
-                    container.innerHTML = `<div style="color:var(--text-muted); font-size:13px; text-align:center; padding:30px;">No blueprints deployed to global nodes.</div>`;
-                    updateWalletMetricsDisplay(0);
-                    return;
-                }
-
-                snap.forEach(child => {
-                    const novel = child.val();
-                    totalAccumulatedReads += (novel.views || 0);
-
-                    const node = document.createElement('div');
-                    node.className = "manuscript-node";
-                    node.onclick = () => populateStudioWorkbench(child.key, novel);
-                    node.innerHTML = `
-                        <div>
-                            <div class="novel-item-title">${novel.title}</div>
-                            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">${novel.genre || 'Unclassified'} · ${novel.views || 0} Reads</div>
-                        </div>
-                        <span class="material-icons-round" style="font-size:18px; color:var(--accent-primary)">edit_note</span>
-                    `;
-                    container.appendChild(node);
-                });
-
-                updateWalletMetricsDisplay(totalAccumulatedReads);
-            });
-        }
-
-        // Secure Anti-Loss Wallet Math Architecture
-        function updateWalletMetricsDisplay(totalViews) {
-            const calculatedRevenue = totalViews * 0.002; // $0.002 per ad-loop view logic
-            
-            document.getElementById('statTotalViews').innerText = totalViews.toLocaleString();
-            document.getElementById('statEstimatedEarnings').innerText = "$" + calculatedRevenue.toFixed(2);
-            document.getElementById('statWalletBalance').innerText = "$" + calculatedRevenue.toFixed(2);
-        }
-
-        function populateStudioWorkbench(id, data) {
-            document.getElementById('trackActiveNovelId').value = id;
-            document.getElementById('fieldNovelTitle').value = data.title || '';
-            document.getElementById('fieldNovelGenre').value = data.genre || '';
-            document.getElementById('fieldNovelSynopsis').value = data.synopsis || '';
-            document.getElementById('fieldNovelContent').value = data.content || '';
-            switchAppViewTab('studioWorkspaceView', document.querySelectorAll('.tab-btn')[0]);
-        }
-
-        function resetStudioFormWorkbench() {
-            document.getElementById('trackActiveNovelId').value = '';
-            document.getElementById('fieldNovelTitle').value = '';
-            document.getElementById('fieldNovelGenre').value = '';
-            document.getElementById('fieldNovelSynopsis').value = '';
-            document.getElementById('fieldNovelContent').value = '';
-        }
-
-        function processManuscriptCommitCloud() {
-            const user = auth.currentUser;
-            if(!user || !primaryAuthorProfileNode) return;
-
-            const novelId = document.getElementById('trackActiveNovelId').value;
-            const title = document.getElementById('fieldNovelTitle').value.trim();
-            const genre = document.getElementById('fieldNovelGenre').value.trim();
-            const synopsis = document.getElementById('fieldNovelSynopsis').value.trim();
-            const content = document.getElementById('fieldNovelContent').value.trim();
-
-            if(!title || !content) { alert("Core fields (Title & Content) cannot be blank."); return; }
-
-            const targetRef = novelId ? db.ref('novels/' + novelId) : db.ref('novels').push();
-            const finalId = novelId ? novelId : targetRef.key;
-
-            const payload = {
-                id: finalId,
-                authorId: user.uid,
-                authorName: primaryAuthorProfileNode.displayName || "Anonymous Creator",
-                authorUsername: primaryAuthorProfileNode.username || "writer",
-                title: title,
-                genre: genre,
-                synopsis: synopsis,
-                content: content,
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            };
-
-            if (!novelId) {
-                payload.views = 0;
-                payload.likes = 0;
-            }
-
-            targetRef.update(payload)
-                .then(() => {
-                    alert("Manuscript Node successfully updated across the global network mainframe!");
-                    if(!novelId) resetStudioFormWorkbench();
-                })
-                .catch(e => alert(e.message));
-        }
-
-        function selectPayoutGatewayChannel(channelName) {
-            document.querySelectorAll('.gateway-card').forEach(card => card.classList.remove('selected'));
-            event.currentTarget.classList.add('selected');
-            document.getElementById('selectedPayoutChannelId').value = channelName;
-            document.getElementById('displaySelectedChannel').value = channelName.toUpperCase();
-        }
-
-        function dispatchWithdrawalRequestToServer() {
-            const user = auth.currentUser;
-            const channel = document.getElementById('selectedPayoutChannelId').value;
-            const identifier = document.getElementById('fieldPayoutReceiverAccount').value.trim();
-            const amount = parseFloat(document.getElementById('fieldPayoutAmount').value);
-
-            if(!channel || !identifier || isNaN(amount)) { alert("Provide target parameters before routing transaction request."); return; }
-            if(amount < 5) { alert("Execution aborted. Payout volume falls below threshold minimum ($5.00)."); return; }
-
-            const transactionRef = db.ref('payout_requests').push();
-            transactionRef.set({
-                userId: user.uid,
-                username: primaryAuthorProfileNode.username || "unknown",
-                payoutChannel: channel,
-                receiverAccount: identifier,
-                requestedAmountUSD: amount,
-                status: "PENDING_VERIFICATION",
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            }).then(() => {
-                alert("Payout protocol initialized. Network nodes checking authentication records.");
-                document.getElementById('fieldPayoutReceiverAccount').value = "";
-                document.getElementById('fieldPayoutAmount').value = "";
-            }).catch(e => alert(e.message));
-        }
-
-        function handleStudioSignOut() {
-            auth.signOut().then(() => window.location.href = "login.html");
-        }
-    </script>
+    }
+</script>
 </body>
- </html>
+</html>
