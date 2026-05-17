@@ -2,29 +2,96 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gate Entry | Wnovels Secure</title>
-    <link rel="manifest" href="manifest.json">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Wnovels | Gateway Mainframe</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    
     <style>
-        body { background-color: #050508; color: #f1f1f6; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .login-card { background-color: #0c0c14; padding: 40px; border-radius: 20px; border: 1px solid #1c1c30; width: 100%; max-width: 360px; text-align: center; }
-        h2 { color: #ff5500; margin-bottom: 25px; font-size: 24px; }
-        input { width: 100%; padding: 14px; background: #050508; border: 1px solid #1c1c30; border-radius: 10px; color: white; margin-bottom: 15px; box-sizing: border-box; outline: none; }
-        input:focus { border-color: #ff5500; }
-        button { width: 100%; padding: 14px; background: #ff5500; border: none; color: white; border-radius: 10px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
+        :root {
+            --bg-mainframe: #030306;
+            --bg-surface: #09090f;
+            --bg-element: #11111a;
+            --brand-primary: #ff5500;
+            --brand-glow: rgba(255, 85, 0, 0.15);
+            --text-primary: #f8f8fa;
+            --text-secondary: #7e7e8f;
+            --border-core: #161626;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-mainframe); color: var(--text-primary); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+
+        .auth-gate-card { background: var(--bg-surface); border: 1px solid var(--border-core); border-radius: 24px; padding: 32px 24px; width: 100%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        .auth-brand-logo { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 24px; font-weight: 800; text-transform: uppercase; letter-spacing: -0.5px; margin-bottom: 8px; }
+        .auth-brand-logo span { color: var(--brand-primary); }
+        
+        .auth-subtitle { text-align: center; color: var(--text-secondary); font-size: 13px; font-weight: 600; margin-bottom: 32px; }
+        
+        .form-input-group { margin-bottom: 18px; position: relative; }
+        .form-input-group .material-icons-round { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-size: 20px; }
+        
+        .auth-input-node { width: 100%; background: var(--bg-element); border: 1px solid var(--border-core); border-radius: 14px; padding: 14px 14px 14px 44px; color: #fff; font-size: 14px; font-weight: 500; outline: none; transition: all 0.2s; }
+        .auth-input-node:focus { border-color: var(--brand-primary); box-shadow: 0 0 10px var(--brand-glow); }
+        .auth-btn-primary { width: 100%; background: var(--brand-primary); border: none; color: #fff; padding: 14px; border-radius: 14px; font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 24px; }
+        .auth-btn-primary:hover { background: #e04b00; }
+
+        .auth-btn-secondary { width: 100%; background: transparent; border: 1px solid var(--border-core); color: var(--text-secondary); padding: 14px; border-radius: 14px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-top: 12px; }
+        .auth-btn-secondary:hover { border-color: var(--text-secondary); color: #fff; }
+
+        .toggle-panel-link { text-align: center; margin-top: 20px; font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+        .toggle-panel-link span { color: var(--brand-primary); cursor: pointer; }
+
+        .hidden-node { display: none; }
     </style>
 </head>
 <body>
-    <div class="login-card">
-        <h2>Wnovels Studio Gate</h2>
-        <input type="email" id="emailNode" placeholder="Email Address">
-        <input type="password" id="passNode" placeholder="Security Password">
-        <button onclick="handleAuthNode('LOGIN')">Sign In</button>
-        <button onclick="handleAuthNode('REG')" style="background:transparent; border: 1px solid #ff5500; color:#ff5500;">Register Account</button>
+
+    <div class="auth-gate-card">
+        <div class="auth-brand-logo">
+            <span class="material-icons-round">token</span>Wnovels<span>Studio</span>
+        </div>
+        <p class="auth-subtitle" id="gatewaySubtitleText">Access your author workbench terminal</p>
+
+        <form id="authGatewayForm" onsubmit="handleAuthFormSubmission(event)">
+            <div class="form-input-group hidden-node" id="usernameInputWrapper">
+                <span class="material-icons-round">account_circle</span>
+                <input type="text" id="fieldAuthUsername" class="auth-input-node" placeholder="Choose unique username (e.g., author_king)">
+            </div>
+
+            <div class="form-input-group hidden-node" id="displayNameInputWrapper">
+                <span class="material-icons-round">badge</span>
+                <input type="text" id="fieldAuthDisplayName" class="auth-input-node" placeholder="Your Public Pen Name">
+            </div>
+
+            <div class="form-input-group">
+                <span class="material-icons-round">mail</span>
+                <input type="email" id="fieldAuthEmail" class="auth-input-node" placeholder="Enter account email address" required>
+            </div>
+
+            <div class="form-input-group">
+                <span class="material-icons-round">lock</span>
+                <input type="password" id="fieldAuthPassword" class="auth-input-node" placeholder="Enter secure password" required>
+            </div>
+
+            <button type="submit" class="auth-btn-primary" id="submitButtonActionNode">
+                <span class="material-icons-round">login</span><span id="submitButtonTextNode">Sign In to Studio</span>
+            </button>
+        </form>
+
+        <button class="auth-btn-secondary hidden-node" id="cancelRegistrationFallback" onclick="toggleAuthGateMode(false)">
+            Cancel Profile Creation
+        </button>
+
+        <div class="toggle-panel-link" id="gateToggleFooterLink">
+            Don't have an account? <span onclick="toggleAuthGateMode(true)">Create Creator Profile</span>
+        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyBelCPgA4ZE7pcFGPPp9191KPOdaSSoMc8",
@@ -37,20 +104,97 @@
         };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
+        const db = firebase.database();
 
-        function handleAuthNode(type) {
-            const email = document.getElementById('emailNode').value.trim();
-            const pass = document.getElementById('passNode').value.trim();
-            if(!email || !pass) { alert("Punan ang email at password."); return; }
+        let isRegistrationModeActive = false;
 
-            if(type === 'LOGIN') {
-                auth.signInWithEmailAndPassword(email, pass)
-                    .then(() => window.location.href="writer.html")
-                    .catch(e => alert(e.message));
+        // Persistent Session Controller
+        auth.onAuthStateChanged(user => {
+            if (user && !isRegistrationModeActive) {
+                // If user is already logged in, skip login page automatically
+                window.location.href = "writer.html";
+            }
+        });
+
+        function toggleAuthGateMode(switchToRegister) {
+            isRegistrationModeActive = switchToRegister;
+            
+            const userWrap = document.getElementById('usernameInputWrapper');
+            const nameWrap = document.getElementById('displayNameInputWrapper');
+            const subTitle = document.getElementById('gatewaySubtitleText');
+            const btnText = document.getElementById('submitButtonTextNode');
+            const btnIcon = document.querySelector('#submitButtonActionNode .material-icons-round');
+            const cancelBtn = document.getElementById('cancelRegistrationFallback');
+            const footerLink = document.getElementById('gateToggleFooterLink');
+
+            if (switchToRegister) {
+                userWrap.classList.remove('hidden-node');
+                nameWrap.classList.remove('hidden-node');
+                cancelBtn.classList.remove('hidden-node');
+                subTitle.innerText = "Deploy your global author registration parameters";
+                btnText.innerText = "Initialize Creator Profile";
+                btnIcon.innerText = "person_add";
+                footerLink.style.display = "none";
             } else {
-                auth.createUserWithEmailAndPassword(email, pass)
-                    .then(() => alert("Rehistrado na! Maaari ka nang mag-login."))
-                    .catch(e => alert(e.message));
+                userWrap.classList.add('hidden-node');
+                nameWrap.classList.add('hidden-node');
+                cancelBtn.classList.add('hidden-node');
+                subTitle.innerText = "Access your author workbench terminal";
+                btnText.innerText = "Sign In to Studio";
+                btnIcon.innerText = "login";
+                footerLink.style.display = "block";
+            }
+        }
+
+        function handleAuthFormSubmission(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('fieldAuthEmail').value.trim();
+            const password = document.getElementById('fieldAuthPassword').value;
+            
+            if (isRegistrationModeActive) {
+                const username = document.getElementById('fieldAuthUsername').value.toLowerCase().trim();
+                const displayName = document.getElementById('fieldAuthDisplayName').value.trim();
+                
+                if (!username || !displayName) {
+                    alert("Please fill in your username and pen name.");
+                    return;
+                }
+
+                // Check if username is already taken in the database
+                db.ref('users').orderByChild('username').equalTo(username).once('value', snapshot => {
+                    if (snapshot.exists()) {
+                        alert("This username is already taken by another author.");
+                    } else {
+                        // Create the account in Firebase Auth
+                        auth.createUserWithEmailAndPassword(email, password)
+                            .then(credentials => {
+                                // Initialize User Meta Profile & Wallet Ecosystem Node
+                                return db.ref('users/' + credentials.user.uid).set({
+                                    uid: credentials.user.uid,
+                                    username: username,
+                                    displayName: displayName,
+                                    profilePicture: "https://api.dicebear.com/7.x/bottts/svg?seed=" + username,
+                                    walletCoins: 0,
+                                    walletEarningsUSD: 0.00,
+                                    accountStatus: "ACTIVE_AUTHOR",
+                                    registrationTimestamp: firebase.database.ServerValue.TIMESTAMP
+                                });
+                            })
+                            .then(() => {
+                                alert("Creator Profile Sync Successful! Entering workbench...");
+                                window.location.href = "writer.html";
+                            })
+                            .catch(error => alert(error.message));
+                    }
+                });
+            } else {
+                // Log In Sequence
+                auth.signInWithEmailAndPassword(email, password)
+                    .then(() => {
+                        window.location.href = "writer.html";
+                    })
+                    .catch(error => alert(error.message));
             }
         }
     </script>
