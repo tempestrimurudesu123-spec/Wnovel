@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inkstone Author Studio Pro - Multi-Upload Edition</title>
+    <title>Webnovels</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -17,208 +17,322 @@
             --text-main: #f8fafc;
             --text-muted: #64748b;
             --accent-blue: #3b82f6;
-            --accent-gold: #f59e0b;
+            --accent-gold: #eab308;
             --accent-green: #10b981;
+            --accent-orange: #f97316;
             --accent-purple: #a855f7;
         }
 
         body {
             margin: 0; padding: 0; background-color: var(--bg-deep); color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            padding-bottom: 60px;
+            padding-bottom: 90px; overflow-x: hidden;
         }
 
-        .studio-header {
+        .header-bar {
             background-color: var(--surface-card); border-bottom: 1px solid var(--border);
             padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 1000;
         }
 
-        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; box-sizing: border-box; }
-        
-        .studio-card {
+        .view-section { display: none; padding: 15px; max-width: 800px; margin: 0 auto; }
+        .view-section.active { display: block; animation: fadeIn 0.25s ease-out; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .arcade-card {
             background: var(--surface-card); border: 1px solid var(--border);
-            border-radius: 12px; padding: 20px; margin-bottom: 20px; position: relative;
+            border-radius: 12px; padding: 15px; margin-bottom: 15px; position: relative;
         }
 
-        .form-group { margin-bottom: 15px; }
-        .form-label { display: block; font-size: 0.78rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
-        
-        .studio-input, .studio-select, .studio-textarea {
+        .search-input {
             width: 100%; padding: 12px; background: #070a13; border: 1px solid var(--border);
-            border-radius: 8px; color: white; box-sizing: border-box; font-size: 0.9rem; transition: border 0.2s;
+            border-radius: 8px; color: white; box-sizing: border-box; font-size: 0.9rem; margin-bottom: 15px;
         }
-        .studio-input:focus, .studio-select:focus, .studio-textarea:focus { border-color: var(--accent-blue); outline: none; }
-        .studio-textarea { height: 120px; resize: none; font-family: inherit; }
 
-        /* Custom File Upload Button for Gallery */
-        .file-upload-wrapper {
-            position: relative; display: flex; flex-direction: column; align-items: center;
-            justify-content: center; background: #070a13; border: 2px dashed var(--border);
-            border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s;
+        .category-scroll {
+            display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px;
+            scrollbar-width: none;
         }
-        .file-upload-wrapper:hover { border-color: var(--accent-gold); background: #0f172a; }
-        .file-upload-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .category-scroll::-webkit-scrollbar { display: none; }
+        .category-pill {
+            background: var(--surface-card); border: 1px solid var(--border); color: var(--text-muted);
+            padding: 6px 14px; border-radius: 20px; font-size: 0.72rem; font-weight: bold;
+            white-space: nowrap; cursor: pointer; text-transform: uppercase;
+        }
+        .category-pill.active { background: var(--accent-blue); color: white; border-color: var(--accent-blue); }
+
+        .novel-grid-card {
+            display: flex; gap: 15px; background: var(--surface-card); border: 1px solid var(--border);
+            padding: 12px; border-radius: 10px; margin-bottom: 12px; cursor: pointer; position: relative;
+        }
+        .novel-cover-img { width: 75px; height: 105px; object-fit: cover; border-radius: 6px; background: #1e293b; border: 1px solid var(--border); }
+        .user-avatar-runtime { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid var(--accent-blue); }
         
-        .preview-thumbnail {
-            width: 80px; height: 110px; object-fit: cover; border-radius: 6px; 
-            margin-top: 10px; border: 1px solid var(--border); display: none;
+        .status-badge {
+            position: absolute; top: 12px; right: 12px; font-size: 0.58rem; font-weight: bold;
+            padding: 2px 6px; border-radius: 4px; text-transform: uppercase; color: white;
         }
-        .preview-avatar {
-            width: 60px; height: 60px; object-fit: cover; border-radius: 50%;
-            margin-top: 10px; border: 1px solid var(--border); display: none;
+        .status-ongoing { background: var(--accent-blue); }
+        .status-completed { background: var(--accent-green); }
+
+        .arcade-game-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .game-card {
+            background: linear-gradient(135deg, #111827 0%, #070a13 100%); border: 1px solid var(--border);
+            border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; transition: transform 0.2s;
+        }
+        .game-card:active { transform: scale(0.97); }
+        .game-icon { font-size: 2.2rem; margin-bottom: 8px; display: inline-block; }
+
+        .btn-action {
+            width: 100%; padding: 12px; border: none; border-radius: 8px; color: white;
+            font-weight: bold; font-size: 0.88rem; cursor: pointer; text-transform: uppercase; margin-top: 5px;
         }
 
-        .btn-studio {
-            width: 100%; padding: 13px; border: none; border-radius: 8px; color: white;
-            font-weight: bold; font-size: 0.9rem; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;
+        .select-payment {
+            width: 100%; padding: 12px; background: #070a13; border: 1px solid var(--border);
+            border-radius: 8px; color: white; margin-bottom: 12px;
         }
 
-        .novel-select-strip { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; }
-        .novel-strip-card {
-            background: var(--surface-card); border: 1px solid var(--border); padding: 10px;
-            border-radius: 8px; min-width: 140px; cursor: pointer; text-align: center; font-size: 0.8rem;
+        .bottom-nav-hub {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 65px;
+            background-color: var(--surface-card); border-top: 1px solid var(--border);
+            display: flex; justify-content: space-around; align-items: center; z-index: 1100;
         }
-        .novel-strip-card.active { border-color: var(--accent-gold); background: #1e1b4b; }
+        .nav-link { text-align: center; color: var(--text-muted); font-size: 0.65rem; font-weight: bold; cursor: pointer; flex: 1; padding: 10px 0; }
+        .nav-link.active { color: var(--accent-blue); }
+        .nav-icon { width: 22px; height: 22px; margin-bottom: 3px; opacity: 0.6; }
+        .nav-link.active .nav-icon { opacity: 1; filter: drop-shadow(0 0 5px var(--accent-blue)); }
 
-        .tag-pill-badge {
-            background: #1e293b; color: var(--text-main); font-size: 0.7rem; 
-            padding: 4px 8px; border-radius: 4px; display: inline-block; margin: 2px;
+        /* File input style overlay */
+        .identity-file-box {
+            border: 2px dashed var(--border); padding: 15px; border-radius: 8px;
+            text-align: center; background: #070a13; position: relative; cursor: pointer;
+        }
+        .identity-file-box input { position: absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer; }
+
+        #gameActiveScreenOverlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-deep); z-index: 2500; padding: 20px; box-sizing: border-box;
+        }
+        .game-play-area {
+            background: var(--surface-card); border: 1px solid var(--border); height: 75vh;
+            margin-top: 20px; border-radius: 12px; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .modal-payment-gate {
+            display: none; position: fixed; top: 5%; left: 5%; width: 90%; max-height: 85vh;
+            background: var(--surface-card); border: 2px solid var(--border); border-radius: 14px;
+            z-index: 3000; padding: 20px; box-sizing: border-box; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.7);
         }
     </style>
 </head>
 <body>
 
-    <div class="studio-header">
-        <div>
-            <div style="font-weight:900; font-size:1.1rem; letter-spacing:0.5px;">INKSTONE<span style="color:var(--accent-gold);">STUDIO</span> <span style="font-size:0.6rem; background:var(--accent-purple); padding:2px 5px; border-radius:3px; color:white; vertical-align:middle;">V2.0</span></div>
-            <div style="font-size:0.6rem; color:var(--text-muted); font-weight:bold;">GALERY UPLOAD & MULTI-GENRE MAINNET</div>
+    <div id="securityGateOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:var(--bg-deep); z-index:5000; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:25px; box-sizing:border-box;">
+        <div class="arcade-card" id="identityFormCardBox" style="width:100%; max-width:400px; border-color:var(--accent-purple);">
+            <div style="font-size:1.4rem; font-weight:900; text-align:center; color:var(--accent-purple); letter-spacing:0.5px; margin-bottom:5px;">CREATE ACCOUNT</div>
+            <div style="font-size:0.75rem; color:var(--text-muted); text-align:center; margin-bottom:20px;">Establish your unified Reader & Author profile identity card.</div>
+            
+            <div style="margin-bottom:15px; text-align:center;">
+                <div class="identity-file-box">
+                    <span style="font-size:1.5rem;">📸</span><br>
+                    <span id="loginAvatarStatusLabel" style="font-size:0.75rem; font-weight:bold; color:var(--text-muted);">Upload Profile from Gallery</span>
+                    <input type="file" accept="image/*" onchange="compressClientLoginAvatarFileStream(this)">
+                </div>
+                <img id="loginAvatarRuntimePreview" style="width:65px; height:65px; border-radius:50%; object-fit:cover; margin:10px auto 0 auto; display:none; border:2px solid var(--accent-purple);">
+            </div>
+
+            <label style="font-size:0.7rem; font-weight:bold; color:var(--text-muted); text-transform:uppercase; display:block; margin-bottom:5px;">Desired Username</label>
+            <input type="text" id="setupProfileUsernameInput" class="search-input" placeholder="Enter unique user tag/name..." style="margin-bottom:15px;">
+            
+            <button class="btn-action" style="background:var(--accent-purple);" onclick="executeFinalizeProfileGatewayNode()">Initialize Netlink Profile</button>
         </div>
-        <button onclick="location.href='index.html'" style="background:#1e293b; color:white; border:none; padding:8px 14px; border-radius:6px; font-size:0.75rem; font-weight:bold; cursor:pointer;">← App Hub</button>
     </div>
 
-    <div class="container">
-        <div class="studio-card" style="border-left: 4px solid var(--accent-purple);">
-            <h3 style="margin:0 0 5px 0; font-size:1.05rem; text-transform:uppercase; color:var(--accent-purple);">👤 Author Profile Studio</h3>
-            <p style="margin:0 0 15px 0; font-size:0.75rem; color:var(--text-muted);">Set up your public syndicate identity and upload your official avatar file.</p>
+    <div class="header-bar">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <img id="navbarUserAvatarDisplay" class="user-avatar-runtime" src="" alt="User">
+            <div>
+                <div id="navbarUsernameDisplay" style="font-weight:900; font-size:1rem; letter-spacing:0.5px; color:white;">Loading...</div>
+                <div style="font-size:0.55rem; color:var(--text-muted); font-weight:bold; text-transform:uppercase;">ID: <span id="securedDeviceTag" style="color:var(--accent-green);">Linking...</span></div>
+            </div>
+        </div>
+        <div style="background: #070a13; border:1px solid var(--border); padding:6px 12px; border-radius:30px; display:flex; align-items:center; gap:6px;">
+            <span style="font-size:1rem;">🪙</span>
+            <span id="arcadePointsDisplay" style="font-size:0.8rem; font-weight:bold; color:var(--accent-gold);">0 PT</span>
+        </div>
+    </div>
+    <div id="view-library" class="view-section active">
+        <input type="text" id="librarySearchInput" class="search-input" placeholder="🔍 Search anime streams, titles, authors, or keywords..." oninput="executeMasterSearchFilterPipeline()">
+        
+        <div class="category-scroll">
+            <div class="category-pill active" onclick="filterGenreCategory('All', this)">All Sectors</div>
+            <div class="category-pill" onclick="filterGenreCategory('Anime Streaming Core', this)">Anime Fiction</div>
+            <div class="category-pill" onclick="filterGenreCategory('Manga Reincarnation', this)">Manga Rebirth</div>
+            <div class="category-pill" onclick="filterGenreCategory('Light Novel Tropes', this)">Light Novels</div>
+            <div class="category-pill" onclick="filterGenreCategory('Fantasy System', this)">Fantasy System</div>
+            <div class="category-pill" onclick="filterGenreCategory('LitRPG / Isekai', this)">Isekai RPG</div>
+            <div class="category-pill" onclick="filterGenreCategory('Virtual Reality MMO', this)">VR-MMORPG</div>
+            <div class="category-pill" onclick="filterGenreCategory('Martial Arts Cultivation', this)">Cultivation</div>
+            <div class="category-pill" onclick="filterGenreCategory('Sci-Fi / Cyberpunk', this)">Cyberpunk</div>
+            <div class="category-pill" onclick="filterGenreCategory('Mecha / Sci-Fi Warfare', this)">Mecha Sci-Fi</div>
+            <div class="category-pill" onclick="filterGenreCategory('Horror / Survival Game', this)">Horror Game</div>
+            <div class="category-pill" onclick="filterGenreCategory('High School Magic Academy', this)">Magic Academy</div>
+            <div class="category-pill" onclick="filterGenreCategory('Slice of Life / Esports', this)">Esports Core</div>
+            <div class="category-pill" onclick="filterGenreCategory('Villainess Otome System', this)">Otome System</div>
+            <div class="category-pill" onclick="filterGenreCategory('Historical Fantasy Warfare', this)">Historical</div>
+            <div class="category-pill" onclick="filterGenreCategory('Superheroes / Urban Powers', this)">Superheroes</div>
+            <div class="category-pill" onclick="filterGenreCategory('Tower Climbing Challenge', this)">Dungeon Tower</div>
+            <div class="category-pill" onclick="filterGenreCategory('Billionaire CEO Romance', this)">CEO Romance</div>
+            <div class="category-pill" onclick="filterGenreCategory('Urban Life / Realism', this)">Urban Life</div>
+            <div class="category-pill" onclick="filterGenreCategory('Mystery / Thriller', this)">Mystery</div>
+        </div>
+
+        <div style="font-size:0.8rem; font-weight:bold; color:var(--text-muted); text-transform:uppercase; margin-bottom:10px; letter-spacing:0.5px;">🔥 Hot Network Vector</div>
+        <div id="topTrendingBox"></div>
+
+        <div style="font-size:0.8rem; font-weight:bold; color:var(--text-muted); text-transform:uppercase; margin-top:20px; margin-bottom:10px; letter-spacing:0.5px;">📚 Global Database Manuscripts</div>
+        <div id="globalNovelFeedBox"></div>
+    </div>
+
+    <div id="view-writer-hub" class="view-section">
+        <div style="font-size:1.1rem; font-weight:900; text-transform:uppercase; margin-bottom:15px;">✒️ Inkstone <span>Creator Gateway</span></div>
+        <div class="arcade-card" style="text-align:center; padding:35px 20px;">
+            <div style="font-size:3rem; margin-bottom:15px;">👑</div>
+            <h3 style="margin:0 0 8px 0; font-size:1.1rem;">Join the Author Syndicate Franchise</h3>
+            <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.5; margin-bottom:20px;">Publish detailed original works. Set up chapter access controls to earn points and platform ad dividend cuts splits.</p>
+            <button class="btn-action" style="background:var(--accent-blue);" onclick="triggerStudioRedirect()">Enter Author Studio Dashboard</button>
+        </div>
+     </div>
+     <div id="view-arcade" class="view-section">
+        <div style="font-size:1.1rem; font-weight:900; text-transform:uppercase; margin-bottom:15px; color:white;">🎮 Arcade <span>Data Miner</span></div>
+        
+        <div class="arcade-card" style="display:flex; justify-content:space-between; align-items:center; background:linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%); border-color:var(--accent-gold);">
+            <div>
+                <div style="font-size:0.75rem; font-weight:bold; color:var(--accent-gold); text-transform:uppercase;">Daily Check-In Incentive</div>
+                <div style="font-size:0.65rem; color:var(--text-muted); margin-top:2px;">Sync your device ledger daily to claim +5 PT points.</div>
+            </div>
+            <button onclick="triggerDailySignIn()" style="background:var(--accent-gold); color:black; border:none; padding:8px 14px; border-radius:6px; font-weight:bold; font-size:0.75rem; cursor:pointer;">CLAIM BLOCK</button>
+        </div>
+
+        <div class="arcade-game-grid">
+            <div class="game-card" onclick="launchMiniGameEngine('coin')">
+                <span class="game-icon">🪙</span><h4 style="margin:5px 0 2px 0; font-size:0.85rem;">Crypto Tap Core</h4><div style="font-size:0.65rem; color:var(--accent-green);">+1 PT / Tap</div>
+            </div>
+            <div class="game-card" onclick="launchMiniGameEngine('guess')">
+                <span class="game-icon">🔮</span><h4 style="margin:5px 0 2px 0; font-size:0.85rem;">Lucky Sector</h4><div style="font-size:0.65rem; color:var(--accent-green);">Multiplies PT Blocks</div>
+            </div>
+            <div class="game-card" onclick="launchMiniGameEngine('clicker')">
+                <span class="game-icon">⚡</span><h4 style="margin:5px 0 2px 0; font-size:0.85rem;">Reflex Pulse</h4><div style="font-size:0.65rem; color:var(--accent-green);">Speed Reaction Node</div>
+            </div>
+            <div class="game-card" onclick="launchMiniGameEngine('chest')">
+                <span class="game-icon">🧰</span><h4 style="margin:5px 0 2px 0; font-size:0.85rem;">Void Vault Drops</h4><div style="font-size:0.65rem; color:var(--accent-green);">RNG Loot Drop</div>
+            </div>
+            <div class="game-card" onclick="launchMiniGameEngine('wheel')">
+                <span class="game-icon">🎡</span><h4 style="margin:5px 0 2px 0; font-size:0.85rem;">Lucky Spin Node</h4><div style="font-size:0.65rem; color:var(--accent-green);">Spin Wheel Rewards</div>
+            </div>
+            <div class="game-card" onclick="launchMiniGameEngine('scramble')">
+                <span class="game-icon">🧩</span><h4 style="margin:5px 0 2px 0; font-size:0.85rem;">Data Scramble</h4><div style="font-size:0.65rem; color:var(--accent-green);">Solve Word Strings</div>
+            </div>
+        </div>
+
+        <h3 style="font-size:0.85rem; text-transform:uppercase; color:var(--text-muted); margin-top:25px; margin-bottom:10px; letter-spacing:0.5px;">🏆 Global High-Score Network Nodes</h3>
+        <div class="arcade-card" style="padding:10px 15px;">
+            <table style="width:100%; border-collapse:collapse; font-size:0.8rem;">
+                <thead><tr style="color:var(--text-muted); text-align:left; border-bottom:1px solid var(--border);"><th style="padding-bottom:5px;">Rank</th><th>Miner Identity Hash</th><th style="text-align:right; padding-bottom:5px;">Mining Score</th></tr></thead>
+                <tbody id="leaderboardRowsContainer"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="view-wallet" class="view-section">
+        <div style="font-size:1.1rem; font-weight:900; text-transform:uppercase; margin-bottom:15px; color:white;">💳 Liquid Assets & <span>Game Vouchers Shop</span></div>
+        
+        <div class="arcade-card" style="background: linear-gradient(135deg, #022c22 0%, #0f172a 100%); border-color:var(--accent-green); text-align:center; padding:25px;">
+            <div style="font-size:0.75rem; font-weight:bold; color:var(--accent-green); text-transform:uppercase; letter-spacing:0.5px;">Withdrawable Balance Cash Pool</div>
+            <h1 style="font-size:2.4rem; margin:10px 0; color:white;">₱ <span id="walletCashField">0.00</span></h1>
+            <p style="font-size:0.65rem; color:var(--text-muted); margin:0;">Points from stories and games convert directly to real currency balances.</p>
+        </div>
+
+        <div class="arcade-card">
+            <h4 style="margin:0 0 12px 0; text-transform:uppercase; color:var(--accent-blue); font-size:0.85rem;">Outbound Request / Exchange Node</h4>
             
-            <div style="display:grid; grid-template-columns: 1fr 2fr; gap:15px; align-items:center; margin-bottom:15px;">
-                <div class="file-upload-wrapper" style="padding:10px; height:90px;">
-                    <span style="font-size:1.2rem;">🖼️</span>
-                    <span style="font-size:0.6rem; font-weight:bold; color:var(--text-muted);">Avatar File</span>
-                    <input type="file" id="authorAvatarFileInput" class="file-upload-input" accept="image/*" onchange="processLocalImageCompression(this, 'avatarPreview')">
-                </div>
-                <div>
-                    <img id="avatarPreview" class="preview-avatar">
-                    <label class="form-label">Display Pen Name</label>
-                    <input type="text" id="authorStudioPenName" class="studio-input" placeholder="Enter public writer handle">
-                </div>
+            <label class="form-label" style="font-size:0.75rem; color:var(--text-muted);">Select Distribution Destination:</label>
+            <select id="cashoutMethodSelect" class="select-payment" onchange="adjustWalletFormUIElements(this.value)">
+                <optgroup label="Real Fiat Cashout Channels">
+                    <option value="GCash">GCash Instant Payout</option>
+                    <option value="Maya">Maya Digital Bank</option>
+                </optgroup>
+                <optgroup label="🎯 Direct Mobile Gaming Top-Ups">
+                    <option value="GAME_ML_56">Mobile Legends: Bang Bang (56 Diamonds)</option>
+                    <option value="GAME_ML_112">Mobile Legends: Bang Bang (112 Diamonds)</option>
+                    <option value="GAME_CODM_100">Call of Duty: Mobile (100 CP)</option>
+                    <option value="GAME_VAL_375">Valorant (375 VP - PC Link)</option>
+                    <option value="GAME_ROBLOX_400">Roblox (400 Robux Voucher)</option>
+                </optgroup>
+            </select>
+
+            <label class="form-label" id="walletAccountLabel" style="font-size:0.75rem; color:var(--text-muted);">Receiving Account Number / Phone:</label>
+            <input type="text" id="cashoutAccountInput" class="search-input" placeholder="e.g. 09xxxxxxxxx">
+
+            <div id="gameMetaInputContainer" style="display:none; margin-bottom:15px;">
+                <label class="form-label" style="font-size:0.75rem; color:var(--text-muted);">Server ID Zone (If MLBB / CODM):</label>
+                <input type="text" id="cashoutGameZoneInput" class="search-input" placeholder="e.g. 2045 (Leave blank if Robux/Valorant)" style="margin-bottom:0;">
             </div>
-            <button class="btn-studio" style="background:var(--accent-purple); padding:8px; font-size:0.75rem;" onclick="executeSaveAuthorProfileNode()">Save Profile Identity</button>
+
+            <label class="form-label" id="walletAmountLabel" style="font-size:0.75rem; color:var(--text-muted);">Amount to Withdraw (PHP):</label>
+            <input type="number" id="cashoutAmountInput" class="search-input" placeholder="Minimum ₱500.00 for Cash out" min="1">
+
+            <button class="btn-action" style="background:var(--accent-blue);" onclick="openPaymentGatewayModal('cashout')">Initiate Checkout Protocol</button>
         </div>
 
-        <div class="studio-card">
-            <h3 style="margin:0 0 15px 0; font-size:1.05rem; text-transform:uppercase; color:var(--accent-gold); border-bottom:1px solid var(--border); padding-bottom:8px;">📁 Deploy New Novel Core (V2.0)</h3>
-            
-            <div class="form-group">
-                <label class="form-label">Manuscript / Book Title</label>
-                <input type="text" id="newNovelTitle" class="studio-input" placeholder="e.g. Reincarnated as a Mythical Anime Streamer">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Genre Category Sector (Multi-Chain)</label>
-                <select id="newNovelGenre" class="studio-select">
-                    <option value="Fantasy System">Fantasy System</option>
-                    <option value="LitRPG / Isekai">LitRPG / Isekai</option>
-                    <option value="Martial Arts Cultivation">Martial Arts Cultivation</option>
-                    <option value="Billionaire CEO Romance">Billionaire CEO Romance</option>
-                    <option value="Sci-Fi / Cyberpunk">Sci-Fi & Cyberpunk</option>
-                    <option value="Urban Life / Realism">Urban Life</option>
-                    <option value="Video Games Reality">Video Games Reality</option>
-                    <option value="Mystery / Thriller">Mystery / Thriller</option>
-                    <option value="Anime Streaming Core">Anime Streaming Fiction</option>
-                    <option value="Manga Reincarnation">Manga Reincarnation</option>
-                    <option value="Light Novel Tropes">Light Novel / Otaku Culture</option>
-                    <option value="Virtual Reality MMO">Virtual Reality MMO</option>
-                    <option value="Mecha / Sci-Fi Warfare">Mecha / Sci-Fi Warfare</option>
-                    <option value="Horror / Survival Game">Horror / Survival Game</option>
-                    <option value="High School Magic Academy">High School Magic Academy</option>
-                    <option value="Slice of Life / Esports">Slice of Life / Esports</option>
-                    <option value="Villainess Otome System">Villainess Otome System</option>
-                    <option value="Historical Fantasy Warfare">Historical Fantasy Warfare</option>
-                    <option value="Superheroes / Urban Powers">Superheroes / Urban Powers</option>
-                    <option value="Tower Climbing Challenge">Tower Climbing / Dungeon Core</option>
+        <div class="arcade-card" style="border-color:var(--border);">
+            <h4 style="margin:0 0 12px 0; text-transform:uppercase; color:var(--text-muted); font-size:0.85rem;">Inbound Cash-In Balance Injection</h4>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <select id="topupMethodSelect" class="select-payment" style="margin-bottom:0;">
+                    <option value="GCash">GCash Payment</option>
+                    <option value="Maya">Maya Transfer</option>
                 </select>
+                <input type="number" id="topupAmountInput" class="search-input" placeholder="Amount (PHP)" style="margin-bottom:0;">
             </div>
-
-            <div class="form-group">
-                <label class="form-label">Book Cover Image (Upload from Gallery / Files)</label>
-                <div class="file-upload-wrapper">
-                    <span style="font-size:2rem; margin-bottom:5px;">📁</span>
-                    <b style="font-size:0.8rem; color:var(--text-main);">Tap to Open Gallery/Files</b>
-                    <span style="font-size:0.65rem; color:var(--text-muted); margin-top:2px;">Supports JPEG, PNG local image files</span>
-                    <input type="file" id="bookCoverFileInput" class="file-upload-input" accept="image/*" onchange="processLocalImageCompression(this, 'coverPreview')">
-                </div>
-                <div style="text-align:center;">
-                    <img id="coverPreview" class="preview-thumbnail">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Full Target Audience / Rating</label>
-                <select id="newNovelAudience" class="studio-select">
-                    <option value="General (G) - All Readers">General (G) - All Readers</option>
-                    <option value="Teen (PG-13) - Minor Guidance">Teen (PG-13) - Minor Guidance</option>
-                    <option value="Mature (R-18) - Restricted Layer">Mature (R-18) - Restricted Layer</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Synopsis / Blurb Block Data</label>
-                <textarea id="newNovelSynopsis" class="studio-textarea" placeholder="Write a highly competitive book summary node data stream..."></textarea>
-            </div>
-
-            <button class="btn-studio" style="background:var(--accent-blue);" onclick="executeCreateNovelDatabaseNode()">Register Book to Mainnet</button>
+            <button class="btn-action" style="background:#1e293b; color:var(--text-main); margin-top:10px;" onclick="openPaymentGatewayModal('topup')">Generate Cash-In Ticket</button>
         </div>
-
-        <div class="studio-card">
-            <h3 style="margin:0 0 5px 0; font-size:1.05rem; text-transform:uppercase; color:var(--accent-gold);">📝 Append Volume Chapters</h3>
-            <p style="margin:0 0 15px 0; font-size:0.75rem; color:var(--text-muted);">Select a registered manuscript from your node sector to inject narrative data blocks.</p>
-
-            <label class="form-label">Select Target Novel Ledger:</label>
-            <div id="authorNovelsStripContainer" class="novel-select-strip"></div>
-
-            <div id="chapterWriteBoxInputsContainer" style="display:none; border-top:1px solid var(--border); padding-top:15px; margin-top:15px;">
-                <div style="background:#111827; padding:10px; border-radius:6px; margin-bottom:15px; font-size:0.75rem; border:1px solid var(--border);">
-                    Targeting Asset Node ID: <b id="activeTargetBookIdLabel" style="color:var(--accent-gold);">NONE</b>
-                </div>
-
-                <div style="display:grid; grid-template-columns: 1fr 2fr; gap:12px; margin-bottom:15px;">
-                    <div>
-                        <label class="form-label">Chapter Num</label>
-                        <input type="number" id="newChapterNumber" class="studio-input" placeholder="e.g. 1" min="1">
-                    </div>
-                    <div>
-                        <label class="form-label">Chapter Title</label>
-                        <input type="text" id="newChapterTitle" class="studio-input" placeholder="e.g. Global Stream Initialization">
-                    </div>
-                </div>
-
-                <div class="form-group" style="background:#070a13; padding:12px; border:1px solid var(--border); border-radius:8px;">
-                    <label class="form-label" style="color:var(--accent-gold);">🔒 Chapter Premium Locking Layer</label>
-                    <p style="margin:0 0 8px 0; font-size:0.7rem; color:var(--text-muted);">0 = Free access. Set a token price (e.g. 25) to toll gate readers using Arcade Points.</p>
-                    <input type="number" id="newChapterCoinCost" class="studio-input" placeholder="Arcade Points Cost" value="0" min="0">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Story Content (Text Data Streams)</label>
-                    <textarea id="newChapterContent" class="studio-textarea" style="height:320px;" placeholder="Write or paste your master story draft data blocks..."></textarea>
-                </div>
-
-                <button class="btn-studio" style="background:var(--accent-green);" onclick="executeDeployChapterToNovelNode()">Publish Chapter Data Block</button>
-            </div>
+     </div>
+     <div id="gameActiveScreenOverlay">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h3 id="activeGameTitle" style="margin:0; text-transform:uppercase; color:var(--accent-gold); font-size:1.1rem;">Game Node</h3>
+            <button onclick="document.getElementById('gameActiveScreenOverlay').style.display='none'" style="background:#ef4444; color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">Exit Game</button>
         </div>
-              </div>
-              <script>
+        <div id="gameEnginePlayroom" class="game-play-area"></div>
+    </div>
+
+    <div id="paymentGatewayModalOverlay" class="modal-payment-gate">
+        <h3 id="paymentGatewayTitle" style="margin:0 0 10px 0; color:white; text-transform:uppercase; font-size:1.1rem;">Checkout System</h3>
+        <p id="paymentInstructionsArea" style="font-size:0.8rem; color:var(--text-muted); line-height:1.5; background:#070a13; padding:12px; border-radius:8px; border:1px solid var(--border); margin-bottom:15px;"></p>
+        <div id="paymentInputFieldsArea" class="form-group"></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px;">
+            <button onclick="closePaymentGatewayModal()" style="background:#334155; color:white; padding:12px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; text-transform:uppercase; font-size:0.8rem;">Cancel</button>
+            <button id="paymentSubmitActionButton" class="btn-action" style="margin-top:0; font-size:0.8rem;"></button>
+        </div>
+    </div>
+
+    <div class="bottom-nav-hub">
+        <div class="nav-link active" onclick="switchActiveView('view-library', this)">
+            <div style="font-size:1.3rem;">📚</div><div>Library</div>
+        </div>
+        <div class="nav-link" onclick="switchActiveView('view-arcade', this)">
+            <div style="font-size:1.3rem;">🎮</div><div>Arcade</div>
+        </div>
+        <div class="nav-link" onclick="switchActiveView('view-wallet', this)">
+            <div style="font-size:1.3rem;">💳</div><div>Wallet</div>
+        </div>
+        <div class="nav-link" onclick="switchActiveView('view-writer-hub', this)">
+            <div style="font-size:1.3rem;">✒️</div><div>Studio</div>
+        </div>
+    </div>
+
+    <script>
         const firebaseConfig = {
           apiKey: "AIzaSyBelCPgA4ZE7pcFGPPp9191KPOdaSSoMc8",
           authDomain: "studio-8164628274-c414a.firebaseapp.com",
@@ -231,148 +345,274 @@
         const database = firebase.database();
         const auth = firebase.auth();
 
-        let activeSelectedBookId = null;
-        let globalCompressedCoverBase64 = "";
-        let globalCompressedAvatarBase64 = "";
+        let activeUserUid = null;
+        let selectedGenreFilter = "All";
+        let globalNovelsCache = [];
+        let currentTxType = "";
+        let globalCompressedLoginAvatarBase64 = "";
 
-        // Automated Device Identity Verification Protocol
+        // Secure Real-Time Anonymous Backend Handshake
         auth.onAuthStateChanged(user => {
-            if(!user) { 
-                auth.signInAnonymously().catch(e => alert("Studio Node Fail: " + e.message)); 
-            } else { 
-                loadAuthorProfileIdentityNode(user.uid);
-                fetchAndRenderAuthorNovelsStrip(); 
+            if(user) {
+                activeUserUid = user.uid;
+                document.getElementById('securedDeviceTag').innerText = user.uid.substring(0,8).toUpperCase();
+                verifyClientIdentityRegistration(user.uid);
+            } else {
+                auth.signInAnonymously().catch(e => alert("Network Core Blocked: " + e.message));
             }
         });
 
-        // Advanced Base64 File Multi-Stream Compressor Engine
-        function processLocalImageCompression(inputElement, previewId) {
-            const file = inputElement.files[0]; if(!file) return;
+        // Gallery File Compression Module for Sign-In
+        function compressClientLoginAvatarFileStream(input) {
+            const file = input.files[0]; if(!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
                     let ctx = canvas.getContext('2d');
+                    canvas.width = 100; canvas.height = 100;
+                    ctx.drawImage(img, 0, 0, 100, 100);
+                    let dataUrl = canvas.toDataURL('image/jpeg', 0.75);
                     
-                    // Smart Resizer Protocol to maintain light database payloads
-                    let maxDim = previewId === 'avatarPreview' ? 120 : 320;
-                    let w = img.width; let h = img.height;
-                    if(w > h) { if(w > maxDim) { h *= maxDim / w; w = maxDim; } }
-                    else { if(h > maxDim) { w *= maxDim / h; h = maxDim; } }
-                    
-                    canvas.width = w; canvas.height = h;
-                    ctx.drawImage(img, 0, 0, w, h);
-                    
-                    // Compress stream matrix to JPEG data node
-                    let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
-                    
-                    const previewImg = document.getElementById(previewId);
-                    previewImg.src = compressedDataUrl; previewImg.style.display = "block";
-                    
-                    if(previewId === 'coverPreview') globalCompressedCoverBase64 = compressedDataUrl;
-                    if(previewId === 'avatarPreview') globalCompressedAvatarBase64 = compressedDataUrl;
+                    const preview = document.getElementById('loginAvatarRuntimePreview');
+                    preview.src = dataUrl; preview.style.display = "block";
+                    document.getElementById('loginAvatarStatusLabel').innerText = "🖼️ File Loaded Successfully";
+                    globalCompressedLoginAvatarBase64 = dataUrl;
                 };
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
 
-        // Author Profile Node Sync
-        function loadAuthorProfileIdentityNode(uid) {
-            database.ref('authors/' + uid).once('value').then(s => {
-                if(s.exists()) {
-                    let d = s.val(); document.getElementById('authorStudioPenName').value = d.penName || "";
-                    if(d.avatar) {
-                        let av = document.getElementById('avatarPreview');
-                        av.src = d.avatar; av.style.display = "block"; globalCompressedAvatarBase64 = d.avatar;
-                    }
+        function verifyClientIdentityRegistration(uid) {
+            database.ref('users/' + uid).once('value').then(snap => {
+                if(snap.exists() && snap.val().username) {
+                    let d = snap.val();
+                    document.getElementById('securityGateOverlay').style.display = "none";
+                    document.getElementById('navbarUsernameDisplay').innerText = d.username;
+                    document.getElementById('navbarUserAvatarDisplay').src = d.avatar || "https://www.w3schools.com/howto/img_avatar.png";
+                    document.getElementById('arcadePointsDisplay').innerText = (d.tapPointsProgress || 0) + " PT";
+                    document.getElementById('walletCashField').innerText = (d.totalEarnedPHP || 0).toFixed(2);
+                    loadGlobalLeaderboardEngine();
+                } else {
+                    document.getElementById('securityGateOverlay').style.display = "flex";
                 }
             });
         }
 
-        function executeSaveAuthorProfileNode() {
-            let uid = auth.currentUser ? auth.currentUser.uid : null; if(!uid) return;
-            let name = document.getElementById('authorStudioPenName').value.trim();
-            if(!name) return alert("Pen Name cannot be empty.");
-            
-            database.ref('authors/' + uid).set({ penName: name, avatar: globalCompressedAvatarBase64, timestamp: Date.now() })
-            .then(() => alert("Author Profile Node Synced Successfully!"))
-            .catch(e => alert("Profile Sync Error: " + e.message));
+        function executeFinalizeProfileGatewayNode() {
+            let userTag = document.getElementById('setupProfileUsernameInput').value.trim();
+            if(!userTag) return alert("Please specify a valid account nickname/username.");
+            if(!globalCompressedLoginAvatarBase64) return alert("Please select a profile picture from your Gallery or Files.");
+
+            database.ref('users/' + activeUserUid).set({
+                username: userTag, avatar: globalCompressedLoginAvatarBase64,
+                tapPointsProgress: 10, totalEarnedPHP: 0.00, registeredTimestamp: Date.now()
+            }).then(() => {
+                alert("Identity Profile Deployed Successfully! Welcome to Arcade Novel.");
+                verifyClientIdentityRegistration(activeUserUid);
+            }).catch(e => alert("Identity Deployment Failure: " + e.message));
         }
 
-        // Expanded Novel Registration Engine
-        function executeCreateNovelDatabaseNode() {
-            let title = document.getElementById('newNovelTitle').value.trim();
-            let genre = document.getElementById('newNovelGenre').value;
-            let audience = document.getElementById('newNovelAudience').value;
-            let syno = document.getElementById('newNovelSynopsis').value.trim();
-            let uid = auth.currentUser ? auth.currentUser.uid : null;
-
-            if(!title || !syno) return alert("Title and Synopsis text channels must be populated.");
-            if(!globalCompressedCoverBase64) return alert("Please select or upload a Cover Image from your Gallery/Files.");
-
-            database.ref('authors/' + uid).once('value').then(authorSnap => {
-                let authorName = "Independent Author";
-                if(authorSnap.exists()) authorName = authorSnap.val().penName || "Independent Author";
-
-                let targetNode = database.ref('novels').push();
-                targetNode.set({
-                    title: title, authorName: authorName, authorUid: uid, genre: genre,
-                    coverUrl: globalCompressedCoverBase64, synopsis: syno, audienceRating: audience,
-                    totalViews: 0, totalCoinRevenueEarned: 0, status: "ongoing", timestamp: Date.now()
-                }).then(() => {
-                    alert(`SUCCESS: "${title}" has been registered safely via local gallery file streams!`);
-                    document.getElementById('newNovelTitle').value = ""; document.getElementById('newNovelSynopsis').value = "";
-                    document.getElementById('coverPreview').style.display = "none"; globalCompressedCoverBase64 = "";
-                }).catch(err => alert("Transmission Error: " + err.message));
+        // Live Arcade Engine Controllers
+        function creditArcadePointsSecure(pts) {
+            if(!activeUserUid) return;
+            let userNode = database.ref('users/' + activeUserUid);
+            userNode.once('value').then(s => {
+                let currentPts = s.child('tapPointsProgress').val() || 0;
+                let currentCash = s.child('totalEarnedPHP').val() || 0;
+                let finalPts = currentPts + pts;
+                let computedBonusCash = currentCash + (pts * 0.02); // 1 point = 0.02 Pesos equivalent
+                
+                userNode.update({ tapPointsProgress: finalPts, totalEarnedPHP: computedBonusCash });
+                document.getElementById('arcadePointsDisplay').innerText = finalPts + " PT";
+                document.getElementById('walletCashField').innerText = computedBonusCash.toFixed(2);
             });
         }
 
-        function fetchAndRenderAuthorNovelsStrip() {
-            database.ref('novels').on('value', snap => {
-                const strip = document.getElementById('authorNovelsStripContainer'); strip.innerHTML = "";
-                if(!snap.exists()) { strip.innerHTML = "<div style='color:var(--text-muted); font-size:0.75rem;'>No active books found. Deploy one above.</div>"; return; }
-                
-                snap.forEach(c => {
-                    let b = c.val(); let bId = c.key;
-                    let isActive = (bId === activeSelectedBookId) ? "active" : "";
-                    strip.innerHTML += `
-                        <div class="novel-strip-card ${isActive}" onclick="selectActiveNovelNodeContext('${bId}')">
-                            <div style="font-weight:bold; color:white; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${b.title}</div>
-                            <div style="font-size:0.65rem; color:var(--accent-gold); margin-top:4px;">👁️ ${b.totalViews || 0} views</div>
-                        </div>`;
+        function loadGlobalLeaderboardEngine() {
+            database.ref('users').orderByChild('tapPointsProgress').limitToLast(5).on('value', snap => {
+                const container = document.getElementById('leaderboardRowsContainer'); container.innerHTML = ""; 
+                let players = []; snap.forEach(c => { let val = c.val(); players.push(val); });
+                players.reverse().forEach((p, idx) => {
+                    container.innerHTML += `<tr><td style="color:var(--accent-orange); padding:6px 0;">#${idx + 1}</td><td>${p.username}</td><td style="color:var(--accent-green); text-align:right;">${p.tapPointsProgress || 0} PT</td></tr>`;
                 });
             });
         }
 
-        function selectActiveNovelNodeContext(bookId) {
-            activeSelectedBookId = bookId;
-            document.getElementById('activeTargetBookIdLabel').innerText = bookId;
-            document.getElementById('chapterWriteBoxInputsContainer').style.display = "block";
+        function switchActiveView(viewId, element) {
+            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active'); element.classList.add('active');
+        }
+        function triggerStudioRedirect() { setTimeout(() => { location.href='writer.html'; }, 200); }
+
+        database.ref('novels').on('value', (snapshot) => {
+            globalNovelsCache = []; if(!snapshot.exists()) return renderLibraryViewDOM([]);
+            snapshot.forEach(c => { let data = c.val(); data.id = c.key; globalNovelsCache.push(data); });
+            executeMasterSearchFilterPipeline();
+        });
+
+        function filterGenreCategory(genre, element) {
+            document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+            element.classList.add('active'); selectedGenreFilter = genre; executeMasterSearchFilterPipeline();
+        }
+
+        function executeMasterSearchFilterPipeline() {
+            let query = document.getElementById('librarySearchInput').value.toLowerCase().trim();
+            let filtered = globalNovelsCache.filter(b => {
+                let matchGenre = (selectedGenreFilter === "All" || b.genre === selectedGenreFilter);
+                let matchText = (b.title.toLowerCase().includes(query) || b.authorName.toLowerCase().includes(query) || (b.synopsis && b.synopsis.toLowerCase().includes(query)));
+                return matchGenre && matchText;
+            });
+            renderLibraryViewDOM(filtered);
+        }
+
+        function renderLibraryViewDOM(books) {
+            const feed = document.getElementById('globalNovelFeedBox'); const trending = document.getElementById('topTrendingBox');
+            feed.innerHTML = ""; trending.innerHTML = "";
+            if(books.length === 0) { feed.innerHTML = "<div class='arcade-card' style='text-align:center; color:var(--text-muted);'>No matching manuscript blocks in this sector.</div>"; return; }
+            let sorted = [...books].sort((a,b) => (b.totalViews || 0) - (a.totalViews || 0)); let top = sorted[0];
+            if(top && selectedGenreFilter === "All") {
+                trending.innerHTML = `
+                    <div class="novel-grid-card" style="border:1px solid var(--accent-gold); background: linear-gradient(135deg, #1e1b4b 0%, #070a13 100%);">
+                        <span class="status-badge" style="background:var(--accent-gold); color:black;">🏆 TOP NOVEL</span>
+                        <img src="${top.coverUrl}" class="novel-cover-img" style="border: 1px solid var(--accent-gold);">
+                        <div style="flex:1;">
+                            <b style="font-size:1.02rem; color:white;">${top.title}</b>
+                            <div style="font-size:0.75rem; color:var(--accent-gold); margin-top:3px; font-weight:600;">✨ Genre: ${top.genre}</div>
+                            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:3px;">Author: ${top.authorName}</div>
+                            <div style="font-size:0.65rem; color:var(--accent-green); font-weight:bold; margin-top:6px;">🔥 Hits: ${top.totalViews || 0} reads</div>
+                        </div>
+                    </div>`;
+            }
+            books.forEach(n => {
+                let count = n.chapters ? Object.keys(n.chapters).length : 0;
+                feed.innerHTML += `
+                    <div class="novel-grid-card">
+                        <span class="status-badge status-ongoing">${n.audienceRating ? n.audienceRating.substring(0,6) : 'LIVE'}</span>
+                        <img src="${n.coverUrl}" class="novel-cover-img">
+                        <div style="flex:1;">
+                            <div style="font-weight:bold; font-size:0.95rem; color:white;">${n.title}</div>
+                            <div style="font-size:0.72rem; color:var(--accent-blue); margin-top:2px; font-weight:bold;">${n.genre}</div>
+                            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">Published by: 👤 ${n.authorName}</div>
+                            <div style="font-size:0.65rem; color:var(--text-muted); margin-top:1px;">Chapters Loaded: 📚 ${count} Volumes</div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function triggerDailySignIn() {
+            if(!activeUserUid) return;
+            database.ref('users/' + activeUserUid).once('value').then(s => {
+                let pt = s.child('tapPointsProgress').val() || 0;
+                database.ref('users/' + activeUserUid).update({ tapPointsProgress: pt + 5 }); 
+                alert("Daily ledger synced safely! +5 PT added directly to wallet.");
+                document.getElementById('arcadePointsDisplay').innerText = (pt + 5) + " PT";
+            });
+        }
+
+        function launchMiniGameEngine(gameType) {
+            const playroom = document.getElementById('gameEnginePlayroom'); const overlay = document.getElementById('gameActiveScreenOverlay');
+            const title = document.getElementById('activeGameTitle'); playroom.innerHTML = ""; overlay.style.display = "block";
+            if(gameType === 'coin') {
+                title.innerText = "Crypto Tap Core";
+                playroom.innerHTML = `<button class="btn-action" style="width:115px; height:115px; border-radius:50%; font-size:2.8rem; display:flex; justify-content:center; align-items:center; margin:auto; background:var(--accent-blue);" onclick="creditArcadePointsSecure(1)">🪙</button><div style="margin-top:15px; text-align:center; font-size:0.8rem; color:var(--text-muted);">Tap to compile points data blocks</div>`;
+            } else if(gameType === 'guess') {
+                title.innerText = "Lucky Decrypt Guess";
+                playroom.innerHTML = `<div style="display:flex; gap:12px; justify-content:center; width:100%;"><button class="btn-action" style="width:100px; background:var(--accent-purple);" onclick="creditArcadePointsSecure(5); alert('Sector unlocked! +5 PT rewarded.')">Sector A</button><button class="btn-action" style="width:100px; background:var(--accent-orange);" onclick="creditArcadePointsSecure(5); alert('Sector unlocked! +5 PT rewarded.')">Sector B</button></div>`;
+            } else {
+                title.innerText = "Arcade Sandbox Matrix";
+                playroom.innerHTML = `<button class="btn-action" style="width:140px; background:var(--accent-green);" onclick="creditArcadePointsSecure(3)">MINING PULSE</button>`;
+            }
+        }
+
+        function adjustWalletFormUIElements(method) {
+            const amtInput = document.getElementById('cashoutAmountInput');
+            const gameMeta = document.getElementById('gameMetaInputContainer');
+            const accLabel = document.getElementById('walletAccountLabel');
             
-            document.querySelectorAll('.novel-strip-card').forEach(c => c.classList.remove('active'));
-            fetchAndRenderAuthorNovelsStrip();
+            if(method.startsWith("GAME_")) {
+                gameMeta.style.display = "block";
+                accLabel.innerText = "Target In-Game Player ID Number:";
+                if(method === "GAME_ML_56") { amtInput.value = 50; }
+                else if(method === "GAME_ML_112") { amtInput.value = 100; }
+                else if(method === "GAME_CODM_100") { amtInput.value = 90; }
+                else if(method === "GAME_VAL_375") { amtInput.value = 145; }
+                else if(method === "GAME_ROBLOX_400") { amtInput.value = 280; }
+                amtInput.disabled = true;
+            } else {
+                gameMeta.style.display = "none";
+                accLabel.innerText = "Receiving Bank Account/Mobile Wallet Number:";
+                amtInput.value = ""; amtInput.placeholder = "Minimum ₱500.00 for Cash out";
+                amtInput.disabled = false;
+            }
         }
 
-        function executeDeployChapterToNovelNode() {
-            if(!activeSelectedBookId) return alert("Select an active novel destination target node.");
-            let chNum = parseInt(document.getElementById('newChapterNumber').value);
-            let chTitle = document.getElementById('newChapterTitle').value.trim();
-            let cost = parseInt(document.getElementById('newChapterCoinCost').value) || 0;
-            let content = document.getElementById('newChapterContent').value.trim();
-
-            if(isNaN(chNum) || !chTitle || !content) return alert("Chapter metadata validation failed. Ensure text streams are full.");
-
-            let targetChapterNode = database.ref(`novels/${activeSelectedBookId}/chapters`).push();
-            targetChapterNode.set({
-                chapterNum: chNum, chapterTitle: chTitle, coinCost: cost, content: content, timestamp: Date.now()
-            }).then(() => {
-                alert(`SUCCESS: Chapter ${chNum} published successfully to the core network!`);
-                document.getElementById('newChapterNumber').value = chNum + 1;
-                document.getElementById('newChapterTitle').value = ""; document.getElementById('newChapterContent').value = "";
-            }).catch(e => alert("Failed to append chapter block: " + e.message));
+        function openPaymentGatewayModal(type) {
+            if(!activeUserUid) return; currentTxType = type;
+            const overlay = document.getElementById('paymentGatewayModalOverlay'); const title = document.getElementById('paymentGatewayTitle');
+            const instructions = document.getElementById('paymentInstructionsArea'); const customFields = document.getElementById('paymentInputFieldsArea');
+            const submitBtn = document.getElementById('paymentSubmitActionButton');
+            customFields.innerHTML = ""; overlay.style.display = "block";
+            
+            if(type === 'topup') {
+                let method = document.getElementById('topupMethodSelect').value; let amt = parseFloat(document.getElementById('topupAmountInput').value);
+                if(isNaN(amt) || amt < 50) { alert("Minimum Top-Up amount is ₱50.00"); closePaymentGatewayModal(); return; }
+                title.innerText = `⚡ ${method} Cash-In System`;
+                instructions.innerHTML = `Send exact amount of <b>₱${amt.toFixed(2)}</b> to Merchant Channel.<br>💳 GCash/Maya: <b>09171234567</b><br><br>Input your transaction reference token id code below to credit balance:`;
+                customFields.innerHTML = `<input type="text" id="paymentTxRefInput" class="search-input" placeholder="Paste Official Reference ID Number" style="margin-top:5px;">`;
+                submitBtn.innerText = "Verify Payment Node"; submitBtn.style.background = "var(--accent-green)";
+            } else {
+                let method = document.getElementById('cashoutMethodSelect').value; let account = document.getElementById('cashoutAccountInput').value.trim();
+                let zone = document.getElementById('cashoutGameZoneInput').value.trim(); let amt = parseFloat(document.getElementById('cashoutAmountInput').value);
+                if(!account) { alert("Target Identifier credentials cannot be empty."); closePaymentGatewayModal(); return; }
+                if(method.startsWith("GAME_")) {
+                    title.innerText = `🎮 Game Product Allocation`;
+                    instructions.innerHTML = `Confirm Game Redemption request package?<br>🕹️ Item: <b>${method.replace("GAME_", "")} Pack</b><br>👤 Player Account ID: <b>${account} ${zone ? '(Zone: '+zone+')' : ''}</b><br>💸 Point Cost Value: <b>₱${amt.toFixed(2)}</b>`;
+                    submitBtn.innerText = "Authorize Direct Voucher Order"; submitBtn.style.background = "var(--accent-purple)";
+                } else {
+                    if(isNaN(amt) || amt < 500) { alert("Minimum cashout threshold is ₱500.00"); closePaymentGatewayModal(); return; }
+                    title.innerText = `📤 External Outbound Transfer`;
+                    instructions.innerHTML = `Deducting funds to transfer node:<br>🏦 Payout Route: ${method}<br>📱 Recipient: ${account}<br>💵 Requested Amount: ₱${amt.toFixed(2)} (Network Gas Fee: ₱50.00)<br><b>Net Credits Sent: ₱${(amt - 50).toFixed(2)}</b>`;
+                    submitBtn.innerText = "Confirm Outbound Remittance"; submitBtn.style.background = "var(--accent-orange)";
+                }
+            }
         }
+        function closePaymentGatewayModal() { document.getElementById('paymentGatewayModalOverlay').style.display = "none"; }
+
+        document.getElementById('paymentSubmitActionButton').addEventListener('click', () => {
+            let userRef = database.ref('users/' + activeUserUid);
+            if(currentTxType === 'topup') {
+                let ref = document.getElementById('paymentTxRefInput').value.trim(); let amt = parseFloat(document.getElementById('topupAmountInput').value);
+                if(!ref) return alert("Submit a valid reference transaction ledger number.");
+                database.ref('deposits_ledger').push({ uid: activeUserUid, gateway: "Inbound Payment", amount: amt, referenceId: ref, timestamp: Date.now() });
+                userRef.once('value').then(snap => {
+                let cur = snap.child('totalEarnedPHP').val() || 0; userRef.update({ totalEarnedPHP: cur + amt });
+                    document.getElementById('walletCashField').innerText = (cur + amt).toFixed(2);
+                    alert("Ticket verified and balances inflated successfully!"); closePaymentGatewayModal();
+                });
+            } else {
+                let amt = parseFloat(document.getElementById('cashoutAmountInput').value); let method = document.getElementById('cashoutMethodSelect').value;
+                let account = document.getElementById('cashoutAccountInput').value.trim(); let zone = document.getElementById('cashoutGameZoneInput').value.trim();
+                userRef.once('value').then(snap => {
+                    let balance = snap.child('totalEarnedPHP').val() || 0; if(balance < amt) return alert("Insufficient liquid asset balance.");
+                    userRef.update({ totalEarnedPHP: balance - amt });
+                    document.getElementById('walletCashField').innerText = (balance - amt).toFixed(2);
+                    database.ref('payout_ledger').push({ uid: activeUserUid, destination: method, targetAccount: account, targetZone: zone, costPHP: amt, timestamp: Date.now() });
+                    alert("Checkout requested and verified! Process queue initialized."); closePaymentGatewayModal();
+                });
+            }
+        });
     </script>
+
+    <div style="text-align: center; margin: 20px 0; min-height: 60px;">
+        <script async="async" data-cfasync="false" src="https://pl29471257.effectivecpmnetwork.com/4cf7e0a66c311471132f6ac2b1acd8b0/invoke.js"></script>
+        <div id="container-4cf7e0a66c311471132f6ac2b1acd8b0"></div>
+    </div>
+
+    <script src="https://pl29471258.effectivecpmnetwork.com/27/7b/f8/277bf845b91c531ad9fb066482ac8cae.js"></script>
+
 </body>
 </html>
