@@ -2,178 +2,248 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WNOVELS STUDIO - Studio Matrix</title>
-    <script src="https://pl29471258.effectivecpmnetwork.com/27/7b/f8/277bf845b91c531ad9fb066482ac8cae.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inkstone Author Studio - Dashboard</title>
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
     <style>
-        :root { --bg-deep: #04060e; --bg-surface: #0b0f1e; --border: #1e293b; --accent: #6366f1; }
-        body { background: var(--bg-deep); color: #f1f5f9; font-family: sans-serif; padding: 20px; }
-        .form-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 20px; }
-        .field-group { margin-bottom: 12px; }
-        label { font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; font-weight: bold; display: block; margin-bottom: 4px; }
-        .input-box, select, textarea { width: 100%; background: #04060e; border: 1px solid var(--border); border-radius: 8px; padding: 12px; color: white; box-sizing: border-box; }
-        textarea { height: 80px; } .prose { height: 200px; font-family: serif; }
-        .btn { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; text-transform: uppercase; }
+        :root {
+            --bg-deep: #020617;
+            --surface-card: #0f172a;
+            --border: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #64748b;
+            --accent-blue: #2563eb;
+            --accent-gold: #f59e0b;
+            --accent-green: #10b981;
+        }
+
+        body {
+            margin: 0; padding: 0; background-color: var(--bg-deep); color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding-bottom: 40px;
+        }
+
+        .studio-header {
+            background-color: var(--surface-card); border-bottom: 1px solid var(--border);
+            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; box-sizing: border-box; }
+        
+        .studio-card {
+            background: var(--surface-card); border: 1px solid var(--border);
+            border-radius: 12px; padding: 20px; margin-bottom: 20px;
+        }
+
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; font-size: 0.8rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; }
+        
+        .studio-input, .studio-select, .studio-textarea {
+            width: 100%; padding: 12px; background: #070a13; border: 1px solid var(--border);
+            border-radius: 8px; color: white; box-sizing: border-box; font-size: 0.9rem;
+        }
+        .studio-textarea { height: 120px; resize: none; font-family: inherit; }
+
+        .btn-studio {
+            width: 100%; padding: 12px; border: none; border-radius: 8px; color: white;
+            font-weight: bold; font-size: 0.9rem; cursor: pointer; text-transform: uppercase;
+        }
+
+        .novel-select-strip {
+            display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px;
+        }
+        .novel-strip-card {
+            background: var(--surface-card); border: 1px solid var(--border); padding: 10px;
+            border-radius: 8px; min-width: 140px; cursor: pointer; text-align: center; font-size: 0.8rem;
+        }
+        .novel-strip-card.active { border-color: var(--accent-gold); background: #1e1b4b; }
     </style>
 </head>
 <body>
 
-<div class="form-card">
-    <h3 style="margin-top:0; color:var(--accent);">🆕 STEP 1: CREATE NEW IMMUNE NOVEL BLUEPRINT</h3>
-    <div style="font-size:0.7rem; color:#94a3b8; margin-bottom:10px;">[ System Auto-Generates 100% Legal Safe Cover Canvas automatically if file empty ]</div>
-    
-    <div class="field-group">
-        <label>Optional Gallery Cover File</label>
-        <input type="file" id="coverFileInput" accept="image/*">
+    <div class="studio-header">
+        <div>
+            <div style="font-weight:900; font-size:1.1rem; letter-spacing:0.5px;">INKSTONE<span style="color:var(--accent-gold);">STUDIO</span></div>
+            <div style="font-size:0.6rem; color:var(--text-muted); font-weight:bold;">AUTHOR WORKBENCH SUBSYSTEM</div>
+        </div>
+        <button onclick="location.href='index.html'" style="background:#1e293b; color:white; border:none; padding:8px 14px; border-radius:6px; font-size:0.75rem; font-weight:bold; cursor:pointer;">← App Hub</button>
     </div>
-    <div class="field-group">
-        <label>Novel Title</label>
-        <input type="text" id="bookTitle" class="input-box" placeholder="The Absolute Ruler System">
-    </div>
-    <div class="field-group">
-        <label>Author Penname</label>
-        <input type="text" id="bookAuthor" class="input-box" placeholder="Xeno_Matrix">
-    </div>
-    <div class="field-group">
-        <label>Ecosystem Genre</label>
-        <select id="bookGenre"><option value="Fantasy System">Fantasy System</option><option value="LitRPG / Isekai">LitRPG / Isekai</option></select>
-    </div>
-    <div class="field-group">
-        <label>Ecosystem Index Status</label>
-        <select id="bookStatus"><option value="ongoing">ONGOING SLOTS</option><option value="completed">COMPLETED SLOTS</option></select>
-    </div>
-    <div class="field-group">
-        <label>Ecosystem Hook Synopsis</label>
-        <textarea id="bookSynopsis" placeholder="Enter storyline hooking summary details..."></textarea>
-    </div>
-    <button class="btn" onclick="createNewNovelBlueprint()">Deploy Core Book Module</button>
-</div>
 
-<div class="form-card" style="border-color: #f59e0b;">
-    <h3 style="margin-top:0; color:#f59e0b;">🚀 STEP 2: DEPLOY UNLIMITED MANUSCRIPT CHAPTERS / VOLUMES</h3>
-    <div class="field-group">
-        <label>Target Book Node Key Address</label>
-        <select id="targetBookDropdown" class="input-box"><option value="">-- Fetching Active Node Vectors --</option></select>
-    </div>
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;" class="field-group">
-        <div><label>Volume Segment Number</label><input type="number" id="chVolume" class="input-box" value="1"></div>
-        <div><label>Chapter Position Number</label><input type="number" id="chNumber" class="input-box" value="1"></div>
-    </div>
-    <div class="field-group">
-        <label>Chapter Name Title</label>
-        <input type="text" id="chTitle" class="input-box" placeholder="Awakening Core Domain">
-    </div>
-    <div class="field-group">
-        <label>Full Chapter Prose Text Editor</label>
-        <textarea id="chContent" class="input-box prose" placeholder="Type unlimited narrative paragraphs streams here..."></textarea>
-    </div>
-    <button class="btn" style="background:#f59e0b;" onclick="pushUnlimitedChapterNode()">Broadcast Chapter Stream</button>
-</div>
+    <div class="container">
+        <div class="studio-card">
+            <h3 style="margin:0 0 15px 0; font-size:1.05rem; text-transform:uppercase; color:var(--accent-gold); border-bottom:1px solid var(--border); padding-bottom:8px;">📁 Deploy New Novel Core</h3>
+            
+            <div class="form-group">
+                <label class="form-label">Manuscript Title</label>
+                <input type="text" id="newNovelTitle" class="studio-input" placeholder="e.g. Solo Max-Level Streamer">
+            </div>
 
-<div style="text-align:center; font-size:0.8rem; color:#475569; cursor:pointer;" onclick="location.href='index.html'">← Leave Studio Matrix</div>
-<script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBelCPgA4ZE7pcFGPPp9191KPOdaSSoMc8",
-      authDomain: "studio-8164628274-c414a.firebaseapp.com",
-      databaseURL: "https://studio-8164628274-c414a-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "studio-8164628274-c414a",
-      storageBucket: "studio-8164628274-c414a.firebasestorage.app",
-      messagingSenderId: "327634019544", appId: "1:327634019544:web:e3e913c4f12ea1d54ce3ad"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-    const adsterraDirectLink = "https://pl29471258.effectivecpmnetwork.com/27/7b/f8/277bf845b91c531ad9fb066482ac8cae.js";
+            <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:12px;">
+                <div class="form-group">
+                    <label class="form-label">Pen Name / Author</label>
+                    <input type="text" id="newNovelAuthor" class="studio-input" placeholder="Author name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Genre Category</label>
+                    <select id="newNovelGenre" class="studio-select">
+                        <option value="Fantasy System">Fantasy System</option>
+                        <option value="LitRPG / Isekai">LitRPG / Isekai</option>
+                        <option value="Martial Arts Cultivation">Martial Arts Cultivation</option>
+                        <option value="Billionaire CEO Romance">Billionaire CEO Romance</option>
+                        <option value="Sci-Fi / Cyberpunk">Sci-Fi & Space</option>
+                        <option value="Urban Life / Realism">Urban Life</option>
+                        <option value="Video Games Reality">Video Games Reality</option>
+                        <option value="Mystery / Thriller">Mystery</option>
+                    </select>
+                </div>
+            </div>
 
-    // 🛡️ COPYRIGHT IMMUNE GEOMETRIC GENERATOR CORE
-    function generateCopyrightSafeCoverCanvas(titleText) {
-        const canvas = document.createElement('canvas');
-        canvas.width = 300; canvas.height = 450;
-        const ctx = canvas.getContext('2d');
+            <div class="form-group">
+                <label class="form-label">Cover Art Image URL</label>
+                <input type="text" id="newNovelCoverUrl" class="studio-input" placeholder="https://example.com/cover.jpg">
+            </div>
 
-        // Create elegant background abstract premium color nodes
-        const gradients = [
-            ['#0f172a', '#1e293b'], ['#1e1b4b', '#311042'], ['#4c0519', '#111827'], ['#022c22', '#064e3b']
-        ];
-        const pick = gradients[Math.floor(Math.random() * gradients.length)];
-        let grad = ctx.createLinearGradient(0, 0, 0, 450);
-        grad.addColorStop(0, pick[0]); grad.addColorStop(1, pick[1]);
-        ctx.fillStyle = grad; ctx.fillRect(0, 0, 300, 450);
+            <div class="form-group">
+                <label class="form-label">Synopsis / Blurb Block</label>
+                <textarea id="newNovelSynopsis" class="studio-textarea" placeholder="Write a catchy book summary data..."></textarea>
+            </div>
 
-        // Add geometric structural lines to avoid matching any existing legal art patent
-        ctx.strokeStyle = "rgba(245, 158, 11, 0.15)"; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.moveTo(0, 50); ctx.lineTo(300, 400); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(300, 80); ctx.lineTo(0, 350); ctx.stroke();
+            <button class="btn-studio" style="background:var(--accent-blue);" onclick="executeCreateNovelDatabaseNode()">Register Book to Mainnet</button>
+                        </div>
+                        <div class="studio-card">
+            <h3 style="margin:0 0 5px 0; font-size:1.05rem; text-transform:uppercase; color:var(--accent-gold);">📝 Append Volume Chapters</h3>
+            <p style="margin:0 0 15px 0; font-size:0.75rem; color:var(--text-muted);">Select a registered manuscript from your node sector to inject narrative data blocks.</p>
 
-        // Print Book Title on the Cover Matrix
-        ctx.fillStyle = "#ffffff"; ctx.font = "bold 22px system-ui"; ctx.textAlign = "center";
-        ctx.shadowColor = "rgba(0,0,0,0.8)"; ctx.shadowBlur = 6;
-        
-        // Simple line wrapper text engine
-        let words = titleText.toUpperCase().split(' '), line = '', y = 180;
-        for(let n=0; n<words.length; n++) {
-            let testLine = line + words[n] + ' ';
-            if (testLine.length > 15 && n > 0) { ctx.fillText(line, 150, y); line = words[n] + ' '; y += 28; }
-            else { line = testLine; }
-        }
-        ctx.fillText(line, 150, y);
-        return canvas.toDataURL("image/jpeg");
-    }
+            <label class="form-label">1. Select Target Novel:</label>
+            <div id="authorNovelsStripContainer" class="novel-select-strip">
+                </div>
 
-    function createNewNovelBlueprint() {
-        let title = document.getElementById('bookTitle').value.trim();
-        let author = document.getElementById('bookAuthor').value.trim();
-        let genre = document.getElementById('bookGenre').value;
-        let status = document.getElementById('bookStatus').value;
-        let syn = document.getElementById('bookSynopsis').value.trim();
-        let file = document.getElementById('coverFileInput').files[0];
+            <div id="chapterWriteBoxInputsContainer" style="display:none; border-top:1px solid var(--border); padding-top:15px; margin-top:15px;">
+                <div style="background:#1e293b; padding:10px; border-radius:6px; margin-bottom:15px; font-size:0.75rem;">
+                    Targeting Asset Node ID: <b id="activeTargetBookIdLabel" style="color:var(--accent-gold);">NONE</b>
+                </div>
 
-        if(!title || !author || !syn) return alert("Fill up all metadata nodes!");
-        window.open(adsterraDirectLink, '_blank');
+                <div style="display:grid; grid-template-columns: 1fr 2fr; gap:12px; margin-bottom:15px;">
+                    <div>
+                        <label class="form-label">Chapter Number</label>
+                        <input type="number" id="newChapterNumber" class="studio-input" placeholder="e.g. 1" min="1">
+                    </div>
+                    <div>
+                        <label class="form-label">Chapter Title</label>
+                        <input type="text" id="newChapterTitle" class="studio-input" placeholder="e.g. The Awakening Awakening">
+                    </div>
+                </div>
 
-        const processUpload = (finalCoverUrl) => {
-            database.ref('novels').push({
-                title: title, authorName: author, genre: genre, status: status, synopsis: syn,
-                coverUrl: finalCoverUrl, totalViews: 0, timestamp: Date.now()
-            }).then(() => { alert("Novel Vector Blueprint Saved!"); location.reload(); });
+                <div class="form-group" style="background:#070a13; padding:12px; border:1px solid var(--border); border-radius:8px;">
+                    <label class="form-label" style="color:var(--accent-gold);">🔒 Chapter Premium Locking Layer</label>
+                    <p style="margin:0 0 8px 0; font-size:0.7rem; color:var(--text-muted);">Set to 0 if this chapter is FREE. Set a value (e.g., 20) to lock it behind an Arcade Points toll gate.</p>
+                    <input type="number" id="newChapterCoinCost" class="studio-input" placeholder="Arcade Points Cost (0 = Free)" value="0" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Story Content (Text Data Streams)</label>
+                    <textarea id="newChapterContent" class="studio-textarea" style="height:320px;" placeholder="Paste or write the entire chapter contents here..."></textarea>
+                </div>
+
+                <button class="btn-studio" style="background:var(--accent-green);" onclick="executeDeployChapterToNovelNode()">Publish Chapter Data Block</button>
+            </div>
+        </div>
+            </div>
+                <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyBelCPgA4ZE7pcFGPPp9191KPOdaSSoMc8",
+          authDomain: "studio-8164628274-c414a.firebaseapp.com",
+          databaseURL: "https://studio-8164628274-c414a-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId: "studio-8164628274-c414a",
+          storageBucket: "studio-8164628274-c414a.firebasestorage.app",
+          messagingSenderId: "327634019544", appId: "1:327634019544:web:e3e913c4f12ea1d54ce3ad"
         };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const auth = firebase.auth();
 
-        if(file) {
-            let r = new FileReader(); r.onloadend = () => processUpload(r.result); r.readAsDataURL(file);
-        } else {
-            // Trigger auto copyright-immune payload block
-            processUpload(generateCopyrightSafeCoverCanvas(title));
-        }
-    }
+        let activeSelectedBookId = null;
 
-    // LOAD ACTIVE NOVEL LIST ON DROPDOWN MENU
-    database.ref('novels').on('value', snap => {
-        let select = document.getElementById('targetBookDropdown'); select.innerHTML="";
-        if(!snap.exists()) return;
-        snap.forEach(c => { select.innerHTML += `<option value="${c.key}">${c.val().title}</option>`; });
-    });
-
-    // 🚀 PUSH ENGINE: UNLIMITED CHAPTER AND VOLUME STORAGE PIPELINE
-    function pushUnlimitedChapterNode() {
-        let bookId = document.getElementById('targetBookDropdown').value;
-        let vol = document.getElementById('chVolume').value;
-        let num = document.getElementById('chNumber').value;
-        let title = document.getElementById('chTitle').value.trim();
-        let content = document.getElementById('chContent').value.trim();
-
-        if(!bookId || !title || !content) return alert("Verify all active tracking fields!");
-        window.open(adsterraDirectLink, '_blank');
-
-        database.ref(`novels/${bookId}/chapters`).push({
-            volumeNum: vol, chapterNum: num, chapterTitle: title, content: content, timestamp: Date.now()
-        }).then(() => {
-            // Update master book timestamp configuration to dynamic trigger trending nodes
-            database.ref('novels/'+bookId).update({ timestamp: Date.now() });
-            alert("Chapter broadcast successfully streamed!");
-            document.getElementById('chTitle').value=""; document.getElementById('chContent').value="";
+        // Auto Anonymous Login Node validation 
+        auth.onAuthStateChanged(user => {
+            if(!user) { auth.signInAnonymously().catch(e => alert("Studio Node Fail: " + e.message)); }
+            else { fetchAndRenderAuthorNovelsStrip(); }
         });
-    }
-</script>
+
+        function executeCreateNovelDatabaseNode() {
+            let title = document.getElementById('newNovelTitle').value.trim();
+            let author = document.getElementById('newNovelAuthor').value.trim();
+            let genre = document.getElementById('newNovelGenre').value;
+            let cover = document.getElementById('newNovelCoverUrl').value.trim();
+            let syno = document.getElementById('newNovelSynopsis').value.trim();
+
+            if(!title || !author || !cover || !syno) { return alert("All block data units must be populated."); }
+
+            let targetNode = database.ref('novels').push();
+            targetNode.set({
+                title: title, authorName: author, genre: genre, coverUrl: cover, synopsis: syno,
+                totalViews: 0, totalCoinRevenueEarned: 0, status: "ongoing", rating: "G",
+                audience: "General", tags: "#System #P2E #Inkstone", timestamp: Date.now()
+            }).then(() => {
+                alert(`SUCCESS: "${title}" has been registered to the global network node!`);
+                document.getElementById('newNovelTitle').value = "";
+                document.getElementById('newNovelCoverUrl').value = "";
+                document.getElementById('newNovelSynopsis').value = "";
+            }).catch(err => alert("Transmission Error: " + err.message));
+        }
+
+        function fetchAndRenderAuthorNovelsStrip() {
+            database.ref('novels').on('value', snap => {
+                const strip = document.getElementById('authorNovelsStripContainer');
+                strip.innerHTML = "";
+                if(!snap.exists()) { strip.innerHTML = "<div style='color:var(--text-muted); font-size:0.75rem;'>No active books found. Deploy one above.</div>"; return; }
+                
+                snap.forEach(c => {
+                    let b = c.val(); let bId = c.key;
+                    let isActive = (bId === activeSelectedBookId) ? "active" : "";
+                    strip.innerHTML += `
+                        <div class="novel-strip-card ${isActive}" onclick="selectActiveNovelNodeContext('${bId}')">
+                            <div style="font-weight:bold; color:white; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${b.title}</div>
+                            <div style="font-size:0.65rem; color:var(--accent-gold); margin-top:4px;">👁️ ${b.totalViews || 0} views</div>
+                        </div>`;
+                });
+            });
+        }
+
+        function selectActiveNovelNodeContext(bookId) {
+            activeSelectedBookId = bookId;
+            document.getElementById('activeTargetBookIdLabel').innerText = bookId;
+            document.getElementById('chapterWriteBoxInputsContainer').style.display = "block";
+            
+            // Highlight active selection UI
+            document.querySelectorAll('.novel-strip-card').forEach(c => c.classList.remove('active'));
+            fetchAndRenderAuthorNovelsStrip();
+        }
+
+        function executeDeployChapterToNovelNode() {
+            if(!activeSelectedBookId) return alert("Select an active novel destination target node.");
+            let chNum = parseInt(document.getElementById('newChapterNumber').value);
+            let chTitle = document.getElementById('newChapterTitle').value.trim();
+            let cost = parseInt(document.getElementById('newChapterCoinCost').value) || 0;
+            let content = document.getElementById('newChapterContent').value.trim();
+
+            if(isNaN(chNum) || !chTitle || !content) { return alert("Chapter metadata validation failed. Ensure text streams are full."); }
+
+            let targetChapterNode = database.ref(`novels/${activeSelectedBookId}/chapters`).push();
+            targetChapterNode.set({
+                chapterNum: chNum, chapterTitle: chTitle, coinCost: cost, content: content, timestamp: Date.now()
+            }).then(() => {
+                alert(`SUCCESS: Chapter ${chNum} published successfully to the core network!`);
+                document.getElementById('newChapterNumber').value = chNum + 1; // Auto-increment for convenience
+                document.getElementById('newChapterTitle').value = "";
+                document.getElementById('newChapterContent').value = "";
+            }).catch(e => alert("Failed to append chapter block: " + e.message));
+        }
+    </script>
 </body>
 </html>
+                        
