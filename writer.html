@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inkstone Author Studio - Dashboard</title>
+    <title>Inkstone Author Studio Pro - Multi-Upload Edition</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -11,20 +11,21 @@
 
     <style>
         :root {
-            --bg-deep: #020617;
+            --bg-deep: #030712;
             --surface-card: #0f172a;
             --border: #1e293b;
             --text-main: #f8fafc;
             --text-muted: #64748b;
-            --accent-blue: #2563eb;
+            --accent-blue: #3b82f6;
             --accent-gold: #f59e0b;
             --accent-green: #10b981;
+            --accent-purple: #a855f7;
         }
 
         body {
             margin: 0; padding: 0; background-color: var(--bg-deep); color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            padding-bottom: 40px;
+            padding-bottom: 60px;
         }
 
         .studio-header {
@@ -36,124 +37,188 @@
         
         .studio-card {
             background: var(--surface-card); border: 1px solid var(--border);
-            border-radius: 12px; padding: 20px; margin-bottom: 20px;
+            border-radius: 12px; padding: 20px; margin-bottom: 20px; position: relative;
         }
 
         .form-group { margin-bottom: 15px; }
-        .form-label { display: block; font-size: 0.8rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; }
+        .form-label { display: block; font-size: 0.78rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
         
         .studio-input, .studio-select, .studio-textarea {
             width: 100%; padding: 12px; background: #070a13; border: 1px solid var(--border);
-            border-radius: 8px; color: white; box-sizing: border-box; font-size: 0.9rem;
+            border-radius: 8px; color: white; box-sizing: border-box; font-size: 0.9rem; transition: border 0.2s;
         }
+        .studio-input:focus, .studio-select:focus, .studio-textarea:focus { border-color: var(--accent-blue); outline: none; }
         .studio-textarea { height: 120px; resize: none; font-family: inherit; }
 
-        .btn-studio {
-            width: 100%; padding: 12px; border: none; border-radius: 8px; color: white;
-            font-weight: bold; font-size: 0.9rem; cursor: pointer; text-transform: uppercase;
+        /* Custom File Upload Button for Gallery */
+        .file-upload-wrapper {
+            position: relative; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; background: #070a13; border: 2px dashed var(--border);
+            border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s;
+        }
+        .file-upload-wrapper:hover { border-color: var(--accent-gold); background: #0f172a; }
+        .file-upload-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        
+        .preview-thumbnail {
+            width: 80px; height: 110px; object-fit: cover; border-radius: 6px; 
+            margin-top: 10px; border: 1px solid var(--border); display: none;
+        }
+        .preview-avatar {
+            width: 60px; height: 60px; object-fit: cover; border-radius: 50%;
+            margin-top: 10px; border: 1px solid var(--border); display: none;
         }
 
-        .novel-select-strip {
-            display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px;
+        .btn-studio {
+            width: 100%; padding: 13px; border: none; border-radius: 8px; color: white;
+            font-weight: bold; font-size: 0.9rem; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;
         }
+
+        .novel-select-strip { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; }
         .novel-strip-card {
             background: var(--surface-card); border: 1px solid var(--border); padding: 10px;
             border-radius: 8px; min-width: 140px; cursor: pointer; text-align: center; font-size: 0.8rem;
         }
         .novel-strip-card.active { border-color: var(--accent-gold); background: #1e1b4b; }
+
+        .tag-pill-badge {
+            background: #1e293b; color: var(--text-main); font-size: 0.7rem; 
+            padding: 4px 8px; border-radius: 4px; display: inline-block; margin: 2px;
+        }
     </style>
 </head>
 <body>
 
     <div class="studio-header">
         <div>
-            <div style="font-weight:900; font-size:1.1rem; letter-spacing:0.5px;">INKSTONE<span style="color:var(--accent-gold);">STUDIO</span></div>
-            <div style="font-size:0.6rem; color:var(--text-muted); font-weight:bold;">AUTHOR WORKBENCH SUBSYSTEM</div>
+            <div style="font-weight:900; font-size:1.1rem; letter-spacing:0.5px;">INKSTONE<span style="color:var(--accent-gold);">STUDIO</span> <span style="font-size:0.6rem; background:var(--accent-purple); padding:2px 5px; border-radius:3px; color:white; vertical-align:middle;">V2.0</span></div>
+            <div style="font-size:0.6rem; color:var(--text-muted); font-weight:bold;">GALERY UPLOAD & MULTI-GENRE MAINNET</div>
         </div>
         <button onclick="location.href='index.html'" style="background:#1e293b; color:white; border:none; padding:8px 14px; border-radius:6px; font-size:0.75rem; font-weight:bold; cursor:pointer;">← App Hub</button>
     </div>
 
     <div class="container">
+        <div class="studio-card" style="border-left: 4px solid var(--accent-purple);">
+            <h3 style="margin:0 0 5px 0; font-size:1.05rem; text-transform:uppercase; color:var(--accent-purple);">👤 Author Profile Studio</h3>
+            <p style="margin:0 0 15px 0; font-size:0.75rem; color:var(--text-muted);">Set up your public syndicate identity and upload your official avatar file.</p>
+            
+            <div style="display:grid; grid-template-columns: 1fr 2fr; gap:15px; align-items:center; margin-bottom:15px;">
+                <div class="file-upload-wrapper" style="padding:10px; height:90px;">
+                    <span style="font-size:1.2rem;">🖼️</span>
+                    <span style="font-size:0.6rem; font-weight:bold; color:var(--text-muted);">Avatar File</span>
+                    <input type="file" id="authorAvatarFileInput" class="file-upload-input" accept="image/*" onchange="processLocalImageCompression(this, 'avatarPreview')">
+                </div>
+                <div>
+                    <img id="avatarPreview" class="preview-avatar">
+                    <label class="form-label">Display Pen Name</label>
+                    <input type="text" id="authorStudioPenName" class="studio-input" placeholder="Enter public writer handle">
+                </div>
+            </div>
+            <button class="btn-studio" style="background:var(--accent-purple); padding:8px; font-size:0.75rem;" onclick="executeSaveAuthorProfileNode()">Save Profile Identity</button>
+        </div>
+
         <div class="studio-card">
-            <h3 style="margin:0 0 15px 0; font-size:1.05rem; text-transform:uppercase; color:var(--accent-gold); border-bottom:1px solid var(--border); padding-bottom:8px;">📁 Deploy New Novel Core</h3>
+            <h3 style="margin:0 0 15px 0; font-size:1.05rem; text-transform:uppercase; color:var(--accent-gold); border-bottom:1px solid var(--border); padding-bottom:8px;">📁 Deploy New Novel Core (V2.0)</h3>
             
             <div class="form-group">
-                <label class="form-label">Manuscript Title</label>
-                <input type="text" id="newNovelTitle" class="studio-input" placeholder="e.g. Solo Max-Level Streamer">
+                <label class="form-label">Manuscript / Book Title</label>
+                <input type="text" id="newNovelTitle" class="studio-input" placeholder="e.g. Reincarnated as a Mythical Anime Streamer">
             </div>
 
-            <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:12px;">
-                <div class="form-group">
-                    <label class="form-label">Pen Name / Author</label>
-                    <input type="text" id="newNovelAuthor" class="studio-input" placeholder="Author name">
+            <div class="form-group">
+                <label class="form-label">Genre Category Sector (Multi-Chain)</label>
+                <select id="newNovelGenre" class="studio-select">
+                    <option value="Fantasy System">Fantasy System</option>
+                    <option value="LitRPG / Isekai">LitRPG / Isekai</option>
+                    <option value="Martial Arts Cultivation">Martial Arts Cultivation</option>
+                    <option value="Billionaire CEO Romance">Billionaire CEO Romance</option>
+                    <option value="Sci-Fi / Cyberpunk">Sci-Fi & Cyberpunk</option>
+                    <option value="Urban Life / Realism">Urban Life</option>
+                    <option value="Video Games Reality">Video Games Reality</option>
+                    <option value="Mystery / Thriller">Mystery / Thriller</option>
+                    <option value="Anime Streaming Core">Anime Streaming Fiction</option>
+                    <option value="Manga Reincarnation">Manga Reincarnation</option>
+                    <option value="Light Novel Tropes">Light Novel / Otaku Culture</option>
+                    <option value="Virtual Reality MMO">Virtual Reality MMO</option>
+                    <option value="Mecha / Sci-Fi Warfare">Mecha / Sci-Fi Warfare</option>
+                    <option value="Horror / Survival Game">Horror / Survival Game</option>
+                    <option value="High School Magic Academy">High School Magic Academy</option>
+                    <option value="Slice of Life / Esports">Slice of Life / Esports</option>
+                    <option value="Villainess Otome System">Villainess Otome System</option>
+                    <option value="Historical Fantasy Warfare">Historical Fantasy Warfare</option>
+                    <option value="Superheroes / Urban Powers">Superheroes / Urban Powers</option>
+                    <option value="Tower Climbing Challenge">Tower Climbing / Dungeon Core</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Book Cover Image (Upload from Gallery / Files)</label>
+                <div class="file-upload-wrapper">
+                    <span style="font-size:2rem; margin-bottom:5px;">📁</span>
+                    <b style="font-size:0.8rem; color:var(--text-main);">Tap to Open Gallery/Files</b>
+                    <span style="font-size:0.65rem; color:var(--text-muted); margin-top:2px;">Supports JPEG, PNG local image files</span>
+                    <input type="file" id="bookCoverFileInput" class="file-upload-input" accept="image/*" onchange="processLocalImageCompression(this, 'coverPreview')">
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Genre Category</label>
-                    <select id="newNovelGenre" class="studio-select">
-                        <option value="Fantasy System">Fantasy System</option>
-                        <option value="LitRPG / Isekai">LitRPG / Isekai</option>
-                        <option value="Martial Arts Cultivation">Martial Arts Cultivation</option>
-                        <option value="Billionaire CEO Romance">Billionaire CEO Romance</option>
-                        <option value="Sci-Fi / Cyberpunk">Sci-Fi & Space</option>
-                        <option value="Urban Life / Realism">Urban Life</option>
-                        <option value="Video Games Reality">Video Games Reality</option>
-                        <option value="Mystery / Thriller">Mystery</option>
-                    </select>
+                <div style="text-align:center;">
+                    <img id="coverPreview" class="preview-thumbnail">
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Cover Art Image URL</label>
-                <input type="text" id="newNovelCoverUrl" class="studio-input" placeholder="https://example.com/cover.jpg">
+                <label class="form-label">Full Target Audience / Rating</label>
+                <select id="newNovelAudience" class="studio-select">
+                    <option value="General (G) - All Readers">General (G) - All Readers</option>
+                    <option value="Teen (PG-13) - Minor Guidance">Teen (PG-13) - Minor Guidance</option>
+                    <option value="Mature (R-18) - Restricted Layer">Mature (R-18) - Restricted Layer</option>
+                </select>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Synopsis / Blurb Block</label>
-                <textarea id="newNovelSynopsis" class="studio-textarea" placeholder="Write a catchy book summary data..."></textarea>
+                <label class="form-label">Synopsis / Blurb Block Data</label>
+                <textarea id="newNovelSynopsis" class="studio-textarea" placeholder="Write a highly competitive book summary node data stream..."></textarea>
             </div>
 
             <button class="btn-studio" style="background:var(--accent-blue);" onclick="executeCreateNovelDatabaseNode()">Register Book to Mainnet</button>
-                        </div>
-                        <div class="studio-card">
+        </div>
+
+        <div class="studio-card">
             <h3 style="margin:0 0 5px 0; font-size:1.05rem; text-transform:uppercase; color:var(--accent-gold);">📝 Append Volume Chapters</h3>
             <p style="margin:0 0 15px 0; font-size:0.75rem; color:var(--text-muted);">Select a registered manuscript from your node sector to inject narrative data blocks.</p>
 
-            <label class="form-label">1. Select Target Novel:</label>
-            <div id="authorNovelsStripContainer" class="novel-select-strip">
-                </div>
+            <label class="form-label">Select Target Novel Ledger:</label>
+            <div id="authorNovelsStripContainer" class="novel-select-strip"></div>
 
             <div id="chapterWriteBoxInputsContainer" style="display:none; border-top:1px solid var(--border); padding-top:15px; margin-top:15px;">
-                <div style="background:#1e293b; padding:10px; border-radius:6px; margin-bottom:15px; font-size:0.75rem;">
+                <div style="background:#111827; padding:10px; border-radius:6px; margin-bottom:15px; font-size:0.75rem; border:1px solid var(--border);">
                     Targeting Asset Node ID: <b id="activeTargetBookIdLabel" style="color:var(--accent-gold);">NONE</b>
                 </div>
 
                 <div style="display:grid; grid-template-columns: 1fr 2fr; gap:12px; margin-bottom:15px;">
                     <div>
-                        <label class="form-label">Chapter Number</label>
+                        <label class="form-label">Chapter Num</label>
                         <input type="number" id="newChapterNumber" class="studio-input" placeholder="e.g. 1" min="1">
                     </div>
                     <div>
                         <label class="form-label">Chapter Title</label>
-                        <input type="text" id="newChapterTitle" class="studio-input" placeholder="e.g. The Awakening Awakening">
+                        <input type="text" id="newChapterTitle" class="studio-input" placeholder="e.g. Global Stream Initialization">
                     </div>
                 </div>
 
                 <div class="form-group" style="background:#070a13; padding:12px; border:1px solid var(--border); border-radius:8px;">
                     <label class="form-label" style="color:var(--accent-gold);">🔒 Chapter Premium Locking Layer</label>
-                    <p style="margin:0 0 8px 0; font-size:0.7rem; color:var(--text-muted);">Set to 0 if this chapter is FREE. Set a value (e.g., 20) to lock it behind an Arcade Points toll gate.</p>
-                    <input type="number" id="newChapterCoinCost" class="studio-input" placeholder="Arcade Points Cost (0 = Free)" value="0" min="0">
+                    <p style="margin:0 0 8px 0; font-size:0.7rem; color:var(--text-muted);">0 = Free access. Set a token price (e.g. 25) to toll gate readers using Arcade Points.</p>
+                    <input type="number" id="newChapterCoinCost" class="studio-input" placeholder="Arcade Points Cost" value="0" min="0">
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Story Content (Text Data Streams)</label>
-                    <textarea id="newChapterContent" class="studio-textarea" style="height:320px;" placeholder="Paste or write the entire chapter contents here..."></textarea>
+                    <textarea id="newChapterContent" class="studio-textarea" style="height:320px;" placeholder="Write or paste your master story draft data blocks..."></textarea>
                 </div>
 
                 <button class="btn-studio" style="background:var(--accent-green);" onclick="executeDeployChapterToNovelNode()">Publish Chapter Data Block</button>
             </div>
         </div>
             </div>
-                <script>
+            <script>
         const firebaseConfig = {
           apiKey: "AIzaSyBelCPgA4ZE7pcFGPPp9191KPOdaSSoMc8",
           authDomain: "studio-8164628274-c414a.firebaseapp.com",
@@ -167,39 +232,106 @@
         const auth = firebase.auth();
 
         let activeSelectedBookId = null;
+        let globalCompressedCoverBase64 = "";
+        let globalCompressedAvatarBase64 = "";
 
-        // Auto Anonymous Login Node validation 
+        // Automated Device Identity Verification Protocol
         auth.onAuthStateChanged(user => {
-            if(!user) { auth.signInAnonymously().catch(e => alert("Studio Node Fail: " + e.message)); }
-            else { fetchAndRenderAuthorNovelsStrip(); }
+            if(!user) { 
+                auth.signInAnonymously().catch(e => alert("Studio Node Fail: " + e.message)); 
+            } else { 
+                loadAuthorProfileIdentityNode(user.uid);
+                fetchAndRenderAuthorNovelsStrip(); 
+            }
         });
 
+        // Advanced Base64 File Multi-Stream Compressor Engine
+        function processLocalImageCompression(inputElement, previewId) {
+            const file = inputElement.files[0]; if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let ctx = canvas.getContext('2d');
+                    
+                    // Smart Resizer Protocol to maintain light database payloads
+                    let maxDim = previewId === 'avatarPreview' ? 120 : 320;
+                    let w = img.width; let h = img.height;
+                    if(w > h) { if(w > maxDim) { h *= maxDim / w; w = maxDim; } }
+                    else { if(h > maxDim) { w *= maxDim / h; h = maxDim; } }
+                    
+                    canvas.width = w; canvas.height = h;
+                    ctx.drawImage(img, 0, 0, w, h);
+                    
+                    // Compress stream matrix to JPEG data node
+                    let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                    
+                    const previewImg = document.getElementById(previewId);
+                    previewImg.src = compressedDataUrl; previewImg.style.display = "block";
+                    
+                    if(previewId === 'coverPreview') globalCompressedCoverBase64 = compressedDataUrl;
+                    if(previewId === 'avatarPreview') globalCompressedAvatarBase64 = compressedDataUrl;
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Author Profile Node Sync
+        function loadAuthorProfileIdentityNode(uid) {
+            database.ref('authors/' + uid).once('value').then(s => {
+                if(s.exists()) {
+                    let d = s.val(); document.getElementById('authorStudioPenName').value = d.penName || "";
+                    if(d.avatar) {
+                        let av = document.getElementById('avatarPreview');
+                        av.src = d.avatar; av.style.display = "block"; globalCompressedAvatarBase64 = d.avatar;
+                    }
+                }
+            });
+        }
+
+        function executeSaveAuthorProfileNode() {
+            let uid = auth.currentUser ? auth.currentUser.uid : null; if(!uid) return;
+            let name = document.getElementById('authorStudioPenName').value.trim();
+            if(!name) return alert("Pen Name cannot be empty.");
+            
+            database.ref('authors/' + uid).set({ penName: name, avatar: globalCompressedAvatarBase64, timestamp: Date.now() })
+            .then(() => alert("Author Profile Node Synced Successfully!"))
+            .catch(e => alert("Profile Sync Error: " + e.message));
+        }
+
+        // Expanded Novel Registration Engine
         function executeCreateNovelDatabaseNode() {
             let title = document.getElementById('newNovelTitle').value.trim();
-            let author = document.getElementById('newNovelAuthor').value.trim();
             let genre = document.getElementById('newNovelGenre').value;
-            let cover = document.getElementById('newNovelCoverUrl').value.trim();
+            let audience = document.getElementById('newNovelAudience').value;
             let syno = document.getElementById('newNovelSynopsis').value.trim();
+            let uid = auth.currentUser ? auth.currentUser.uid : null;
 
-            if(!title || !author || !cover || !syno) { return alert("All block data units must be populated."); }
+            if(!title || !syno) return alert("Title and Synopsis text channels must be populated.");
+            if(!globalCompressedCoverBase64) return alert("Please select or upload a Cover Image from your Gallery/Files.");
 
-            let targetNode = database.ref('novels').push();
-            targetNode.set({
-                title: title, authorName: author, genre: genre, coverUrl: cover, synopsis: syno,
-                totalViews: 0, totalCoinRevenueEarned: 0, status: "ongoing", rating: "G",
-                audience: "General", tags: "#System #P2E #Inkstone", timestamp: Date.now()
-            }).then(() => {
-                alert(`SUCCESS: "${title}" has been registered to the global network node!`);
-                document.getElementById('newNovelTitle').value = "";
-                document.getElementById('newNovelCoverUrl').value = "";
-                document.getElementById('newNovelSynopsis').value = "";
-            }).catch(err => alert("Transmission Error: " + err.message));
+            database.ref('authors/' + uid).once('value').then(authorSnap => {
+                let authorName = "Independent Author";
+                if(authorSnap.exists()) authorName = authorSnap.val().penName || "Independent Author";
+
+                let targetNode = database.ref('novels').push();
+                targetNode.set({
+                    title: title, authorName: authorName, authorUid: uid, genre: genre,
+                    coverUrl: globalCompressedCoverBase64, synopsis: syno, audienceRating: audience,
+                    totalViews: 0, totalCoinRevenueEarned: 0, status: "ongoing", timestamp: Date.now()
+                }).then(() => {
+                    alert(`SUCCESS: "${title}" has been registered safely via local gallery file streams!`);
+                    document.getElementById('newNovelTitle').value = ""; document.getElementById('newNovelSynopsis').value = "";
+                    document.getElementById('coverPreview').style.display = "none"; globalCompressedCoverBase64 = "";
+                }).catch(err => alert("Transmission Error: " + err.message));
+            });
         }
 
         function fetchAndRenderAuthorNovelsStrip() {
             database.ref('novels').on('value', snap => {
-                const strip = document.getElementById('authorNovelsStripContainer');
-                strip.innerHTML = "";
+                const strip = document.getElementById('authorNovelsStripContainer'); strip.innerHTML = "";
                 if(!snap.exists()) { strip.innerHTML = "<div style='color:var(--text-muted); font-size:0.75rem;'>No active books found. Deploy one above.</div>"; return; }
                 
                 snap.forEach(c => {
@@ -219,7 +351,6 @@
             document.getElementById('activeTargetBookIdLabel').innerText = bookId;
             document.getElementById('chapterWriteBoxInputsContainer').style.display = "block";
             
-            // Highlight active selection UI
             document.querySelectorAll('.novel-strip-card').forEach(c => c.classList.remove('active'));
             fetchAndRenderAuthorNovelsStrip();
         }
@@ -231,19 +362,17 @@
             let cost = parseInt(document.getElementById('newChapterCoinCost').value) || 0;
             let content = document.getElementById('newChapterContent').value.trim();
 
-            if(isNaN(chNum) || !chTitle || !content) { return alert("Chapter metadata validation failed. Ensure text streams are full."); }
+            if(isNaN(chNum) || !chTitle || !content) return alert("Chapter metadata validation failed. Ensure text streams are full.");
 
             let targetChapterNode = database.ref(`novels/${activeSelectedBookId}/chapters`).push();
             targetChapterNode.set({
                 chapterNum: chNum, chapterTitle: chTitle, coinCost: cost, content: content, timestamp: Date.now()
             }).then(() => {
                 alert(`SUCCESS: Chapter ${chNum} published successfully to the core network!`);
-                document.getElementById('newChapterNumber').value = chNum + 1; // Auto-increment for convenience
-                document.getElementById('newChapterTitle').value = "";
-                document.getElementById('newChapterContent').value = "";
+                document.getElementById('newChapterNumber').value = chNum + 1;
+                document.getElementById('newChapterTitle').value = ""; document.getElementById('newChapterContent').value = "";
             }).catch(e => alert("Failed to append chapter block: " + e.message));
         }
     </script>
 </body>
 </html>
-                        
